@@ -147,8 +147,21 @@ main:focus { outline: none; }
 .piece.lost.got img { clip-path: circle(75% at 50% 50%); }
 .piece.lost.got .piece-in::before { opacity: 0; }
 
-.home-end { position: relative; z-index: 1; background: var(--bg); padding: 18vh var(--pad) 10vh; }
-.home-end p { max-width: 34rem; font-size: 1.25rem; margin-bottom: 8vh; }
+/* ---------- Home: gallery strip that slides left as you scroll ---------- */
+.gallery { position: relative; z-index: 1; background: var(--bg); margin-top: 10vh; }
+.gallery-pin { position: sticky; top: 0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; justify-content: center; gap: 5vh; padding-top: var(--nav-h); }
+.gallery-head { padding: 0 var(--pad); font-size: clamp(2rem, 5vw, 5rem); font-weight: 700; font-stretch: 75%; line-height: .92; letter-spacing: -.02em; max-width: 14em; }
+.gallery-track { display: flex; align-items: flex-start; gap: clamp(1rem, 2.2vw, 2.25rem); width: max-content; padding: 0 var(--pad); will-change: transform; }
+.gallery-track > * { display: block; flex: none; }
+.gallery-track > :nth-child(even) { margin-top: 5vh; }
+.gallery-track img { height: 44vh; width: auto; max-width: none; transition: opacity .3s; }
+.gallery-track span span, .gallery-track a span { display: block; padding-top: .5rem; font-size: .9375rem; color: var(--muted); }
+.gallery-track a:hover span { color: var(--fg); }
+.gallery-track:hover img { opacity: .45; }
+.gallery-track > :hover img { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .gallery-pin { position: static; height: auto; overflow-x: auto; padding: 12vh 0; } }
+
+.home-end { position: relative; z-index: 1; background: var(--bg); padding: 14vh var(--pad) 10vh; }
 .home-end a { display: block; width: fit-content; }
 .home-end a.giant { font-size: clamp(2rem, 4.2vw, 4.25rem); line-height: 1; }
 .home-end + .site-foot { margin-top: 0; }
@@ -304,6 +317,7 @@ main:focus { outline: none; }
   .b-pair { grid-template-columns: 1fr 1fr; gap: 1rem; }
   .p-hero, .p-hero img { max-height: 70vh; height: 70vh; }
   .p-next img { display: none; }
+  .gallery-track img { height: 34vh; }
   .log li { grid-template-columns: 1fr; gap: .5rem; }
   .log img { justify-self: start; }
   .arch a { grid-template-columns: 3.25rem 1fr; }

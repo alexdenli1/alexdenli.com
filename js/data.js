@@ -5,6 +5,7 @@
 
    ADD A PROJECT    copy one { ... } block inside "projects" and change it.
    ADD A LOG ENTRY  add one line at the TOP of "log".
+   ADD TO GALLERY   add one { src: "..." } to "gallery" (the strip at the bottom of the home page).
    IMAGES           put files in /images/<project-name>/ and point "hero"
                     and block "src" at them, e.g. "images/rescue/hero.jpg".
 
@@ -146,6 +147,18 @@ window.SITE = {
         { type: "statement", text: "Placeholder: where the numbers are projected to go next." }
       ]
     }
+  ],
+
+  /* Gallery strip at the bottom of the home page: it slides to the left as the visitor scrolls.
+     Add as many images as you like, from current and archived work, in the order they should appear.
+     "project" is optional: give a project slug and the image links to that project's page. */
+  gallery: [
+    { src: PH(1), project: "xfly" }, { src: PH(6), project: "adverts" }, { src: PH(9), project: "signature-logo" },
+    { src: PH(4), project: "ball-cabinet" }, { src: PH(10), project: "rescue" }, { src: PH(13), project: "brand-identity" },
+    { src: PH(5), project: "amazon" }, { src: PH(2), project: "adverts" }, { src: PH(3), project: "xfly" },
+    { src: PH(14), project: "brand-identity" }, { src: PH(7), project: "adverts" }, { src: PH(15), project: "ball-cabinet" },
+    { src: PH(11), project: "rescue" }, { src: PH(8), project: "adverts" }, { src: PH(16) }, { src: PH(12), project: "signature-logo" },
+    { src: PH(1), project: "amazon" }, { src: PH(6) }, { src: PH(9), project: "xfly" }, { src: PH(4) }
   ],
 
   /* Running log of new work. Newest first.
