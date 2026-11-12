@@ -97,13 +97,6 @@ main:focus { outline: none; }
 
 /* ---------- Home: the field of scattered work ---------- */
 .field { position: relative; z-index: 1; background: var(--bg); }
-.field-title {
-  position: sticky; top: 0; height: 100vh; margin-bottom: -100vh; z-index: 0; pointer-events: none;
-  display: flex; align-items: flex-end; padding: 0 var(--pad) 3vh; color: rgba(238, 233, 227, .1);
-  transition: color .3s;
-}
-.field-title span { font-size: clamp(4rem, 15vw, 17rem); max-width: 75%; }
-.field-title.on { color: rgba(238, 233, 227, .95); }
 .field-index {
   position: sticky; top: 50vh; z-index: 3; height: 0; margin-left: auto;
   width: fit-content; margin-right: var(--pad); text-align: right;
@@ -128,6 +121,14 @@ main:focus { outline: none; }
 .piece:hover .zap, .piece.on .zap { animation: flicker .9s steps(1) infinite; }
 @keyframes flicker { 0%, 100% { opacity: 1; } 8% { opacity: .35; } 12% { opacity: 1; } 55% { opacity: .7; } 60% { opacity: 1; } }
 .piece img { width: auto; max-width: 100%; max-height: 84vh; transition: opacity .5s, clip-path .9s var(--ease), filter .4s; }
+/* project name, set beside its image on whichever side has room */
+.piece-title { position: absolute; font-size: clamp(2.25rem, 5.2vw, 5.75rem); line-height: .88; transition: opacity .4s; }
+.piece-title.t-right { left: calc(100% + 2.2vw); text-align: left; }
+.piece-title.t-left { right: calc(100% + 2.2vw); text-align: right; }
+.piece-title.v-top { top: 0; }
+.piece-title.v-bot { bottom: 0; }
+.piece-title.v-mid { top: 50%; transform: translateY(-50%); }
+.field.dim .piece:not(.on) .piece-title { opacity: .2; }
 .piece-cap { display: none; padding-top: .5rem; font-size: .9375rem; }
 .piece-cap small { color: var(--muted); font-size: inherit; display: block; }
 .field.dim .piece:not(.on) img { opacity: .2; }
@@ -285,8 +286,8 @@ main:focus { outline: none; }
   .nav-pages { grid-row: 2; justify-self: center; }
   .gate-mark { width: 62vw; }
   .field { height: auto !important; padding: 12vh var(--pad) 0; display: grid; gap: 14vh; }
-  .field-title, .field-index { display: none; }
-  .piece { position: static; width: 86% !important; }
+  .field-index, .piece-title { display: none; }
+  .piece { position: static; width: 86% !important; text-align: left !important; }
   .piece img { max-height: none; width: 100%; }
   .zap { display: none; }
   .piece:nth-child(3n) { width: 62% !important; justify-self: end; }

@@ -19,19 +19,24 @@
     <a class="ul" href="mailto:${esc(S.owner.email)}">${esc(S.owner.email)}</a><a class="ul" href="#" data-top>Back to top</a></footer>`;
 
   // Scatter pattern for the home page. New projects drop into the next slot automatically.
+  // x = left edge (% of width), w = width (vw), s = drift speed, dy = vertical nudge (vh), v = where the title sits beside the image.
+  // The title goes on whichever side of the image has more room.
+  const RIGHT_EDGE = 84;
   const SLOTS = [
-    { x: 4, w: 54, s: .06 }, { x: 30, w: 46, s: -.05 }, { x: 8, w: 50, s: .08 }, { x: 34, w: 44, s: -.07 },
-    { x: 4, w: 46, s: .05 }, { x: 26, w: 54, s: -.05 }, { x: 12, w: 48, s: .07 }
+    { x: 3, w: 46, s: .06, dy: 0, v: "bot" }, { x: 43, w: 41, s: -.05, dy: 9, v: "top" }, { x: 12, w: 42, s: .08, dy: -4, v: "mid" },
+    { x: 50, w: 34, s: -.07, dy: 10, v: "bot" }, { x: 5, w: 40, s: .05, dy: -8, v: "top" }, { x: 35, w: 49, s: -.05, dy: 5, v: "mid" },
+    { x: 22, w: 36, s: .07, dy: -2, v: "top" }
   ];
   const ZAP = `<svg class="zap" aria-hidden="true"><rect width="100%" height="100%" pathLength="1"/><rect width="100%" height="100%" pathLength="1"/></svg>`;
 
   function home() {
     const n = S.projects.length, step = 84;
     const pieces = S.projects.map((p, i) => {
-      const t = SLOTS[i % SLOTS.length];
+      const t = SLOTS[i % SLOTS.length], roomL = t.x, roomR = RIGHT_EDGE - (t.x + t.w), side = roomR >= roomL ? "right" : "left";
       return `<a class="piece${p.hidden ? " lost" : ""}${found.has(p.slug) ? " got" : ""}" href="${link(p)}" data-slug="${esc(p.slug)}"
-        data-title="${esc(p.title)}" data-speed="${t.s}" style="left:${t.x}%;top:${28 + i * step}vh;width:${t.w}vw">
-        <span class="piece-in"><img src="${esc(p.hero)}" alt="${esc(p.title)}" loading="${i < 2 ? "eager" : "lazy"}">${ZAP}</span>
+        data-title="${esc(p.title)}" data-speed="${t.s}" style="left:${t.x}%;top:${24 + i * step + t.dy}vh;width:${t.w}vw;text-align:${side === "left" ? "right" : "left"}">
+        <span class="piece-in"><img src="${esc(p.hero)}" alt="${esc(p.title)}" loading="${i < 2 ? "eager" : "lazy"}">${ZAP}
+          <span class="piece-title giant t-${side} v-${t.v}" style="width:${Math.max(roomL, roomR) - 4}vw">${esc(p.title)}</span></span>
         <span class="piece-cap">${esc(p.title)}<small>${esc(cat(p.category).label)}, ${esc(p.year)}</small></span></a>`;
     }).join("");
     const index = S.projects.map((p) => `<li><a href="${link(p)}" data-slug="${esc(p.slug)}" class="${p.hidden ? "lost" : ""}${found.has(p.slug) ? " got" : ""}">
@@ -47,7 +52,6 @@
         <div class="disco-end" hidden><p>Time</p><p class="giant"><span class="disco-final">0</span> caught</p><p class="disco-of"></p>
           <div class="disco-acts"><button class="btn" type="button" data-again>Play again</button><button class="btn" type="button" data-enter>Enter the site</button></div></div></section>`}
       <section class="field" style="height:${28 + n * step + 50}vh" aria-label="All work">
-        <div class="field-title giant" aria-hidden="true"><span>Work</span></div>
         <nav class="field-index" aria-label="Projects"><ol>${index}</ol></nav>
         ${pieces}
       </section>
@@ -162,18 +166,16 @@
     live.waves && live.waves.stop();
     live = {
       waves: key === "home" ? intro() : null,
-      home: key === "home", mark: $(".gate-mark"), field: $(".field"), title: $(".field-title"),
+      home: key === "home", mark: $(".gate-mark"), field: $(".field"),
       pieces: $$(".piece"), scrubs: $$("[data-scrub]"), masks: $$(".mask img"),
       names: $$(".field-index a"), wheel: $(".field-index ol"), active: -1
     };
-    const setTitle = (t) => { if (!live.title) return; live.title.classList.toggle("on", !!t); live.title.firstElementChild.textContent = t || "Work"; };
     const spot = (slug, on) => {
       const el = live.pieces.find((p) => p.dataset.slug === slug);
       if (!el) return;
       if (on && el.classList.contains("lost")) reveal(el);
       el.classList.toggle("on", on); live.field.classList.toggle("dim", on);
       $$(".field-index a").forEach((a) => a.classList.toggle("on", on && a.dataset.slug === slug));
-      setTitle(on ? el.dataset.title : "");
     };
     live.pieces.forEach((el) => {
       el.addEventListener("mouseenter", () => spot(el.dataset.slug, true));
