@@ -58,9 +58,9 @@
       </section>
       <section class="gallery" aria-label="Gallery of all work"><div class="gallery-pin">
         <h2 class="gallery-head">Let’s explore and discover more</h2>
-        <div class="gallery-track">${(S.gallery || []).map((g) => { const p = S.projects.find((x) => x.slug === g.project);
+        <div class="gallery-band"><div class="gallery-track">${(S.gallery || []).map((g) => { const p = S.projects.find((x) => x.slug === g.project);
           const im = `<img src="${esc(g.src)}" alt="${esc(p ? p.title : "")}" loading="lazy" draggable="false">`;
-          return p ? `<a href="${link(p)}" aria-label="${esc(p.title)}">${im}</a>` : `<span class="gallery-item">${im}</span>`; }).join("")}</div>
+          return p ? `<a href="${link(p)}" aria-label="${esc(p.title)}">${im}</a>` : `<span class="gallery-item">${im}</span>`; }).join("")}</div></div>
       </div></section>
       <section class="home-end">
         <a class="giant" href="#/projects">Projects</a><a class="giant" href="#/archive">Archive</a><a class="giant" href="#/contact">Contact</a></section>${foot()}`,
@@ -208,7 +208,14 @@
     // gallery strip: the section is made tall enough that scrolling through it slides the strip fully to the left
     // (the strip moves 3x as fast as the scroll, so it sweeps by quickly)
     if (live.gallery && !reduce) {
-      const fit = () => { if (!live.track) return; live.run = Math.max(0, live.track.scrollWidth - innerWidth); live.gallery.style.height = `calc(100vh + ${live.run / 3}px)`; queue(); };
+      const fit = () => {
+        if (!live.track) return;
+        live.run = Math.max(0, live.track.scrollWidth - innerWidth);
+        live.gallery.style.height = `calc(100vh + ${live.run / 3}px)`;
+        live.shots = $$(".gallery-track > *").map((el) => ({ el, c: el.offsetLeft + el.offsetWidth / 2 }));
+        live.span = innerWidth * 0.34;
+        queue();
+      };
       live.fit = fit; fit();
       if (window.ResizeObserver) { live.ro = new ResizeObserver(fit); live.ro.observe(live.track); }
       else $$("img", live.track).forEach((im) => im.addEventListener("load", fit));
@@ -267,7 +274,16 @@
       const top = live.gallery.getBoundingClientRect().top;
       // Scrolling up skips straight past the strip; scrolling down plays it through again.
       if (y < lastY - 1 && top < -2 && top > -live.run / 3 - 2) scrollTo(0, y + top);
-      else if (top < vh && top > -live.run - vh) live.track.style.transform = `translate3d(${-Math.max(0, Math.min(live.run, -top * 3))}px, 0, 0)`;
+      else if (top < vh && top > -live.run - vh) {
+        const t = Math.max(0, Math.min(live.run, -top * 3)), mid = innerWidth / 2;
+        live.track.style.transform = `translate3d(${-t}px, 0, 0)`;
+        // the image passing through the middle grows; the rest stay small and a touch faded
+        for (const s of live.shots || []) {
+          const k = Math.max(0, 1 - Math.abs(s.c - t - mid) / live.span);
+          s.el.style.transform = `scale(${(1 + 0.25 * k).toFixed(3)})`;
+          s.el.style.opacity = (0.72 + 0.28 * k).toFixed(3);
+        }
+      }
     }
     // Projects page: fade the background image of the category nearest the middle of the screen
     if (live.secs && live.secs.length) {
