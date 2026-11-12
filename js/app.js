@@ -172,7 +172,6 @@
     if (key === "home") return swap(); // going home is instant, no transition
     const fx = "fx-sweep", dur = 520; // every other page shares the slanted sweep (see style.css)
     curtainLabel.textContent = page.label;
-    if (fx === "fx-iris") { curtain.style.setProperty("--cx", mx + "px"); curtain.style.setProperty("--cy", my + "px"); }
     curtain.className = `curtain cover ${fx}`;
     setTimeout(() => { swap(); curtain.className = `curtain leave ${fx}`; setTimeout(() => (curtain.className = "curtain"), dur); }, dur);
   }
