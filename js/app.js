@@ -37,23 +37,22 @@
     const index = S.projects.map((p) => `<li><a href="${link(p)}" data-slug="${esc(p.slug)}" class="${p.hidden ? "lost" : ""}${found.has(p.slug) ? " got" : ""}">
       <b>${p.hidden && !found.has(p.slug) ? "·····" : esc(p.title)}</b></a></li>`).join("");
     return {
-      title: "", label: "Back home", scroll: seenGate ? innerHeight : 0,
-      html: `<section class="gate" aria-label="Introduction"><h1 class="gate-mark"><svg class="logo" viewBox="0 0 64.91 16.89" role="img" aria-label="Alex Denli Archive"><use href="#logo"/></svg></h1>
+      title: "", label: "Back home", scroll: 0,
+      html: `${seenGate ? "" : `<section class="gate" aria-label="Introduction"><h1 class="gate-mark"><svg class="logo" viewBox="0 0 64.91 16.89" role="img" aria-label="Alex Denli Archive"><use href="#logo"/></svg></h1>
         <canvas class="disco-lights" aria-hidden="true"></canvas>
         <canvas class="gate-fx" aria-hidden="true"></canvas><div class="gate-fall"></div>
         <button class="disco-btn" type="button" aria-pressed="false" aria-label="Play the disco catch game" title="Disco mode">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5v3.2"/><circle cx="12" cy="13.2" r="8.3"/><ellipse cx="12" cy="13.2" rx="8.3" ry="3.1"/><ellipse cx="12" cy="13.2" rx="3.4" ry="8.3"/><path d="M4.6 9.4h14.8M4.6 17h14.8M20 2.2v3M18.5 3.7h3"/></svg></button>
         <div class="disco-hud" hidden><span>Caught <b class="disco-score">0</b></span><span class="disco-time">20</span></div>
         <div class="disco-end" hidden><p>Time</p><p class="giant"><span class="disco-final">0</span> caught</p><p class="disco-of"></p>
-          <div class="disco-acts"><button class="btn" type="button" data-again>Play again</button><button class="btn" type="button" data-enter>Enter the site</button></div></div></section>
+          <div class="disco-acts"><button class="btn" type="button" data-again>Play again</button><button class="btn" type="button" data-enter>Enter the site</button></div></div></section>`}
       <section class="field" style="height:${28 + n * step + 50}vh" aria-label="All work">
         <div class="field-title giant" aria-hidden="true"><span>Work</span></div>
-        <ol class="field-index">${index}</ol>
+        <nav class="field-index" aria-label="Projects"><ol>${index}</ol></nav>
         ${pieces}
       </section>
       <section class="home-end"><p>${esc(S.owner.intro)}</p>
         <a class="giant" href="#/projects">Projects</a><a class="giant" href="#/archive">Archive</a><a class="giant" href="#/contact">Contact</a></section>${foot()}`,
-      after: () => { seenGate = true; }
     };
   }
 
@@ -164,7 +163,8 @@
     live = {
       waves: key === "home" ? intro() : null,
       home: key === "home", mark: $(".gate-mark"), field: $(".field"), title: $(".field-title"),
-      pieces: $$(".piece"), scrubs: $$("[data-scrub]"), masks: $$(".mask img")
+      pieces: $$(".piece"), scrubs: $$("[data-scrub]"), masks: $$(".mask img"),
+      names: $$(".field-index a"), wheel: $(".field-index ol"), active: -1
     };
     const setTitle = (t) => { if (!live.title) return; live.title.classList.toggle("on", !!t); live.title.firstElementChild.textContent = t || "Work"; };
     const spot = (slug, on) => {
@@ -186,7 +186,7 @@
       a.addEventListener("focus", () => spot(a.dataset.slug, true));
       a.addEventListener("blur", () => spot(a.dataset.slug, false));
     });
-    $$("[data-top]").forEach((a) => a.addEventListener("click", (e) => { e.preventDefault(); scrollTo({ top: live.home ? innerHeight : 0, behavior: reduce ? "auto" : "smooth" }); }));
+    $$("[data-top]").forEach((a) => a.addEventListener("click", (e) => { e.preventDefault(); scrollTo({ top: live.mark ? innerHeight : 0, behavior: reduce ? "auto" : "smooth" }); }));
     $$("[data-peek]").forEach((a) => {
       a.addEventListener("mouseenter", () => { peek.src = a.dataset.peek; peek.classList.add("on"); });
       a.addEventListener("mouseleave", () => peek.classList.remove("on"));
@@ -209,11 +209,13 @@
       if (!reduce) live.mark.style.transform = `scale(${1 + p * 0.9})`;
       live.mark.style.opacity = String(1 - p * 1.15);
     }
-    nav.classList.toggle("nav-away", live.home && y < vh * 0.85);
-    flag.classList.toggle("flag-away", live.home && y < vh * 1.5);
+    nav.classList.toggle("nav-away", !!live.mark && y < vh * 0.85);
+    flag.classList.toggle("flag-away", live.home && y < vh * (live.mark ? 1.5 : 0.5));
     const big = wide();
+    let near = -1, best = 1e9, n = 0;
     for (const el of live.pieces || []) {
-      const r = el.getBoundingClientRect();
+      const r = el.getBoundingClientRect(), off0 = Math.abs(r.top + r.height / 2 - vh / 2), k = n++;
+      if (off0 < best) { best = off0; near = k; }
       if (r.bottom < -vh || r.top > vh * 2) continue;
       if (big && !reduce) {
         const off = (r.top + r.height / 2 - vh / 2) * parseFloat(el.dataset.speed);
@@ -226,6 +228,13 @@
           if (Math.hypot(dx, dy) < 70) reveal(el);
         } else if (r.top < vh * 0.55 && r.bottom > vh * 0.35) reveal(el);
       }
+    }
+    // the project list works like a wheel: names passed are solid, the one on screen is largest
+    if (big && live.wheel && near !== live.active) {
+      live.active = near;
+      live.names.forEach((a, i) => { a.classList.toggle("cur", i === near); a.classList.toggle("next", Math.abs(i - near) === 1); a.classList.toggle("past", i <= near); });
+      const li = live.names[near].parentElement;
+      live.wheel.style.transform = `translateY(${-(li.offsetTop + li.offsetHeight / 2)}px)`;
     }
     for (const el of live.scrubs || []) {
       const r = el.getBoundingClientRect();
@@ -249,7 +258,7 @@
     const gate = $(".gate"), cv = $(".gate-fx"), layer = $(".gate-fall");
     if (!gate || reduce) return null;
     const ctx = cv.getContext("2d"), small = () => innerWidth <= 820;
-    let items = [], raf = 0, prev = 0, next = 0, order = [], W = 0, H = 0, dpr = 1, entered = 0;
+    let items = [], raf = 0, prev = 0, next = 0, order = [], W = 0, H = 0, dpr = 1, entered = -1e9;
     // disco mode: a 20-second catch game
     const btn = $(".disco-btn"), hud = $(".disco-hud"), end = $(".disco-end"), scoreEl = $(".disco-score"), timeEl = $(".disco-time");
     const NEON = ["255,43,214", "0,229,255", "255,230,0", "140,140,255", "40,255,140"];
@@ -404,7 +413,15 @@
   }
 
   const queue = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
-  addEventListener("scroll", queue, { passive: true });
+  // Entering is one-way: once the intro has been scrolled past it is removed, so the home page becomes the top.
+  function enter() {
+    const gate = $(".gate");
+    if (!gate || scrollY < gate.offsetHeight - 1) return;
+    const h = gate.offsetHeight;
+    live.waves && live.waves.stop(); live.waves = null; live.mark = null; seenGate = true;
+    gate.remove(); scrollTo(0, Math.max(0, scrollY - h));
+  }
+  addEventListener("scroll", () => { if (live.mark) enter(); queue(); }, { passive: true });
   addEventListener("resize", queue);
   addEventListener("mousemove", (e) => {
     mx = e.clientX; my = e.clientY;

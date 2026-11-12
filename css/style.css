@@ -15,7 +15,7 @@
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
-  margin: 0; background: var(--bg); color: var(--fg);
+  margin: 0; overflow-anchor: none; background: var(--bg); color: var(--fg);
   font-family: "Bricolage", "Helvetica Neue", Arial, sans-serif;
   font-size: 1.0625rem; line-height: 1.5; font-stretch: 100%;
   -webkit-font-smoothing: antialiased; overflow-x: hidden;
@@ -105,11 +105,15 @@ main:focus { outline: none; }
 .field-title span { font-size: clamp(4rem, 15vw, 17rem); max-width: 75%; }
 .field-title.on { color: rgba(238, 233, 227, .95); }
 .field-index {
-  position: sticky; top: calc(var(--nav-h) + 4vh); z-index: 3; height: 0; margin-left: auto;
-  width: fit-content; margin-right: var(--pad); font-size: .9375rem; text-align: right;
+  position: sticky; top: 50vh; z-index: 3; height: 0; margin-left: auto;
+  width: fit-content; margin-right: var(--pad); text-align: right;
 }
-.field-index a { display: block; padding: .16rem 0; }
-.field-index a:hover, .field-index a.on { font-weight: 700; }
+.field-index ol { transition: transform .45s var(--ease); }
+.field-index a { display: block; padding: .2rem 0; font-size: .9375rem; line-height: 1.15; opacity: .3; transition: opacity .35s, font-size .35s var(--ease); }
+.field-index a.past { opacity: 1; }
+.field-index a.next { font-size: 1.125rem; }
+.field-index a.cur { font-size: 2.1rem; font-weight: 700; font-stretch: 80%; opacity: 1; }
+.field-index a:hover, .field-index a.on { opacity: 1; text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: .2em; }
 .field-index b { font-weight: inherit; }
 
 .piece { position: absolute; z-index: 1; display: block; }
