@@ -143,9 +143,11 @@ main:focus { outline: none; }
 .piece.lost.got img { clip-path: circle(75% at 50% 50%); }
 .piece.lost.got .piece-in::before { opacity: 0; }
 
-.home-end { position: relative; z-index: 1; background: var(--bg); padding: 18vh var(--pad) 12vh; }
+.home-end { position: relative; z-index: 1; background: var(--bg); padding: 18vh var(--pad) 10vh; }
 .home-end p { max-width: 34rem; font-size: 1.25rem; margin-bottom: 8vh; }
 .home-end a { display: block; width: fit-content; }
+.home-end a.giant { font-size: clamp(2rem, 4.2vw, 4.25rem); line-height: 1; }
+.home-end + .site-foot { margin-top: 0; }
 .home-end a { transition: box-shadow .3s var(--ease); }
 .home-end a:hover { box-shadow: inset 0 -.1em 0 var(--accent); }
 
