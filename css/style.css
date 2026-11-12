@@ -96,7 +96,12 @@ main:focus { outline: none; }
 .disco-acts { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin-top: 1.5rem; }
 
 /* ---------- Home: the field of scattered work ---------- */
-.field { position: relative; z-index: 1; background: var(--bg); }
+/* every home image: same size, landscape 3:2, evenly spaced */
+.field {
+  position: relative; z-index: 1; background: var(--bg);
+  --pw: min(52vw, 111vh); --ph: calc(var(--pw) / 1.5); --gap: 20vh; --first: 16vh;
+  height: calc(var(--first) + var(--n) * (var(--ph) + var(--gap)));
+}
 .field-index {
   position: sticky; top: 50vh; z-index: 3; height: 0; margin-left: auto;
   width: fit-content; margin-right: var(--pad); text-align: right;
@@ -109,8 +114,8 @@ main:focus { outline: none; }
 .field-index a:hover, .field-index a.on { opacity: 1; text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: .2em; }
 .field-index b { font-weight: inherit; }
 
-.piece { position: absolute; z-index: 1; display: block; }
-.piece-in { display: inline-block; position: relative; will-change: transform; }
+.piece { position: absolute; z-index: 1; display: block; width: var(--pw); top: calc(var(--first) + var(--i) * (var(--ph) + var(--gap))); }
+.piece-in { display: block; position: relative; will-change: transform; }
 /* Hover: a quick electric outline drawn round the image */
 .zap { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; fill: none; visibility: hidden; }
 /* the electric filter is only switched on while a project is hovered: it is costly to leave running */
@@ -120,9 +125,9 @@ main:focus { outline: none; }
 .piece:hover .zap rect, .piece:focus-visible .zap rect, .piece.on .zap rect { stroke-dashoffset: 0; transition: stroke-dashoffset .38s cubic-bezier(.3, 0, .1, 1); }
 .piece:hover .zap, .piece.on .zap { animation: flicker .9s steps(1) infinite; }
 @keyframes flicker { 0%, 100% { opacity: 1; } 8% { opacity: .35; } 12% { opacity: 1; } 55% { opacity: .7; } 60% { opacity: 1; } }
-.piece img { width: auto; max-width: 100%; max-height: 84vh; transition: opacity .5s, clip-path .9s var(--ease), filter .4s; }
+.piece img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; transition: opacity .5s, clip-path .9s var(--ease), filter .4s; }
 /* project name, set beside its image on whichever side has room */
-.piece-title { position: absolute; font-size: clamp(2.25rem, 5.2vw, 5.75rem); line-height: .88; transition: opacity .4s; }
+.piece-title { position: absolute; font-size: clamp(2rem, 4.4vw, 5rem); line-height: .88; transition: opacity .4s; }
 .piece-title.t-right { left: calc(100% + 2.2vw); text-align: left; }
 .piece-title.t-left { right: calc(100% + 2.2vw); text-align: right; }
 .piece-title.v-top { top: 0; }
@@ -285,13 +290,10 @@ main:focus { outline: none; }
   .nav-home .logo { height: 2rem; }
   .nav-pages { grid-row: 2; justify-self: center; }
   .gate-mark { width: 62vw; }
-  .field { height: auto !important; padding: 12vh var(--pad) 0; display: grid; gap: 14vh; }
+  .field { height: auto; padding: 12vh var(--pad) 0; display: grid; gap: 12vh; }
   .field-index, .piece-title { display: none; }
-  .piece { position: static; width: 86% !important; text-align: left !important; }
-  .piece img { max-height: none; width: 100%; }
-  .zap { display: none; }
-  .piece:nth-child(3n) { width: 62% !important; justify-self: end; }
-  .piece:nth-child(3n + 1) { width: 74% !important; justify-self: center; }
+  .piece { position: static; width: 90%; }
+  .piece:nth-of-type(even) { justify-self: end; }
   .piece-cap { display: block; }
   .row, .p-head, .b-steps li, .about { grid-template-columns: 1fr; }
   .row > *, .p-head > *, .b-steps li > *, .about > * { grid-column: 1 / -1 !important; order: 0 !important; }
