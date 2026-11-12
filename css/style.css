@@ -72,9 +72,9 @@ main:focus { outline: none; }
 .gate-mark { align-self: center; justify-self: center; position: relative; width: min(52vw, 90vh); transform-origin: 50% 50%; will-change: transform, opacity; }
 .gate-mark .logo { width: 100%; height: auto; }
 .gate-fx { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
-.gate-fall { position: absolute; inset: 0; z-index: 1; overflow: hidden; }
-.faller { position: absolute; left: 0; top: 0; display: block; will-change: transform; cursor: pointer; touch-action: manipulation; }
-.faller img { width: 100%; max-height: 22rem; object-fit: cover; box-shadow: 0 1.6rem 2.6rem rgba(0, 0, 0, .28); pointer-events: none; }
+.gate-fall { position: absolute; inset: 0; z-index: 1; overflow: hidden; contain: strict; }
+.faller { position: absolute; left: 0; top: 0; display: block; will-change: transform; backface-visibility: hidden; cursor: pointer; touch-action: manipulation; }
+.faller img { width: 100%; max-height: 22rem; object-fit: cover; box-shadow: 0 .9rem 1.4rem rgba(0, 0, 0, .22); pointer-events: none; }
 .gate-mark { z-index: 2; pointer-events: none; }
 
 /* ---------- Home: disco mode (20-second catch game on the intro) ---------- */
@@ -86,18 +86,9 @@ main:focus { outline: none; }
 .gate.disco { background: #000; color: var(--fg); touch-action: none; }
 .gate.disco .disco-btn { background: var(--fg); color: #000; border-color: var(--fg); }
 .gate.disco .faller { cursor: inherit; }
-.disco-lights { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; opacity: 0; transition: opacity .4s; }
-.gate.disco .disco-lights { opacity: 1; animation: beat .5s ease-in-out infinite alternate; }
-@keyframes beat { from { filter: brightness(.65); } to { filter: brightness(1.15); } }
-.disco-lights i { position: absolute; top: -8vh; width: 46vh; height: 150vh; margin-left: -23vh; transform-origin: 50% 0; clip-path: polygon(47% 0, 53% 0, 100% 100%, 0 100%); background: linear-gradient(var(--c), transparent 82%); mix-blend-mode: screen; opacity: .62; animation: swing var(--d) ease-in-out infinite alternate; animation-play-state: paused; }
-.gate.disco .disco-lights i { animation-play-state: running; }
-@keyframes swing { from { transform: rotate(var(--a)); } to { transform: rotate(var(--b)); } }
-.disco-lights i:nth-child(1) { left: 12%; --c: #ff2bd6; --a: -58deg; --b: -4deg; --d: 1.7s; }
-.disco-lights i:nth-child(2) { left: 30%; --c: #00e5ff; --a: 34deg; --b: -40deg; --d: 2.3s; }
-.disco-lights i:nth-child(3) { left: 50%; --c: #ffe600; --a: -46deg; --b: 46deg; --d: 1.9s; }
-.disco-lights i:nth-child(4) { left: 50%; --c: #8c8cff; --a: 52deg; --b: -52deg; --d: 2.7s; }
-.disco-lights i:nth-child(5) { left: 70%; --c: #28ff8c; --a: -30deg; --b: 42deg; --d: 2.1s; }
-.disco-lights i:nth-child(6) { left: 88%; --c: #ff2bd6; --a: 6deg; --b: 60deg; --d: 1.5s; }
+.gate.disco .faller img { box-shadow: none; }
+.disco-lights { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0; }
+.gate.disco .disco-lights { opacity: 1; }
 .disco-hud { position: absolute; top: var(--pad); left: 50%; transform: translateX(-50%); z-index: 6; display: flex; gap: 2.5rem; white-space: nowrap; pointer-events: none; font-weight: 700; font-stretch: 75%; font-size: clamp(1.5rem, 3vw, 2.5rem); line-height: 1; font-variant-numeric: tabular-nums; }
 .disco-time::after { content: "s"; }
 .disco-end { position: absolute; inset: 0; z-index: 7; background: #000; color: var(--fg); display: grid; place-content: center; justify-items: center; gap: 1.25rem; text-align: center; padding: var(--pad); }
