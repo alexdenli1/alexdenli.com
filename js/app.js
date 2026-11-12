@@ -39,7 +39,13 @@
     return {
       title: "", label: "Back home", scroll: seenGate ? innerHeight : 0,
       html: `<section class="gate" aria-label="Introduction"><h1 class="gate-mark"><svg class="logo" viewBox="0 0 64.91 16.89" role="img" aria-label="Alex Denli Archive"><use href="#logo"/></svg></h1>
-        <canvas class="gate-fx" aria-hidden="true"></canvas><div class="gate-fall"></div></section>
+        <div class="disco-lights" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <canvas class="gate-fx" aria-hidden="true"></canvas><div class="gate-fall"></div>
+        <button class="disco-btn" type="button" aria-pressed="false" aria-label="Play the disco catch game" title="Disco mode">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5v3.2"/><circle cx="12" cy="13.2" r="8.3"/><ellipse cx="12" cy="13.2" rx="8.3" ry="3.1"/><ellipse cx="12" cy="13.2" rx="3.4" ry="8.3"/><path d="M4.6 9.4h14.8M4.6 17h14.8M20 2.2v3M18.5 3.7h3"/></svg></button>
+        <div class="disco-hud" hidden><span>Caught <b class="disco-score">0</b></span><span class="disco-time">20</span></div>
+        <div class="disco-end" hidden><p>Time</p><p class="giant"><span class="disco-final">0</span> caught</p><p class="disco-of"></p>
+          <div class="disco-acts"><button class="btn" type="button" data-again>Play again</button><button class="btn" type="button" data-enter>Enter the site</button></div></div></section>
       <section class="field" style="height:${28 + n * step + 50}vh" aria-label="All work">
         <div class="field-title giant" aria-hidden="true"><span>Work</span></div>
         <ol class="field-index">${index}</ol>
@@ -237,26 +243,33 @@
   }
   /* Intro screen: project images fall down the page, tumbling as they go, with speed lines
      drawn behind them. Click one to open that project. Move the cursor to the bottom edge
-     (or scroll) to enter the home page. */
+     (or scroll) to enter the home page. The disco button (top right) starts a 20-second game:
+     lights on, images fall faster, and the cursor becomes a basket that catches them. */
   function intro() {
     const gate = $(".gate"), cv = $(".gate-fx"), layer = $(".gate-fall");
     if (!gate || reduce) return null;
     const ctx = cv.getContext("2d"), small = () => innerWidth <= 820;
     let items = [], raf = 0, prev = 0, next = 0, order = [], W = 0, H = 0, dpr = 1, entered = 0;
+    // disco mode: a 20-second catch game
+    const btn = $(".disco-btn"), hud = $(".disco-hud"), end = $(".disco-end"), scoreEl = $(".disco-score"), timeEl = $(".disco-time");
+    const NEON = ["255,43,214", "0,229,255", "255,230,0", "140,140,255", "40,255,140"];
+    const BASKET = "url(\"data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44"><path d="M9 20 Q22 -2 35 20" fill="none" stroke="#000" stroke-width="5"/><path d="M9 20 Q22 -2 35 20" fill="none" stroke="#EEE9E3" stroke-width="2.5"/><path d="M4 19h36l-4.5 20h-27z" fill="#EEE9E3" stroke="#000" stroke-width="2" stroke-linejoin="round"/><path d="M6 26h32M8 33h28M14 19l2 20M22 19v20M30 19l-2 20" stroke="#000" stroke-width="1.4" fill="none"/></svg>') + "\") 22 26, grab";
+    let disco = false, score = 0, total = 0, endAt = 0, px = -999, py = -999, sparks = [], shown = -1;
     const rnd = (a, b) => a + Math.random() * (b - a);
     const streaks = Array.from({ length: 46 }, () => ({ x: Math.random(), y: Math.random(), len: rnd(40, 220), v: rnd(900, 2100), a: rnd(0.05, 0.2), g: Math.random() < 0.15 }));
     const size = () => { dpr = Math.min(devicePixelRatio || 1, 2); W = gate.clientWidth; H = gate.clientHeight; cv.width = W * dpr; cv.height = H * dpr; };
 
     function spawn() {
       if (!order.length) order = S.projects.map((_, i) => i).sort(() => Math.random() - 0.5);
-      const p = S.projects[order.pop()], w = small() ? rnd(96, 150) : rnd(170, 290);
+      const p = S.projects[order.pop()], w = (small() ? rnd(96, 150) : rnd(170, 290)) * (disco ? 0.72 : 1), fast = disco ? rnd(1.7, 2.5) : 1;
+      if (disco) total++;
       const el = document.createElement("a");
       el.className = "faller"; el.href = link(p); el.setAttribute("aria-label", p.title); el.style.width = w + "px";
       el.innerHTML = `<img src="${esc(p.hero)}" alt="" draggable="false">`;
-      el.addEventListener("pointerdown", (e) => { e.preventDefault(); instant = true; location.hash = link(p); });
+      el.addEventListener("pointerdown", (e) => { e.preventDefault(); if (disco) return; instant = true; location.hash = link(p); });
       el.addEventListener("click", (e) => e.preventDefault());
       layer.appendChild(el);
-      items.push({ el, w, x: rnd(0.04, 0.96) * (W - w), y: -w * 1.6, v: H * rnd(0.5, 0.85), drift: rnd(-40, 40),
+      items.push({ el, w, x: rnd(0.04, 0.96) * (W - w), y: -w * 1.6, v: H * rnd(0.5, 0.85) * fast, drift: disco ? rnd(-190, 190) : rnd(-40, 40),
         ax: rnd(25, 55), ay: rnd(35, 65), az: rnd(6, 22), wx: rnd(1.2, 2.6), wy: rnd(1.4, 3), wz: rnd(0.5, 1.2), ph: rnd(0, 6.28), t: 0 });
     }
 
@@ -265,18 +278,29 @@
       const dt = Math.min(0.05, (now - prev) / 1000 || 0); prev = now;
       if (scrollY > innerHeight * 0.9) return;
       if (cv.width !== Math.round(gate.clientWidth * dpr) || cv.height !== Math.round(gate.clientHeight * dpr)) size();
-      if (now > next && items.length < 7) { spawn(); next = now + rnd(330, 620); }
+      if (now > next && items.length < (disco ? 18 : 7)) { spawn(); next = now + (disco ? rnd(110, 260) : rnd(330, 620)); }
+      if (disco) {
+        const left = Math.max(0, Math.ceil((endAt - now) / 1000));
+        if (left !== shown) { shown = left; timeEl.textContent = left; }
+        if (now >= endAt) finish();
+      }
+      const ink = disco ? "238,233,227" : "0,0,0";
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H); ctx.lineCap = "round";
       // background: fine lines streaming down
       for (const s of streaks) {
         s.y += (s.v * dt) / H; if (s.y * H - s.len > H) { s.y = -0.05; s.x = Math.random(); }
         const x = s.x * W, y = s.y * H, gr = ctx.createLinearGradient(0, y - s.len, 0, y);
-        gr.addColorStop(0, "rgba(0,0,0,0)"); gr.addColorStop(1, s.g ? `rgba(9,88,56,${s.a * 2.2})` : `rgba(0,0,0,${s.a})`);
+        gr.addColorStop(0, "rgba(0,0,0,0)"); gr.addColorStop(1, disco ? `rgba(${NEON[Math.floor(s.len) % 5]},${s.a * 3})` : s.g ? `rgba(9,88,56,${s.a * 2.2})` : `rgba(0,0,0,${s.a})`);
         ctx.strokeStyle = gr; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x, y - s.len); ctx.lineTo(x, y); ctx.stroke();
       }
       items = items.filter((it) => {
         it.t += dt; it.y += it.v * dt; it.x += it.drift * dt;
         if (it.y > H + it.w) { it.el.remove(); return false; }
+        if (disco && px > it.x - 26 && px < it.x + it.w + 26 && py > it.y - 26 && py < it.y + (it.el.offsetHeight || it.w) + 26) {
+          score++; scoreEl.textContent = score; it.el.remove();
+          for (let k = 0; k < 14; k++) { const a = rnd(0, 6.28), sp = rnd(120, 520); sparks.push({ x: px, y: py, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 120, life: 1, c: NEON[k % 5] }); }
+          return false;
+        }
         const rx = it.ax * Math.sin(it.t * it.wx + it.ph), ry = it.ay * Math.sin(it.t * it.wy + it.ph * 1.7), rz = it.az * Math.sin(it.t * it.wz + it.ph * 0.6);
         it.el.style.transform = `translate3d(${it.x}px, ${it.y}px, 0) perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg)`;
         // speed lines and fading echoes trailing each image
@@ -284,24 +308,51 @@
         for (let k = 0; k < 6; k++) {
           const lx = cx + (k / 5 - 0.5) * it.w * squash * 0.9, top = it.y - tail * (0.55 + 0.45 * Math.sin(k * 2.4 + it.ph));
           const gr = ctx.createLinearGradient(0, top, 0, it.y + hgt * 0.3);
-          gr.addColorStop(0, "rgba(0,0,0,0)"); gr.addColorStop(1, k === 2 ? "rgba(9,88,56,.75)" : "rgba(0,0,0,.34)");
+          gr.addColorStop(0, `rgba(${ink},0)`); gr.addColorStop(1, disco ? `rgba(${NEON[k % 5]},.7)` : k === 2 ? "rgba(9,88,56,.75)" : "rgba(0,0,0,.34)");
           ctx.strokeStyle = gr; ctx.lineWidth = k === 2 ? 1.6 : 1; ctx.beginPath(); ctx.moveTo(lx, top); ctx.lineTo(lx, it.y + hgt * 0.3); ctx.stroke();
         }
         for (let k = 1; k <= 3; k++) {
           ctx.save(); ctx.translate(cx, cy - k * it.v * 0.07); ctx.rotate((rz * Math.PI) / 180); ctx.scale(squash, Math.abs(Math.cos((rx * Math.PI) / 180)));
-          ctx.strokeStyle = `rgba(0,0,0,${0.2 - k * 0.055})`; ctx.lineWidth = 1; ctx.strokeRect(-it.w / 2, -hgt / 2, it.w, hgt); ctx.restore();
+          ctx.strokeStyle = `rgba(${ink},${0.2 - k * 0.055})`; ctx.lineWidth = 1; ctx.strokeRect(-it.w / 2, -hgt / 2, it.w, hgt); ctx.restore();
         }
         return true;
       });
+      sparks = sparks.filter((s) => {
+        s.life -= dt * 1.9; s.x += s.vx * dt; s.y += s.vy * dt; s.vy += 900 * dt;
+        if (s.life <= 0) return false;
+        ctx.fillStyle = `rgba(${s.c},${s.life})`; ctx.beginPath(); ctx.arc(s.x, s.y, 2 + s.life * 3, 0, 6.3); ctx.fill();
+        return true;
+      });
     }
+    const clear = () => { items.forEach((it) => it.el.remove()); items = []; };
+    const mode = (on) => {
+      disco = on; gate.classList.toggle("disco", on); hud.hidden = !on; btn.setAttribute("aria-pressed", String(on));
+      gate.style.cursor = on ? BASKET : ""; cursor.style.visibility = on ? "hidden" : ""; clear();
+    };
+    function start() {
+      scrollTo(0, 0); score = 0; total = 0; shown = -1; sparks = []; scoreEl.textContent = "0"; end.hidden = true;
+      mode(true); endAt = performance.now() + 20000;
+    }
+    function finish() {
+      mode(false);
+      $(".disco-final").textContent = score; $(".disco-of").textContent = `out of ${total} that fell`;
+      end.hidden = false; $("[data-again]").focus();
+    }
+    btn.addEventListener("click", () => (disco ? mode(false) : start()));
+    $("[data-again]").addEventListener("click", start);
+    $("[data-enter]").addEventListener("click", () => { end.hidden = true; scrollTo({ top: innerHeight, behavior: "smooth" }); });
+    const track = (e) => { const g = gate.getBoundingClientRect(); px = e.clientX - g.left; py = e.clientY - g.top; };
+    gate.addEventListener("pointermove", track); gate.addEventListener("pointerdown", track);
+    const away = () => { if (disco && scrollY > innerHeight * 0.5) mode(false); };
+    addEventListener("scroll", away, { passive: true });
     // cursor reaching the bottom edge enters the home page
     const edge = (e) => {
-      if (scrollY > 10 || e.clientY < innerHeight - 26 || e.movementY <= 0 || performance.now() - entered < 1500) return;
+      if (disco || !end.hidden || scrollY > 10 || e.clientY < innerHeight - 26 || e.movementY <= 0 || performance.now() - entered < 1500) return;
       entered = performance.now(); scrollTo({ top: innerHeight, behavior: "smooth" });
     };
     gate.addEventListener("mousemove", edge);
     size(); raf = requestAnimationFrame(frame);
-    return { stop: () => { cancelAnimationFrame(raf); gate.removeEventListener("mousemove", edge); } };
+    return { stop: () => { cancelAnimationFrame(raf); gate.removeEventListener("mousemove", edge); removeEventListener("scroll", away); cursor.style.visibility = ""; } };
   }
 
   const queue = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
