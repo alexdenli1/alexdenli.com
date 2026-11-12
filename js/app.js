@@ -39,7 +39,7 @@
     return {
       title: "", label: "Back home", scroll: seenGate ? innerHeight : 0,
       html: `<section class="gate" aria-label="Introduction"><h1 class="gate-mark"><svg class="logo" viewBox="0 0 64.91 16.89" role="img" aria-label="Alex Denli Archive"><use href="#logo"/></svg></h1>
-        <div class="gate-foot"><span>${esc(S.owner.role)}</span><span class="gate-hint"><i></i>Scroll to enter</span></div></section>
+        <canvas class="gate-waves" aria-hidden="true"></canvas><span class="gate-dot" aria-hidden="true"></span></section>
       <section class="field" style="height:${28 + n * step + 50}vh" aria-label="All work">
         <div class="field-title giant" aria-hidden="true"><span>Work</span></div>
         <ol class="field-index">${index}</ol>
@@ -154,7 +154,9 @@
 
   /* ---------- Per-page wiring ---------- */
   function bind(key) {
+    live.waves && live.waves.stop();
     live = {
+      waves: key === "home" ? ripples() : null,
       home: key === "home", mark: $(".gate-mark"), field: $(".field"), title: $(".field-title"),
       pieces: $$(".piece"), scrubs: $$("[data-scrub]"), masks: $$(".mask img")
     };
@@ -233,8 +235,62 @@
       im.style.transform = `scale(${1.14 - Math.min(.14, Math.abs(p) * .14)}) translate3d(0, ${p * -5}%, 0)`;
     }
   }
+  /* Intro screen: after 5 seconds without scrolling, the dot sends ripples up the page.
+     They are blocked by the logo, bounce off its lower edge and close in again behind it. */
+  function ripples() {
+    const gate = $(".gate"), cv = $(".gate-waves"), logo = $(".gate-mark .logo"), dot = $(".gate-dot");
+    if (!cv || reduce) return null;
+    const ctx = cv.getContext("2d"), SPEED = 0.36, GAP = 30;
+    let waves = [], raf = 0, timer = 0, first = 0, W = 0, H = 0, dpr = 1;
+    const size = () => { dpr = Math.min(devicePixelRatio || 1, 2); W = gate.clientWidth; H = gate.clientHeight; cv.width = W * dpr; cv.height = H * dpr; };
+    const fire = () => {
+      if (scrollY > innerHeight * 0.4 || document.hidden) return;
+      waves.push(performance.now());
+      dot.classList.remove("ping"); void dot.offsetWidth; dot.classList.add("ping");
+      if (!raf) raf = requestAnimationFrame(draw);
+    };
+    const arm = () => { clearInterval(timer); timer = setInterval(fire, 5000); };
+    const smooth = (x) => { x = Math.max(0, Math.min(1, x)); return x * x * (3 - 2 * x); };
+    function draw(now) {
+      raf = 0;
+      if (cv.width !== Math.round(gate.clientWidth * dpr)) size();
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H); ctx.lineWidth = 1.3; ctx.lineCap = "round";
+      const g = gate.getBoundingClientRect(), l = logo.getBoundingClientRect(), d = dot.getBoundingClientRect(), pad = 16;
+      const L = l.left - g.left - pad, R = l.right - g.left + pad, T = l.top - g.top - pad, B = l.bottom - g.top + pad;
+      const sx = d.left - g.left + d.width / 2, sy = d.top - g.top + d.height / 2, far = Math.hypot(W, H), my = 2 * B - sy;
+      waves = waves.filter((t) => (now - t) * SPEED - 3 * GAP < far);
+      for (const t of waves) for (let k = 0; k < 4; k++) {
+        const r = (now - t) * SPEED - k * GAP;
+        if (r < 6) continue;
+        const base = 0.55 * Math.max(0, 1 - r / far) * (1 - k * 0.2), n = Math.min(900, Math.ceil((Math.PI * r) / 5)), da = Math.PI / n;
+        for (let i = 0; i < n; i++) {
+          // the wave travelling out from the dot
+          const a = i * da * 2 + 1e-4, cx = Math.cos(a), cy = Math.sin(a), cx2 = Math.cos(a + da * 2), cy2 = Math.sin(a + da * 2);
+          let al = base;
+          const tx1 = (L - sx) / cx, tx2 = (R - sx) / cx, ty1 = (T - sy) / cy, ty2 = (B - sy) / cy;
+          const tin = Math.max(Math.min(tx1, tx2), Math.min(ty1, ty2)), tout = Math.min(Math.max(tx1, tx2), Math.max(ty1, ty2));
+          if (tin < tout && tout > 0 && r > tin) al *= r < tout ? 0 : smooth((r - tout) / ((R - L) * 0.8)) * 0.8;
+          if (al > 0.01) { ctx.strokeStyle = `rgba(0,0,0,${al.toFixed(3)})`; ctx.beginPath(); ctx.moveTo(sx + cx * r, sy + cy * r); ctx.lineTo(sx + cx2 * r, sy + cy2 * r); ctx.stroke(); }
+          // the part that bounces back off the logo's lower edge
+          const b = i * da, px = sx + Math.cos(b) * r, py = my + Math.sin(b) * r;
+          if (py > B + 1) {
+            const xb = sx + ((B - my) * (px - sx)) / (py - my);
+            if (xb > L && xb < R) {
+              const edge = smooth(Math.min(xb - L, R - xb) / 40);
+              ctx.strokeStyle = `rgba(0,0,0,${(base * 0.55 * edge).toFixed(3)})`; ctx.beginPath(); ctx.moveTo(px, py);
+              ctx.lineTo(sx + Math.cos(b + da) * r, my + Math.sin(b + da) * r); ctx.stroke();
+            }
+          }
+        }
+      }
+      if (waves.length) raf = requestAnimationFrame(draw);
+    }
+    size(); arm(); first = setTimeout(fire, 1500);
+    return { arm, stop: () => { clearInterval(timer); clearTimeout(first); cancelAnimationFrame(raf); } };
+  }
+
   const queue = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
-  addEventListener("scroll", queue, { passive: true });
+  addEventListener("scroll", () => { queue(); live.waves && live.waves.arm(); }, { passive: true });
   addEventListener("resize", queue);
   addEventListener("mousemove", (e) => {
     mx = e.clientX; my = e.clientY;
