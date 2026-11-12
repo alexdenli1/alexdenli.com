@@ -59,8 +59,8 @@
       <section class="gallery" aria-label="Gallery of all work"><div class="gallery-pin">
         <h2 class="gallery-head">Let’s explore and discover more</h2>
         <div class="gallery-track">${(S.gallery || []).map((g) => { const p = S.projects.find((x) => x.slug === g.project);
-          const im = `<img src="${esc(g.src)}" alt="${esc(g.caption || (p ? p.title : ""))}" loading="lazy" draggable="false">`;
-          return p ? `<a href="${link(p)}">${im}<span>${esc(g.caption || p.title)}</span></a>` : `<span class="gallery-item">${im}${g.caption ? `<span>${esc(g.caption)}</span>` : ""}</span>`; }).join("")}</div>
+          const im = `<img src="${esc(g.src)}" alt="${esc(p ? p.title : "")}" loading="lazy" draggable="false">`;
+          return p ? `<a href="${link(p)}" aria-label="${esc(p.title)}">${im}</a>` : `<span class="gallery-item">${im}</span>`; }).join("")}</div>
       </div></section>
       <section class="home-end">
         <a class="giant" href="#/projects">Projects</a><a class="giant" href="#/archive">Archive</a><a class="giant" href="#/contact">Contact</a></section>${foot()}`,
@@ -197,9 +197,9 @@
       a.addEventListener("blur", () => spot(a.dataset.slug, false));
     });
     // gallery strip: the section is made tall enough that scrolling through it slides the strip fully to the left
-    // (the strip moves 1.8x as fast as the scroll, so a long gallery doesn't take forever to get through)
+    // (the strip moves 3x as fast as the scroll, so it sweeps by quickly)
     if (live.gallery && !reduce) {
-      const fit = () => { if (!live.track) return; live.run = Math.max(0, live.track.scrollWidth - innerWidth); live.gallery.style.height = `calc(100vh + ${live.run / 1.8}px)`; queue(); };
+      const fit = () => { if (!live.track) return; live.run = Math.max(0, live.track.scrollWidth - innerWidth); live.gallery.style.height = `calc(100vh + ${live.run / 3}px)`; queue(); };
       live.fit = fit; fit();
       if (window.ResizeObserver) { live.ro = new ResizeObserver(fit); live.ro.observe(live.track); }
       else $$("img", live.track).forEach((im) => im.addEventListener("load", fit));
@@ -256,7 +256,7 @@
     }
     if (live.run && live.gallery) {
       const top = live.gallery.getBoundingClientRect().top;
-      if (top < vh && top > -live.run - vh) live.track.style.transform = `translate3d(${-Math.max(0, Math.min(live.run, -top * 1.8))}px, 0, 0)`;
+      if (top < vh && top > -live.run - vh) live.track.style.transform = `translate3d(${-Math.max(0, Math.min(live.run, -top * 3))}px, 0, 0)`;
     }
     for (const el of live.scrubs || []) {
       const r = el.getBoundingClientRect();

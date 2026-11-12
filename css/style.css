@@ -155,8 +155,6 @@ main:focus { outline: none; }
 .gallery-track > * { display: block; flex: none; }
 .gallery-track > :nth-child(even) { margin-top: 5vh; }
 .gallery-track img { height: 44vh; width: auto; max-width: none; transition: opacity .3s; }
-.gallery-track span span, .gallery-track a span { display: block; padding-top: .5rem; font-size: .9375rem; color: var(--muted); }
-.gallery-track a:hover span { color: var(--fg); }
 .gallery-track:hover img { opacity: .45; }
 .gallery-track > :hover img { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .gallery-pin { position: static; height: auto; overflow-x: auto; padding: 12vh 0; } }
