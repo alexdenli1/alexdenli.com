@@ -253,10 +253,17 @@
       const r = el.getBoundingClientRect(), off0 = Math.abs(r.top + r.height / 2 - vh / 2), k = n++;
       if (off0 < best) { best = off0; near = k; }
       if (r.bottom < -vh || r.top > vh * 2) continue;
-      if (big && !reduce) {
-        const off = (r.top + r.height / 2 - vh / 2) * parseFloat(el.dataset.speed);
-        const drift = parseFloat(el.dataset.speed) * 4;
-        el.firstElementChild.style.transform = `translate3d(${((mx / innerWidth) - .5) * 60 * drift}px, ${off + ((my / vh) - .5) * 40 * drift}px, 0)`;
+      if (!reduce) {
+        // each image grows from almost nothing to full size as you scroll down to it, then stays
+        const p = Math.max(0, Math.min(1, (vh - r.top) / (vh * 0.58)));
+        const sc = (0.12 + 0.88 * (1 - Math.pow(1 - p, 3))).toFixed(4);
+        const inner = el.firstElementChild;
+        if (big) {
+          const off = (r.top + r.height / 2 - vh / 2) * parseFloat(el.dataset.speed);
+          const drift = parseFloat(el.dataset.speed) * 4;
+          inner.style.transform = `translate3d(${((mx / innerWidth) - .5) * 60 * drift}px, ${off + ((my / vh) - .5) * 40 * drift}px, 0) scale(${sc})`;
+        } else inner.style.transform = `scale(${sc})`;
+        inner.style.opacity = p < 1 ? (0.2 + 0.8 * p).toFixed(3) : "";
       }
       if (el.classList.contains("lost") && !el.classList.contains("got")) {
         if (fine && big) {
