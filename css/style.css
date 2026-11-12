@@ -165,7 +165,7 @@ main:focus { outline: none; }
 .gallery-track img { display: block; height: 36vh; width: auto; max-width: none; }
 @media (prefers-reduced-motion: reduce) { .gallery-pin { position: static; height: auto; overflow-x: auto; padding: 12vh 0; } }
 
-.home-end { position: relative; z-index: 1; background: var(--bg); padding: 14vh var(--pad) 10vh; }
+.home-end { position: relative; z-index: 2; background: var(--bg); margin-top: -6vh; padding: 5vh var(--pad) 10vh; }
 .home-end a { display: block; width: fit-content; }
 .home-end a.giant { font-size: clamp(2rem, 4.2vw, 4.25rem); line-height: 1; }
 .home-end + .site-foot { margin-top: 0; }
