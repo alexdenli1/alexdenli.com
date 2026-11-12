@@ -255,12 +255,17 @@ main:focus { outline: none; }
 .pcat li b { font-size: clamp(1.5rem, 2.6vw, 2.5rem); font-weight: 700; font-stretch: 80%; line-height: 1; }
 .pcat li a:hover b { box-shadow: inset 0 -2px 0 var(--accent); }
 
-/* ---------- Archive ---------- */
-.arch a { display: grid; grid-template-columns: 5rem 1fr auto; gap: 1.5rem; align-items: baseline; padding: 1.1rem 0; border-top: 1px solid var(--line); transition: padding .35s var(--ease), color .2s; }
-.arch li:last-child a { border-bottom: 1px solid var(--line); }
-.arch a b { font-size: clamp(1.75rem, 4.6vw, 4.5rem); font-weight: 700; font-stretch: 75%; line-height: .95; letter-spacing: -.015em; }
-.arch a:hover { padding-left: 1.5rem; box-shadow: inset 5px 0 0 var(--accent); }
-.arch a img { display: none; }
+/* ---------- Archive: scattered photo cards ---------- */
+.cards { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 9vh 5vw; padding: 2vh 2vw 6vh; }
+.cards li { transform: rotate(var(--r)) translateY(var(--dy)); transition: transform .4s var(--ease); }
+.cards li:hover, .cards li:focus-within { transform: rotate(0deg) translateY(calc(var(--dy) - 1.5vh)) scale(1.05); z-index: 2; position: relative; }
+.card { display: block; width: clamp(240px, 26vw, 370px); background: var(--panel); color: #111; padding: .8rem .8rem .9rem; box-shadow: 0 1rem 2.2rem rgba(0, 0, 0, .5); transition: box-shadow .4s; }
+.cards li:hover .card { box-shadow: 0 2.2rem 3.8rem rgba(0, 0, 0, .65); }
+.card img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
+.card span { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding-top: .65rem; }
+.card b { font-size: 1.25rem; font-weight: 700; font-stretch: 80%; }
+.card small { font-size: .875rem; color: #555; white-space: nowrap; }
+
 .peek { position: fixed; left: 0; top: 0; z-index: 30; width: 19rem; pointer-events: none; opacity: 0; transition: opacity .25s; will-change: transform; }
 .peek.on { opacity: 1; }
 
@@ -343,8 +348,8 @@ main:focus { outline: none; }
   .p-hero, .p-hero img { max-height: 70vh; height: 70vh; }
   .p-next img { display: none; }
   .gallery-track img { height: 34vh; }
-  .arch a { grid-template-columns: 3.25rem 1fr; }
-  .arch a small:last-of-type { grid-column: 2; }
+  .cards { gap: 5vh 6vw; justify-content: center; }
+  .cards li { --dy: 0vh !important; }
 }
 
 @media (prefers-reduced-motion: reduce) {
