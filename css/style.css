@@ -90,6 +90,12 @@ main:focus { outline: none; }
 .gate.disco .faller-in { box-shadow: none; }
 .disco-lights { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0; }
 .gate.disco .disco-lights { opacity: 1; }
+.mute-btn { position: absolute; top: var(--pad); right: calc(var(--pad) + 3.4rem); z-index: 6; width: 2.75rem; height: 2.75rem; padding: 0; border-radius: .7rem; border: 1.5px solid var(--fg); background: var(--fg); color: #000; display: grid; place-items: center; cursor: pointer; }
+.mute-btn svg { width: 1.5rem; height: 1.5rem; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.mute-btn .cross { display: none; }
+.mute-btn.off .wave { display: none; }
+.mute-btn.off .cross { display: block; }
+.mute-btn:hover { background: var(--accent); border-color: var(--accent); color: var(--fg); }
 .disco-hud { position: absolute; top: var(--pad); left: 50%; transform: translateX(-50%); z-index: 6; display: flex; gap: 2.5rem; white-space: nowrap; pointer-events: none; font-weight: 700; font-stretch: 75%; font-size: clamp(1.5rem, 3vw, 2.5rem); line-height: 1; font-variant-numeric: tabular-nums; }
 .disco-time::after { content: "s"; }
 .disco-end { position: absolute; inset: 0; z-index: 7; background: #000; color: var(--fg); display: grid; place-content: center; justify-items: center; gap: 1.25rem; text-align: center; padding: var(--pad); }

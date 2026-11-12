@@ -49,6 +49,8 @@
         <canvas class="gate-fx" aria-hidden="true"></canvas><div class="gate-fall"></div>
         <button class="disco-btn" type="button" aria-pressed="false" aria-label="Play the disco catch game" title="Disco mode">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5v3.2"/><circle cx="12" cy="13.2" r="8.3"/><ellipse cx="12" cy="13.2" rx="8.3" ry="3.1"/><ellipse cx="12" cy="13.2" rx="3.4" ry="8.3"/><path d="M4.6 9.4h14.8M4.6 17h14.8M20 2.2v3M18.5 3.7h3"/></svg></button>
+        <button class="mute-btn" type="button" hidden aria-pressed="false" aria-label="Mute the music" title="Music">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13L7.5 14.5H4z"/><path class="wave" d="M15.5 9.2a4 4 0 0 1 0 5.6M18 6.8a7.5 7.5 0 0 1 0 10.4"/><path class="cross" d="M16 9.5l5 5m0-5l-5 5"/></svg></button>
         <div class="disco-hud" hidden><span>Caught <b class="disco-score">0</b></span><span class="disco-time">20</span></div>
         <div class="disco-end" hidden><p>Time</p><p class="giant"><span class="disco-final">0</span> caught</p><p class="disco-of"></p>
           <div class="disco-acts"><button class="btn" type="button" data-again>Play again</button><button class="btn" type="button" data-enter>Enter the site</button></div></div></section>`}
@@ -310,6 +312,99 @@
      drawn behind them. Click one to open that project. Move the cursor to the bottom edge
      (or scroll) to enter the home page. The disco button (top right) starts a 20-second game:
      lights on, images fall faster, and the cursor becomes a basket that catches them. */
+  /* Original disco backing track for the catch game, synthesised in the browser — no audio files,
+     nothing licensed. It plays only while disco mode is on, and starts from the button press so
+     browsers allow the sound. */
+  function music() {
+    const BPM = 118, S16 = 60 / BPM / 4;
+    const ROOT = [45, 38, 43, 36];                                              // A, D, G, C
+    const CH = [[0, 3, 7, 10], [0, 3, 7, 10], [0, 4, 7, 10], [0, 4, 7, 11]];    // m7, m7, 7, maj7
+    const hz = (m) => 440 * Math.pow(2, (m - 69) / 12);
+    let ctx = null, out = null, noise = null, timer = 0, step = 0, next = 0, muted = false;
+    try { muted = localStorage.getItem("ad-mute") === "1"; } catch (err) {}
+
+    const env = (t, a, d, peak) => {
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(peak, t + a);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + a + d);
+      return g;
+    };
+    const hit = (t, type, f, a, d, peak, dest) => {
+      const o = ctx.createOscillator(), g = env(t, a, d, peak);
+      o.type = type; o.frequency.setValueAtTime(f, t);
+      o.connect(g).connect(dest || out); o.start(t); o.stop(t + a + d + 0.05);
+      return o;
+    };
+    const burst = (t, hp, d, peak) => {
+      const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = env(t, 0.002, d, peak);
+      s.buffer = noise; f.type = "highpass"; f.frequency.value = hp;
+      s.connect(f).connect(g).connect(out); s.start(t); s.stop(t + d + 0.05);
+    };
+
+    function play(i, t) {
+      const bar = i >> 4, s = i & 15, root = ROOT[bar], ch = CH[bar];
+      if (s % 4 === 0) {                                                        // four-on-the-floor kick
+        const o = hit(t, "sine", 160, 0.002, 0.3, 0.95);
+        o.frequency.exponentialRampToValueAtTime(46, t + 0.1);
+      }
+      if (s === 4 || s === 12) burst(t, 1400, 0.16, 0.42);                      // clap on 2 and 4
+      burst(t, 8500, s % 4 === 2 ? 0.17 : 0.035, s % 4 === 2 ? 0.2 : 0.12);     // hats, open off-beat
+      if (s % 2 === 0) {                                                        // octave-jumping bassline
+        const m = root + (s % 4 === 0 ? 0 : 12), f = ctx.createBiquadFilter(), g = env(t, 0.005, 0.2, 0.42);
+        const o = ctx.createOscillator();
+        o.type = "sawtooth"; o.frequency.value = hz(m);
+        f.type = "lowpass"; f.frequency.setValueAtTime(900, t); f.frequency.exponentialRampToValueAtTime(260, t + 0.2);
+        o.connect(f).connect(g).connect(out); o.start(t); o.stop(t + 0.3);
+      }
+      if (s % 4 === 2) for (const n of ch) {                                    // off-beat chord stabs
+        const f = ctx.createBiquadFilter(), g = env(t, 0.004, 0.16, 0.085), o = ctx.createOscillator();
+        o.type = "sawtooth"; o.frequency.value = hz(root + 24 + n);
+        f.type = "lowpass"; f.frequency.value = 3000;
+        o.connect(f).connect(g).connect(out); o.start(t); o.stop(t + 0.25);
+      }
+      if (s === 0) for (const n of ch) hit(t, "triangle", hz(root + 36 + n), 0.25, 1.6, 0.03);  // strings
+    }
+
+    function tick() {
+      const t = ctx.currentTime;
+      while (next < t + 0.15) { play(step, next); next += S16; step = (step + 1) % 64; }
+    }
+
+    return {
+      get muted() { return muted; },
+      start() {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        try {
+          ctx = new AC();
+          noise = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
+          const d = noise.getChannelData(0);
+          for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+          const comp = ctx.createDynamicsCompressor();
+          out = ctx.createGain(); out.gain.value = 0;
+          out.connect(comp).connect(ctx.destination);
+          out.gain.linearRampToValueAtTime(muted ? 0 : 0.26, ctx.currentTime + 0.5);
+          step = 0; next = ctx.currentTime + 0.08;
+          ctx.resume && ctx.resume();
+          tick(); timer = setInterval(tick, 25);
+        } catch (err) { ctx = null; }
+      },
+      mute(on) {
+        muted = on;
+        try { localStorage.setItem("ad-mute", on ? "1" : "0"); } catch (err) {}
+        if (ctx && out) out.gain.linearRampToValueAtTime(on ? 0 : 0.26, ctx.currentTime + 0.12);
+      },
+      stop() {
+        clearInterval(timer); timer = 0;
+        if (!ctx) return;
+        const c = ctx, g = out;
+        try { g.gain.cancelScheduledValues(c.currentTime); g.gain.setValueAtTime(g.gain.value, c.currentTime); g.gain.linearRampToValueAtTime(0.0001, c.currentTime + 0.25); } catch (err) {}
+        setTimeout(() => { try { c.close(); } catch (err) {} }, 400);
+        ctx = null; out = null;
+      }
+    };
+  }
+
   function intro() {
     const gate = $(".gate"), cv = $(".gate-fx"), layer = $(".gate-fall");
     if (!gate || reduce) return null;
@@ -337,6 +432,10 @@
       }
     }
     let disco = false, score = 0, total = 0, endAt = 0, px = -999, py = -999, sparks = [], shown = -1;
+    const mute = $(".mute-btn"), band = music();
+    const showMute = () => { mute.classList.toggle("off", band.muted); mute.setAttribute("aria-pressed", String(band.muted)); mute.setAttribute("aria-label", band.muted ? "Turn the music on" : "Mute the music"); };
+    showMute();
+    mute.addEventListener("click", () => { band.mute(!band.muted); showMute(); });
     const rnd = (a, b) => a + Math.random() * (b - a);
     const streaks = Array.from({ length: 28 }, () => ({ x: Math.random(), y: Math.random(), len: rnd(40, 220), v: rnd(900, 2100), a: rnd(0.05, 0.2), g: Math.random() < 0.15 }));
     // pre-drawn fading line, stretched into place each frame (much cheaper than a new gradient per line)
@@ -441,6 +540,8 @@
     const mode = (on) => {
       disco = on; gate.classList.toggle("disco", on); hud.hidden = !on; btn.setAttribute("aria-pressed", String(on));
       gate.style.cursor = on ? BASKET : ""; cursor.style.visibility = on ? "hidden" : ""; clear();
+      mute.hidden = !on;
+      on ? band.start() : band.stop();
     };
     function start() {
       scrollTo(0, 0); score = 0; total = 0; shown = -1; sparks = []; scoreEl.textContent = "0"; end.hidden = true;
@@ -457,6 +558,8 @@
     const track = (e) => { const g = gate.getBoundingClientRect(); px = e.clientX - g.left; py = e.clientY - g.top; };
     gate.addEventListener("pointermove", track); gate.addEventListener("pointerdown", track);
     const away = () => { if (disco && scrollY > innerHeight * 0.5) mode(false); };
+    const hide = () => { if (disco && document.hidden) mode(false); };   // stop the sound if the tab is left
+    document.addEventListener("visibilitychange", hide);
     addEventListener("scroll", away, { passive: true });
     // cursor reaching the bottom edge enters the home page
     const edge = (e) => {
@@ -465,7 +568,7 @@
     };
     gate.addEventListener("mousemove", edge);
     size(); raf = requestAnimationFrame(frame);
-    return { stop: () => { cancelAnimationFrame(raf); gate.removeEventListener("mousemove", edge); removeEventListener("scroll", away); clear(); cursor.style.visibility = ""; } };
+    return { stop: () => { cancelAnimationFrame(raf); gate.removeEventListener("mousemove", edge); removeEventListener("scroll", away); document.removeEventListener("visibilitychange", hide); band.stop(); clear(); cursor.style.visibility = ""; } };
   }
 
   const queue = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
