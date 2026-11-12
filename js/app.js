@@ -235,57 +235,108 @@
       im.style.transform = `scale(${1.14 - Math.min(.14, Math.abs(p) * .14)}) translate3d(0, ${p * -5}%, 0)`;
     }
   }
-  /* Intro screen: after 5 seconds without scrolling, the dot sends ripples up the page.
-     They are blocked by the logo, bounce off its lower edge and close in again behind it. */
+  /* Intro screen: after 5 seconds without scrolling, the circle sends a set of waves up the page.
+     The waves are contour lines of "travel time from the circle", worked out on a grid with the
+     logo as a solid rock, so they wrap round it and close in behind. Five styles, random each time. */
+  const STYLES = [
+    { rings: 4, gap: 34, amp: 16, freq: 1.0, lobes: 0, width: 1.3 },   // long swell
+    { rings: 7, gap: 15, amp: 7, freq: 2.6, lobes: 0, width: 1 },      // tight chop
+    { rings: 3, gap: 44, amp: 10, freq: 0.7, lobes: 5, width: 1.6 },   // scalloped
+    { rings: 5, gap: 24, amp: 26, freq: 0.55, lobes: 2, width: 1.2 },  // lopsided surge
+    { rings: 6, gap: 20, amp: 20, freq: 1.7, lobes: 3, width: 0.9 }    // broken water
+  ];
   function ripples() {
     const gate = $(".gate"), cv = $(".gate-waves"), logo = $(".gate-mark .logo"), dot = $(".gate-dot");
     if (!cv || reduce) return null;
-    const ctx = cv.getContext("2d"), SPEED = 0.36, GAP = 30;
-    let waves = [], raf = 0, timer = 0, first = 0, W = 0, H = 0, dpr = 1;
-    const size = () => { dpr = Math.min(devicePixelRatio || 1, 2); W = gate.clientWidth; H = gate.clientHeight; cv.width = W * dpr; cv.height = H * dpr; };
+    const ctx = cv.getContext("2d"), SPEED = 0.21;
+    const EDGES = [, [3, 0], [0, 1], [3, 1], [1, 2], [3, 0, 1, 2], [0, 2], [3, 2], [2, 3], [0, 2], [0, 1, 2, 3], [1, 2], [1, 3], [0, 1], [3, 0]];
+    let waves = [], raf = 0, timer = 0, first = 0, last = -1, W = 0, H = 0, dpr = 1, h = 8, nx = 0, ny = 0, D, F, sx = 0, sy = 0, reach = 0;
+
+    // Travel-time field from the circle, flowing round the logo (fast sweeping).
+    function field() {
+      dpr = Math.min(devicePixelRatio || 1, 2); W = gate.clientWidth; H = gate.clientHeight;
+      cv.width = W * dpr; cv.height = H * dpr;
+      h = Math.max(6, Math.max(W, H) / 190); nx = Math.ceil(W / h) + 2; ny = Math.ceil(H / h) + 2;
+      D = new Float32Array(nx * ny).fill(Infinity); F = new Float32Array(nx * ny);
+      const g = gate.getBoundingClientRect(), l = logo.getBoundingClientRect(), d = dot.getBoundingClientRect();
+      const lx = l.left - g.left, ly = l.top - g.top, pad = Math.max(12, l.height * 0.14);
+      // the rock: the two lines of the logo, with rounded padding
+      const boxes = [[lx, ly, lx + l.width, ly + l.height * 0.54], [lx + l.width * 0.32, ly + l.height * 0.5, lx + l.width * 0.69, ly + l.height]];
+      const rock = new Uint8Array(nx * ny);
+      for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
+        const x = i * h, y = j * h;
+        for (const [x0, y0, x1, y1] of boxes) if (Math.hypot(Math.max(x0 - x, 0, x - x1), Math.max(y0 - y, 0, y - y1)) < pad) rock[j * nx + i] = 1;
+      }
+      sx = d.left - g.left + d.width / 2; sy = d.top - g.top + d.height / 2;
+      const si = Math.round(sx / h), sj = Math.round(sy / h);
+      for (let j = sj - 1; j <= sj + 1; j++) for (let i = si - 1; i <= si + 1; i++) if (i >= 0 && j >= 0 && i < nx && j < ny) D[j * nx + i] = Math.hypot(i * h - sx, j * h - sy);
+      for (let pass = 0; pass < 12; pass++) {
+        const fx = pass & 1, fy = pass & 2;
+        for (let jj = 0; jj < ny; jj++) for (let ii = 0; ii < nx; ii++) {
+          const i = fx ? nx - 1 - ii : ii, j = fy ? ny - 1 - jj : jj, q = j * nx + i;
+          if (rock[q]) continue;
+          const a = Math.min(i > 0 ? D[q - 1] : Infinity, i < nx - 1 ? D[q + 1] : Infinity);
+          const b = Math.min(j > 0 ? D[q - nx] : Infinity, j < ny - 1 ? D[q + nx] : Infinity);
+          const lo = Math.min(a, b), hi = Math.max(a, b);
+          if (lo === Infinity) continue;
+          const v = hi - lo >= h ? lo + h : (a + b + Math.sqrt(2 * h * h - (a - b) * (a - b))) / 2;
+          if (v < D[q]) D[q] = v;
+        }
+      }
+      reach = Math.min(Math.hypot(W / 2, H) * 0.78, 1100);
+    }
+
     const fire = () => {
       if (scrollY > innerHeight * 0.4 || document.hidden) return;
-      waves.push(performance.now());
+      if (cv.width !== Math.round(gate.clientWidth * dpr) || cv.height !== Math.round(gate.clientHeight * dpr)) field();
+      let s; do { s = Math.floor(Math.random() * STYLES.length); } while (s === last);
+      last = s;
+      const R = () => Math.random() * 6.283;
+      waves.push({ t: performance.now(), st: STYLES[s], p: [R(), R(), R(), R(), R(), R()], lop: 0.6 + Math.random() * 0.8 });
       dot.classList.remove("ping"); void dot.offsetWidth; dot.classList.add("ping");
       if (!raf) raf = requestAnimationFrame(draw);
     };
     const arm = () => { clearInterval(timer); timer = setInterval(fire, 5000); };
-    const smooth = (x) => { x = Math.max(0, Math.min(1, x)); return x * x * (3 - 2 * x); };
+
     function draw(now) {
       raf = 0;
-      if (cv.width !== Math.round(gate.clientWidth * dpr)) size();
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H); ctx.lineWidth = 1.3; ctx.lineCap = "round";
-      const g = gate.getBoundingClientRect(), l = logo.getBoundingClientRect(), d = dot.getBoundingClientRect(), pad = 16;
-      const L = l.left - g.left - pad, R = l.right - g.left + pad, T = l.top - g.top - pad, B = l.bottom - g.top + pad;
-      const sx = d.left - g.left + d.width / 2, sy = d.top - g.top + d.height / 2, far = Math.hypot(W, H), my = 2 * B - sy;
-      waves = waves.filter((t) => (now - t) * SPEED - 3 * GAP < far);
-      for (const t of waves) for (let k = 0; k < 4; k++) {
-        const r = (now - t) * SPEED - k * GAP;
-        if (r < 6) continue;
-        const base = 0.55 * Math.max(0, 1 - r / far) * (1 - k * 0.2), n = Math.min(900, Math.ceil((Math.PI * r) / 5)), da = Math.PI / n;
-        for (let i = 0; i < n; i++) {
-          // the wave travelling out from the dot
-          const a = i * da * 2 + 1e-4, cx = Math.cos(a), cy = Math.sin(a), cx2 = Math.cos(a + da * 2), cy2 = Math.sin(a + da * 2);
-          let al = base;
-          const tx1 = (L - sx) / cx, tx2 = (R - sx) / cx, ty1 = (T - sy) / cy, ty2 = (B - sy) / cy;
-          const tin = Math.max(Math.min(tx1, tx2), Math.min(ty1, ty2)), tout = Math.min(Math.max(tx1, tx2), Math.max(ty1, ty2));
-          if (tin < tout && tout > 0 && r > tin) al *= r < tout ? 0 : smooth((r - tout) / ((R - L) * 0.8)) * 0.8;
-          if (al > 0.01) { ctx.strokeStyle = `rgba(0,0,0,${al.toFixed(3)})`; ctx.beginPath(); ctx.moveTo(sx + cx * r, sy + cy * r); ctx.lineTo(sx + cx2 * r, sy + cy2 * r); ctx.stroke(); }
-          // the part that bounces back off the logo's lower edge
-          const b = i * da, px = sx + Math.cos(b) * r, py = my + Math.sin(b) * r;
-          if (py > B + 1) {
-            const xb = sx + ((B - my) * (px - sx)) / (py - my);
-            if (xb > L && xb < R) {
-              const edge = smooth(Math.min(xb - L, R - xb) / 40);
-              ctx.strokeStyle = `rgba(0,0,0,${(base * 0.55 * edge).toFixed(3)})`; ctx.beginPath(); ctx.moveTo(px, py);
-              ctx.lineTo(sx + Math.cos(b + da) * r, my + Math.sin(b + da) * r); ctx.stroke();
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H); ctx.lineCap = "round"; ctx.lineJoin = "round";
+      waves = waves.filter((w) => (now - w.t) * SPEED - w.st.rings * w.st.gap < reach);
+      for (const w of waves) {
+        const { st, p } = w, age = (now - w.t) / 1000, lead = (now - w.t) * SPEED;
+        const k1 = (st.freq * 6.283) / 420, k2 = k1 * 1.9, k3 = k1 * 0.47;
+        // bend the travel-time field so the fronts come out uneven, and keep them shifting as they move
+        for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
+          const q = j * nx + i, d0 = D[q];
+          if (d0 === Infinity) { F[q] = Infinity; continue; }
+          const x = i * h, y = j * h, grow = Math.min(1, d0 / 160);
+          let n = Math.sin(x * k1 + p[0] + age * 0.7) * Math.cos(y * k1 * 1.3 + p[1]) + 0.5 * Math.sin((x + y) * k2 + p[2] - age) + 0.6 * Math.cos((x - y * 0.6) * k3 + p[3]);
+          if (st.lobes) n += w.lop * Math.sin(Math.atan2(y - sy, x - sx) * st.lobes + p[4] + age * 0.4);
+          F[q] = d0 + n * st.amp * grow;
+        }
+        for (let r = 0; r < st.rings; r++) {
+          const L = lead - r * st.gap * (1 + 0.35 * Math.sin(p[5] + r * 1.7));
+          if (L < 10 || L > reach) continue;
+          const fade = 1 - L / reach, al = 0.95 * Math.pow(fade, 0.8) * (1 - (r / st.rings) * 0.5) * Math.min(1, L / 60);
+          ctx.strokeStyle = `rgba(0,0,0,${al.toFixed(3)})`; ctx.lineWidth = st.width * (1 + 0.5 * Math.sin(p[r % 6] + r)); ctx.beginPath();
+          for (let j = 0; j < ny - 1; j++) for (let i = 0; i < nx - 1; i++) {
+            const q = j * nx + i, a = F[q], b = F[q + 1], c = F[q + nx + 1], d = F[q + nx];
+            const idx = (a > L ? 1 : 0) | (b > L ? 2 : 0) | (c > L ? 4 : 0) | (d > L ? 8 : 0);
+            if (!idx || idx === 15 || a + b + c + d === Infinity) continue;
+            const x = i * h, y = j * h, e = EDGES[idx];
+            for (let s = 0; s < e.length; s += 2) for (let m = 0; m < 2; m++) {
+              const ed = e[s + m];
+              const px = ed === 0 ? x + (h * (L - a)) / (b - a) : ed === 1 ? x + h : ed === 2 ? x + (h * (L - d)) / (c - d) : x;
+              const py = ed === 0 ? y : ed === 1 ? y + (h * (L - b)) / (c - b) : ed === 2 ? y + h : y + (h * (L - a)) / (d - a);
+              m ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
             }
           }
+          ctx.stroke();
         }
       }
       if (waves.length) raf = requestAnimationFrame(draw);
     }
-    size(); arm(); first = setTimeout(fire, 1500);
+    field(); arm(); first = setTimeout(fire, 1500);
     return { arm, stop: () => { clearInterval(timer); clearTimeout(first); cancelAnimationFrame(raf); } };
   }
 
