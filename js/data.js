@@ -33,7 +33,7 @@ window.SITE = {
     name: "Alex Denli",
     role: "Product, graphic and e-commerce design",
     location: "London",
-    email: "hello@alexdenli.com", // placeholder — change to the address you want public
+    email: "alexdenli200@gmail.com", // the address shown on the contact page and in the footer
     intro: "I design golf products, the adverts that sell them and the online stores they sell through.",
     about: [
       "Placeholder: a short paragraph about who you are and the kind of work you do. Two or three sentences is plenty.",
