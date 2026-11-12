@@ -50,6 +50,10 @@
     };
   }
 
+  // Category links shown at the top of the Projects, Archive and category pages.
+  const cats = (active) => `<nav class="cats" aria-label="Work by category">${S.categories.map((c) =>
+    `<a href="#/work/${esc(c.id)}"${c.id === active ? ' aria-current="page"' : ""}>${esc(c.label)}</a>`).join("")}</nav>`;
+
   function work(id) {
     const c = S.categories.find((x) => x.id === id);
     if (!c) return null;
@@ -57,7 +61,7 @@
     const rows = list.map((p) => `<a class="row" href="${link(p)}" data-cursor><span class="row-img"><img src="${esc(p.hero)}" alt="" loading="lazy"></span>
       <span class="row-txt"><h2>${esc(p.title)}</h2><span class="small">${esc(p.summary)} ${esc(p.year)}.</span></span></a>`).join("");
     return { title: c.label, label: c.label, html: `<div class="page"><header class="page-head"><h1 class="giant">${esc(c.label)}</h1>
-      <p class="small">${list.length} project${list.length === 1 ? "" : "s"}</p></header>
+      <p class="small">${list.length} project${list.length === 1 ? "" : "s"}</p>${cats(id)}</header>
       ${list.length ? `<div class="rows">${rows}</div>` : `<p class="empty">Nothing here yet. Add a project with this category in data.js and it appears on this page.</p>`}${foot()}</div>` };
   }
 
@@ -93,14 +97,14 @@
       return `<li><time datetime="${esc(e.date)}">${fmt(e.date)}</time><div><h3>${esc(e.title)}</h3><p>${esc(e.note)}</p>
         ${p ? `<p class="small" style="margin-top:.5rem"><a class="ul" href="${link(p)}">See ${esc(p.title)}</a></p>` : ""}</div>${e.image ? `<img src="${esc(e.image)}" alt="" loading="lazy">` : "<span></span>"}</li>`;
     }).join("");
-    return { title: "Projects", label: "Projects", html: `<div class="page"><header class="page-head"><h1 class="giant">Projects</h1><p class="small">What I am working on now, and a running log of progress.</p></header>
+    return { title: "Projects", label: "Projects", html: `<div class="page"><header class="page-head"><h1 class="giant">Projects</h1><p class="small">What I am working on now, and a running log of progress.</p>${cats()}</header>
       <h2 class="sub">Current projects</h2><div class="current">${cur.map((p) => `<a href="${link(p)}" data-cursor><img src="${esc(p.hero)}" alt="" loading="lazy"><b>${esc(p.title)}</b><span class="small">${esc(cat(p.category).label)}</span></a>`).join("")}</div>
       <h2 class="sub">Log</h2><ol class="log">${log}</ol>${foot()}</div>` };
   }
 
   function archive() {
     const list = S.projects.filter((p) => p.status !== "current").sort((a, b) => b.year - a.year);
-    return { title: "Archive", label: "Archive", html: `<div class="page"><header class="page-head"><h1 class="giant">Archive</h1><p class="small">${list.length} finished projects, newest first.</p></header>
+    return { title: "Archive", label: "Archive", html: `<div class="page"><header class="page-head"><h1 class="giant">Archive</h1><p class="small">${list.length} finished projects, newest first.</p>${cats()}</header>
       <ol class="arch">${list.map((p) => `<li><a href="${link(p)}" data-peek="${esc(p.hero)}"><small class="small">${esc(p.year)}</small><b>${esc(p.title)}</b><small class="small">${esc(cat(p.category).label)}</small></a></li>`).join("")}</ol>${foot()}</div>` };
   }
 
@@ -128,7 +132,7 @@
     const swap = () => {
       view.innerHTML = page.html;
       document.title = (page.title ? page.title + " — " : "") + S.owner.name;
-      $$("a[data-route], #nav-cats a").forEach((a) => {
+      $$("a[data-route]").forEach((a) => {
         const on = a.dataset.route === key || (key === "work" && a.dataset.cat === sub) ||
           (key === "project" && a.dataset.cat === (S.projects.find((p) => p.slug === sub) || {}).category);
         on ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current");
@@ -243,7 +247,6 @@
   }, { passive: true });
 
   /* ---------- Start ---------- */
-  $("#nav-cats").innerHTML = S.categories.map((c) => `<a href="#/work/${esc(c.id)}" data-cat="${esc(c.id)}">${esc(c.label)}</a>`).join("");
   cursor.style.transform = "translate3d(-200px,-200px,0)";
   addEventListener("hashchange", () => show(false));
   show(true);
