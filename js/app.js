@@ -170,9 +170,7 @@
     peek.classList.remove("on");
     if (first || reduce || instant) { instant = false; return swap(); }
     if (key === "home") return swap(); // going home is instant, no transition
-    // the top tabs share the slanted sweep; opening a project zooms from the cursor (see style.css)
-    const FX = { work: ["fx-rise", 680], project: ["fx-iris", 540] };
-    const [fx, dur] = FX[key] || ["fx-sweep", 520];
+    const fx = "fx-sweep", dur = 520; // every other page shares the slanted sweep (see style.css)
     curtainLabel.textContent = page.label;
     if (fx === "fx-iris") { curtain.style.setProperty("--cx", mx + "px"); curtain.style.setProperty("--cy", my + "px"); }
     curtain.className = `curtain cover ${fx}`;

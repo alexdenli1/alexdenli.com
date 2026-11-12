@@ -301,28 +301,16 @@ main:focus { outline: none; }
 .flag:hover { background: var(--muted); }
 .flag:hover .flag-cloth { transform: translateY(-3px) skewY(-8deg) scaleX(1.12); }
 
-/* Page transitions. The top tabs share a slanted sweep; category pages get rising bars;
-   opening a project grows a circle from the cursor. Going home is instant, with no transition. */
+/* Page transitions: every page arrives on the same slanted sweep.
+   Going home is instant, with no transition. */
 .curtain { position: fixed; inset: 0; z-index: 80; pointer-events: none; visibility: hidden; display: grid; place-items: center; padding: var(--pad); text-align: center; color: var(--bg); }
 .curtain.cover, .curtain.leave { visibility: visible; }
 .curtain.cover { pointer-events: auto; }
 .curtain span { position: relative; z-index: 1; font-weight: 800; font-stretch: 75%; line-height: .85; letter-spacing: -.02em; font-size: clamp(3rem, 12vw, 12rem); opacity: 0; transform: translateY(.3em); transition: opacity .25s, transform .3s var(--ease); }
 .curtain.cover span { opacity: 1; transform: none; transition-delay: .18s; }
-.curtain i { display: none; position: absolute; background: var(--panel); }
-.curtain i:nth-child(even) { filter: brightness(.955); }
-.curtain i:nth-child(1) { --k: 0; } .curtain i:nth-child(2) { --k: 1; } .curtain i:nth-child(3) { --k: 2; }
-.curtain i:nth-child(4) { --k: 3; } .curtain i:nth-child(5) { --k: 4; } .curtain i:nth-child(6) { --k: 5; }
-
-/* rising bars (category pages): six columns */
-.fx-rise i { display: block; top: 0; bottom: 0; width: calc(100% / 6 + 1px); left: calc(var(--k) * 100% / 6); transition: transform .38s var(--ease); transform: translateY(102%); transition-delay: calc((5 - var(--k)) * .05s); }
-.cover.fx-rise i { transform: none; }
-.leave.fx-rise i { transform: translateY(-102%); }
 
 /* the single-panel moves */
-.fx-iris::before, .fx-sweep::before { content: ""; position: absolute; background: var(--panel); }
-.fx-iris::before { inset: 0; clip-path: circle(0px at var(--cx, 50%) var(--cy, 50%)); transition: clip-path .5s var(--ease); }
-.cover.fx-iris::before { clip-path: circle(160vmax at var(--cx, 50%) var(--cy, 50%)); }
-.leave.fx-iris::before { clip-path: circle(0px at 50% 50%); }
+.fx-sweep::before { content: ""; position: absolute; background: var(--panel); }
 .fx-sweep::before { inset: -10% -60%; transform: translateX(-115%) skewX(-14deg); transition: transform .5s cubic-bezier(.6, 0, .25, 1); }
 .cover.fx-sweep::before { transform: translateX(0) skewX(-14deg); }
 .leave.fx-sweep::before { transform: translateX(115%) skewX(-14deg); }
