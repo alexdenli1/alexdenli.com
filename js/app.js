@@ -312,15 +312,12 @@
      drawn behind them. Click one to open that project. Move the cursor to the bottom edge
      (or scroll) to enter the home page. The disco button (top right) starts a 20-second game:
      lights on, images fall faster, and the cursor becomes a basket that catches them. */
-  /* Original disco backing track for the catch game, synthesised in the browser — no audio files,
-     nothing licensed. It plays only while disco mode is on, and starts from the button press so
-     browsers allow the sound. */
+  /* Three original disco tracks for the catch game, synthesised in the browser — no audio files,
+     nothing licensed. One is picked at random each game, never the same one twice in a row.
+     They play only while disco mode is on, and start from the button press so browsers allow sound. */
   function music() {
-    const BPM = 118, S16 = 60 / BPM / 4;
-    const ROOT = [45, 38, 43, 36];                                              // A, D, G, C
-    const CH = [[0, 3, 7, 10], [0, 3, 7, 10], [0, 4, 7, 10], [0, 4, 7, 11]];    // m7, m7, 7, maj7
     const hz = (m) => 440 * Math.pow(2, (m - 69) / 12);
-    let ctx = null, out = null, noise = null, timer = 0, step = 0, next = 0, muted = false;
+    let ctx = null, out = null, noise = null, timer = 0, step = 0, next = 0, muted = false, tk = null, last = -1;
     try { muted = localStorage.getItem("ad-mute") === "1"; } catch (err) {}
 
     const env = (t, a, d, peak) => {
@@ -329,45 +326,84 @@
       g.gain.exponentialRampToValueAtTime(0.0001, t + a + d);
       return g;
     };
-    const hit = (t, type, f, a, d, peak, dest) => {
+    // one voice: an oscillator through an optional sweeping low-pass
+    const tone = (t, type, f, a, d, peak, lp, lpTo) => {
       const o = ctx.createOscillator(), g = env(t, a, d, peak);
       o.type = type; o.frequency.setValueAtTime(f, t);
-      o.connect(g).connect(dest || out); o.start(t); o.stop(t + a + d + 0.05);
+      let node = o;
+      if (lp) {
+        const fl = ctx.createBiquadFilter();
+        fl.type = "lowpass"; fl.frequency.setValueAtTime(lp, t);
+        if (lpTo) fl.frequency.exponentialRampToValueAtTime(lpTo, t + a + d);
+        o.connect(fl); node = fl;
+      }
+      node.connect(g).connect(out); o.start(t); o.stop(t + a + d + 0.05);
       return o;
     };
-    const burst = (t, hp, d, peak) => {
+    const burst = (t, hp, d, peak, type) => {
       const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = env(t, 0.002, d, peak);
-      s.buffer = noise; f.type = "highpass"; f.frequency.value = hp;
+      s.buffer = noise; f.type = type || "highpass"; f.frequency.value = hp; f.Q.value = type === "bandpass" ? 1.4 : 0.7;
       s.connect(f).connect(g).connect(out); s.start(t); s.stop(t + d + 0.05);
     };
+    const kick = (t, from, to, d, peak) => {
+      const o = tone(t, "sine", from, 0.002, d, peak);
+      o.frequency.exponentialRampToValueAtTime(to, t + d * 0.32);
+    };
+    const chord = (t, root, ch, oct, a, d, peak, type, lp) => {
+      for (const n of ch) tone(t, type || "sawtooth", hz(root + oct + n), a, d, peak, lp || 3000);
+    };
 
-    function play(i, t) {
-      const bar = i >> 4, s = i & 15, root = ROOT[bar], ch = CH[bar];
-      if (s % 4 === 0) {                                                        // four-on-the-floor kick
-        const o = hit(t, "sine", 160, 0.002, 0.3, 0.95);
-        o.frequency.exponentialRampToValueAtTime(46, t + 0.1);
+    const TRACKS = [
+      { // 1. Classic Philly disco — strings, octave bass, off-beat stabs
+        bpm: 118, len: 64, root: [45, 38, 43, 36],
+        ch: [[0, 3, 7, 10], [0, 3, 7, 10], [0, 4, 7, 10], [0, 4, 7, 11]],
+        play(i, t, root, ch) {
+          const s = i & 15;
+          if (s % 4 === 0) kick(t, 160, 46, 0.3, 0.95);
+          if (s === 4 || s === 12) burst(t, 1400, 0.16, 0.42, "bandpass");
+          burst(t, 8500, s % 4 === 2 ? 0.17 : 0.035, s % 4 === 2 ? 0.2 : 0.12);
+          if (s % 2 === 0) tone(t, "sawtooth", hz(root + (s % 4 === 0 ? 0 : 12)), 0.005, 0.2, 0.42, 900, 260);
+          if (s % 4 === 2) chord(t, root, ch, 24, 0.004, 0.16, 0.085);
+          if (s === 0) chord(t, root, ch, 36, 0.25, 1.6, 0.03, "triangle");
+        }
+      },
+      { // 2. Hi-NRG — fast, driving sixteenth-note bass and a bright arp on top
+        bpm: 142, len: 64, root: [41, 37, 44, 39],
+        ch: [[0, 3, 7, 10], [0, 4, 7, 11], [0, 4, 7, 11], [0, 4, 7, 10]],
+        play(i, t, root, ch) {
+          const s = i & 15;
+          if (s % 4 === 0) kick(t, 180, 44, 0.24, 1);
+          if (s === 4 || s === 12) { burst(t, 1800, 0.13, 0.5, "bandpass"); burst(t, 320, 0.1, 0.25); }
+          burst(t, 9500, s % 4 === 2 ? 0.14 : 0.025, s % 4 === 2 ? 0.26 : 0.1);
+          tone(t, "sawtooth", hz(root + (s % 2 ? 12 : 0)), 0.003, 0.1, 0.4, 1100, 320);   // 16th-note bass
+          if (s % 2 === 0) tone(t, "square", hz(root + 36 + ch[(i >> 1) % ch.length]), 0.003, 0.11, 0.075, 4000);
+          if (s === 0 || s === 8) chord(t, root, ch, 24, 0.01, 0.5, 0.06, "sawtooth", 2200);
+        }
+      },
+      { // 3. Slinky funk — slower, syncopated bass, guitar chucks and brass stabs over a two-chord vamp
+        bpm: 104, len: 32, root: [40, 45],
+        ch: [[0, 3, 7, 10, 14], [0, 4, 7, 10, 14]],
+        play(i, t, root, ch) {
+          const s = i & 15;
+          if (s === 0 || s === 8 || s === 14) kick(t, 150, 42, 0.32, 0.9);
+          if (s === 4 || s === 12) { burst(t, 1900, 0.19, 0.46, "bandpass"); burst(t, 260, 0.12, 0.2); }
+          if (s % 2 === 0) burst(t, 9000, s === 6 || s === 14 ? 0.16 : 0.03, s % 4 === 2 ? 0.2 : 0.1);
+          const BASS = [0, 3, 6, 8, 11, 14], STEPS = [0, 7, 12, 0, 10, 7];
+          const k = BASS.indexOf(s);
+          if (k >= 0) tone(t, "sawtooth", hz(root + STEPS[k]), 0.004, 0.19, 0.46, 750, 220);
+          if (s % 2 === 1) chord(t, root, ch, 24, 0.002, 0.055, 0.045, "square", 2600);     // guitar chucks
+          if (s === 2 || s === 10) chord(t, root, ch, 24, 0.012, 0.3, 0.07, "sawtooth", 2400); // brass
+          if (s === 0) chord(t, root, ch, 36, 0.3, 1.9, 0.022, "triangle");
+        }
       }
-      if (s === 4 || s === 12) burst(t, 1400, 0.16, 0.42);                      // clap on 2 and 4
-      burst(t, 8500, s % 4 === 2 ? 0.17 : 0.035, s % 4 === 2 ? 0.2 : 0.12);     // hats, open off-beat
-      if (s % 2 === 0) {                                                        // octave-jumping bassline
-        const m = root + (s % 4 === 0 ? 0 : 12), f = ctx.createBiquadFilter(), g = env(t, 0.005, 0.2, 0.42);
-        const o = ctx.createOscillator();
-        o.type = "sawtooth"; o.frequency.value = hz(m);
-        f.type = "lowpass"; f.frequency.setValueAtTime(900, t); f.frequency.exponentialRampToValueAtTime(260, t + 0.2);
-        o.connect(f).connect(g).connect(out); o.start(t); o.stop(t + 0.3);
-      }
-      if (s % 4 === 2) for (const n of ch) {                                    // off-beat chord stabs
-        const f = ctx.createBiquadFilter(), g = env(t, 0.004, 0.16, 0.085), o = ctx.createOscillator();
-        o.type = "sawtooth"; o.frequency.value = hz(root + 24 + n);
-        f.type = "lowpass"; f.frequency.value = 3000;
-        o.connect(f).connect(g).connect(out); o.start(t); o.stop(t + 0.25);
-      }
-      if (s === 0) for (const n of ch) hit(t, "triangle", hz(root + 36 + n), 0.25, 1.6, 0.03);  // strings
-    }
+    ];
 
     function tick() {
-      const t = ctx.currentTime;
-      while (next < t + 0.15) { play(step, next); next += S16; step = (step + 1) % 64; }
+      const t = ctx.currentTime, s16 = 60 / tk.bpm / 4;
+      while (next < t + 0.15) {
+        tk.play(step, next, tk.root[(step >> 4) % tk.root.length], tk.ch[(step >> 4) % tk.ch.length]);
+        next += s16; step = (step + 1) % tk.len;
+      }
     }
 
     return {
@@ -376,6 +412,8 @@
         const AC = window.AudioContext || window.webkitAudioContext;
         if (!AC) return;
         try {
+          let n; do { n = Math.floor(Math.random() * TRACKS.length); } while (TRACKS.length > 1 && n === last);
+          last = n; tk = TRACKS[n];
           ctx = new AC();
           noise = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
           const d = noise.getChannelData(0);
