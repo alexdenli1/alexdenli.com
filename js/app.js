@@ -128,7 +128,7 @@
     const list = S.projects.filter((p) => p.status !== "current").sort((a, b) => b.year - a.year);
     return { title: "Archive", label: "Archive", html: `<div class="page"><header class="page-head"><h1 class="giant">Archive</h1><p class="small">${list.length} finished projects, newest first.</p>${cats()}</header>
       <ol class="cards">${list.map((p, i) => `<li style="--r:${ANG[i % ANG.length]}deg;--dy:${DY[i % DY.length]}vh"><a class="card" href="${link(p)}">
-        <img src="${esc(p.hero)}" alt="" loading="lazy"><span><b>${esc(p.title)}</b><small>${esc(cat(p.category).label)}, ${esc(p.year)}</small></span></a></li>`).join("")}</ol>${foot()}</div>` };
+        <img src="${esc(p.hero)}" alt="" loading="lazy"><span><b>${esc(p.title)}</b><small>${esc(cat(p.category).label)}, ${esc(p.year)}</small></span><span class="card-desc">${esc(p.summary)}</span></a></li>`).join("")}</ol>${foot()}</div>` };
   }
 
   function contact() {

@@ -258,13 +258,19 @@ main:focus { outline: none; }
 /* ---------- Archive: scattered photo cards ---------- */
 .cards { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 9vh 5vw; padding: 2vh 2vw 6vh; }
 .cards li { transform: rotate(var(--r)) translateY(var(--dy)); transition: transform .4s var(--ease); }
-.cards li:hover, .cards li:focus-within { transform: rotate(0deg) translateY(calc(var(--dy) - 1.5vh)) scale(1.05); z-index: 2; position: relative; }
+.cards li:hover, .cards li:focus-within { transform: rotate(0deg) translateY(calc(var(--dy) - 2vh)) scale(1.17); z-index: 46; position: relative; }
+/* while a card is held, the rest of the page falls into shadow */
+.page:has(.cards) { position: relative; }
+.page:has(.cards)::after { content: ""; position: fixed; inset: 0; z-index: 45; background: rgba(0, 0, 0, .62); opacity: 0; pointer-events: none; transition: opacity .4s; }
+.page:has(.cards li:hover)::after, .page:has(.cards li:focus-within)::after { opacity: 1; }
 .card { display: block; width: clamp(240px, 26vw, 370px); background: var(--panel); color: #111; padding: .8rem .8rem .9rem; box-shadow: 0 1rem 2.2rem rgba(0, 0, 0, .5); transition: box-shadow .4s; }
 .cards li:hover .card { box-shadow: 0 2.2rem 3.8rem rgba(0, 0, 0, .65); }
 .card img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
 .card span { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding-top: .65rem; }
 .card b { font-size: 1.25rem; font-weight: 700; font-stretch: 80%; }
 .card small { font-size: .875rem; color: #555; white-space: nowrap; }
+.card-desc { display: block; font-size: .9rem; line-height: 1.4; color: #333; max-height: 0; opacity: 0; overflow: hidden; padding-top: 0; transition: max-height .4s var(--ease), opacity .3s, padding .4s var(--ease); }
+.cards li:hover .card-desc, .cards li:focus-within .card-desc { max-height: 7em; opacity: 1; padding-top: .5rem; }
 
 .peek { position: fixed; left: 0; top: 0; z-index: 30; width: 19rem; pointer-events: none; opacity: 0; transition: opacity .25s; will-change: transform; }
 .peek.on { opacity: 1; }
