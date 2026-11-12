@@ -277,10 +277,47 @@ main:focus { outline: none; }
 .flag:hover { background: var(--muted); }
 .flag:hover .flag-cloth { transform: translateY(-3px) skewY(-8deg) scaleX(1.12); }
 
-.curtain { position: fixed; inset: 0; z-index: 80; background: var(--panel); color: var(--bg); display: grid; place-items: center; transform: translateY(101%); pointer-events: none; padding: var(--pad); text-align: center; }
-.curtain span { font-weight: 800; font-stretch: 75%; line-height: .85; letter-spacing: -.02em; font-size: clamp(3rem, 12vw, 12rem); }
-.curtain.cover { transform: none; transition: transform .45s var(--ease); pointer-events: auto; }
-.curtain.leave { transform: translateY(-101%); transition: transform .45s var(--ease); }
+/* Page transitions: each destination has its own move.
+   Home: a swing arc. Projects: blinds drop. Archive: drawers slide in. Category pages: bars rise.
+   Project pages: a circle growing from the cursor. Contact: a slanted sweep. */
+.curtain { position: fixed; inset: 0; z-index: 80; pointer-events: none; visibility: hidden; display: grid; place-items: center; padding: var(--pad); text-align: center; color: var(--bg); }
+.curtain.cover, .curtain.leave { visibility: visible; }
+.curtain.cover { pointer-events: auto; }
+.curtain span { position: relative; z-index: 1; font-weight: 800; font-stretch: 75%; line-height: .85; letter-spacing: -.02em; font-size: clamp(3rem, 12vw, 12rem); opacity: 0; transform: translateY(.3em); transition: opacity .25s, transform .3s var(--ease); }
+.curtain.cover span { opacity: 1; transform: none; transition-delay: .18s; }
+.curtain i { display: none; position: absolute; background: var(--panel); }
+.curtain i:nth-child(even) { filter: brightness(.955); }
+.curtain i:nth-child(1) { --k: 0; } .curtain i:nth-child(2) { --k: 1; } .curtain i:nth-child(3) { --k: 2; }
+.curtain i:nth-child(4) { --k: 3; } .curtain i:nth-child(5) { --k: 4; } .curtain i:nth-child(6) { --k: 5; }
+
+/* blinds (Projects) and rising bars (category pages): six columns */
+.fx-blinds i, .fx-rise i { display: block; top: 0; bottom: 0; width: calc(100% / 6 + 1px); left: calc(var(--k) * 100% / 6); transition: transform .38s var(--ease); }
+.fx-blinds i { transform: translateY(-102%); transition-delay: calc(var(--k) * .05s); }
+.cover.fx-blinds i { transform: none; }
+.leave.fx-blinds i { transform: translateY(102%); }
+.fx-rise i { transform: translateY(102%); transition-delay: calc((5 - var(--k)) * .05s); }
+.cover.fx-rise i { transform: none; }
+.leave.fx-rise i { transform: translateY(-102%); }
+
+/* drawers (Archive): six rows sliding in from alternate sides */
+.fx-drawers i { display: block; left: 0; right: 0; height: calc(100% / 6 + 1px); top: calc(var(--k) * 100% / 6); transition: transform .38s var(--ease); transition-delay: calc(var(--k) * .045s); }
+.fx-drawers i:nth-child(odd) { transform: translateX(-102%); }
+.fx-drawers i:nth-child(even) { transform: translateX(102%); }
+.cover.fx-drawers i { transform: none; }
+.leave.fx-drawers i:nth-child(odd) { transform: translateX(102%); }
+.leave.fx-drawers i:nth-child(even) { transform: translateX(-102%); }
+
+/* the single-panel moves */
+.fx-swing::before, .fx-iris::before, .fx-sweep::before { content: ""; position: absolute; background: var(--panel); }
+.fx-swing::before { width: 300vmax; height: 300vmax; left: 0; top: 100%; transform-origin: 0 0; transform: rotate(0deg); transition: transform .55s cubic-bezier(.6, 0, .25, 1); }
+.cover.fx-swing::before { transform: rotate(-90deg); }
+.leave.fx-swing::before { transform: rotate(-180deg); }
+.fx-iris::before { inset: 0; clip-path: circle(0px at var(--cx, 50%) var(--cy, 50%)); transition: clip-path .5s var(--ease); }
+.cover.fx-iris::before { clip-path: circle(160vmax at var(--cx, 50%) var(--cy, 50%)); }
+.leave.fx-iris::before { clip-path: circle(0px at 50% 50%); }
+.fx-sweep::before { inset: -10% -60%; transform: translateX(-115%) skewX(-14deg); transition: transform .5s cubic-bezier(.6, 0, .25, 1); }
+.cover.fx-sweep::before { transform: translateX(0) skewX(-14deg); }
+.leave.fx-sweep::before { transform: translateX(115%) skewX(-14deg); }
 
 .cursor { position: fixed; left: 0; top: 0; z-index: 90; width: .8rem; height: .8rem; margin: -.4rem 0 0 -.4rem; border-radius: 50%; background: var(--accent); display: none; pointer-events: none; }
 @media (hover: hover) and (pointer: fine) { .cursor { display: block; } }

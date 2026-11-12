@@ -43,7 +43,7 @@
     const index = S.projects.map((p) => `<li><a href="${link(p)}" data-slug="${esc(p.slug)}" class="${p.hidden ? "lost" : ""}${found.has(p.slug) ? " got" : ""}">
       <b>${p.hidden && !found.has(p.slug) ? "·····" : esc(p.title)}</b></a></li>`).join("");
     return {
-      title: "", label: "Back home", scroll: 0,
+      title: "", label: "Home", scroll: 0,
       html: `${seenGate ? "" : `<section class="gate" aria-label="Introduction"><h1 class="gate-mark"><svg class="logo" viewBox="0 0 64.91 16.89" role="img" aria-label="Alex Denli Archive"><use href="#logo"/></svg></h1>
         <canvas class="disco-lights" aria-hidden="true"></canvas>
         <canvas class="gate-fx" aria-hidden="true"></canvas><div class="gate-fall"></div>
@@ -156,9 +156,13 @@
     };
     peek.classList.remove("on");
     if (first || reduce || instant) { instant = false; return swap(); }
+    // each destination gets its own transition (see style.css)
+    const FX = { home: ["fx-swing", 580], projects: ["fx-blinds", 680], archive: ["fx-drawers", 680], work: ["fx-rise", 680], project: ["fx-iris", 540], contact: ["fx-sweep", 520] };
+    const [fx, dur] = FX[key] || ["fx-sweep", 520];
     curtainLabel.textContent = page.label;
-    curtain.className = "curtain cover";
-    setTimeout(() => { swap(); curtain.className = "curtain leave"; setTimeout(() => (curtain.className = "curtain"), 460); }, 470);
+    if (fx === "fx-iris") { curtain.style.setProperty("--cx", mx + "px"); curtain.style.setProperty("--cy", my + "px"); }
+    curtain.className = `curtain cover ${fx}`;
+    setTimeout(() => { swap(); curtain.className = `curtain leave ${fx}`; setTimeout(() => (curtain.className = "curtain"), dur); }, dur);
   }
 
   /* ---------- Per-page wiring ---------- */
