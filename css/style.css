@@ -42,7 +42,7 @@ main:focus { outline: none; }
 .nav {
   position: fixed; inset: 0 0 auto 0; z-index: 40; height: var(--nav-h);
   display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 1.5rem;
-  padding: 0 var(--pad); background: rgba(0, 0, 0, .86); backdrop-filter: blur(10px);
+  padding: 0 var(--pad); background: rgba(0, 0, 0, .93);
   border-bottom: 1px solid var(--line); transition: transform .45s var(--ease);
 }
 .nav.nav-away { transform: translateY(-110%); }
@@ -73,8 +73,9 @@ main:focus { outline: none; }
 .gate-mark .logo { width: 100%; height: auto; }
 .gate-fx { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
 .gate-fall { position: absolute; inset: 0; z-index: 1; overflow: hidden; contain: strict; }
-.faller { position: absolute; left: 0; top: 0; display: block; will-change: transform; backface-visibility: hidden; cursor: pointer; touch-action: manipulation; }
-.faller img { width: 100%; max-height: 22rem; object-fit: cover; box-shadow: 0 .9rem 1.4rem rgba(0, 0, 0, .22); pointer-events: none; }
+.faller { position: absolute; left: 0; top: 0; display: block; visibility: hidden; will-change: transform; contain: layout style; cursor: pointer; touch-action: manipulation; }
+.faller-in { display: block; width: 100%; height: 100%; will-change: transform; box-shadow: 0 .9rem 1.4rem rgba(0, 0, 0, .22); }
+.faller canvas { display: block; width: 100%; height: 100%; pointer-events: none; }
 .gate-mark { z-index: 2; pointer-events: none; }
 
 /* ---------- Home: disco mode (20-second catch game on the intro) ---------- */
@@ -86,7 +87,7 @@ main:focus { outline: none; }
 .gate.disco { background: #000; color: var(--fg); touch-action: none; }
 .gate.disco .disco-btn { background: var(--fg); color: #000; border-color: var(--fg); }
 .gate.disco .faller { cursor: inherit; }
-.gate.disco .faller img { box-shadow: none; }
+.gate.disco .faller-in { box-shadow: none; }
 .disco-lights { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0; }
 .gate.disco .disco-lights { opacity: 1; }
 .disco-hud { position: absolute; top: var(--pad); left: 50%; transform: translateX(-50%); z-index: 6; display: flex; gap: 2.5rem; white-space: nowrap; pointer-events: none; font-weight: 700; font-stretch: 75%; font-size: clamp(1.5rem, 3vw, 2.5rem); line-height: 1; font-variant-numeric: tabular-nums; }
@@ -114,7 +115,9 @@ main:focus { outline: none; }
 .piece { position: absolute; z-index: 1; display: block; }
 .piece-in { display: inline-block; position: relative; will-change: transform; }
 /* Hover: a quick electric outline drawn round the image */
-.zap { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; fill: none; filter: url(#zap) drop-shadow(0 0 4px var(--zap-glow)) drop-shadow(0 0 14px var(--zap-glow)); }
+.zap { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; fill: none; visibility: hidden; }
+/* the electric filter is only switched on while a project is hovered: it is costly to leave running */
+.piece:hover .zap, .piece:focus-visible .zap, .piece.on .zap { visibility: visible; filter: url(#zap) drop-shadow(0 0 4px var(--zap-glow)) drop-shadow(0 0 14px var(--zap-glow)); }
 .zap rect { stroke: var(--zap); stroke-width: 2.5; stroke-dasharray: 1; stroke-dashoffset: 1; }
 .zap rect + rect { stroke: #fff; stroke-width: 1; }
 .piece:hover .zap rect, .piece:focus-visible .zap rect, .piece.on .zap rect { stroke-dashoffset: 0; transition: stroke-dashoffset .38s cubic-bezier(.3, 0, .1, 1); }
@@ -123,7 +126,7 @@ main:focus { outline: none; }
 .piece img { width: auto; max-width: 100%; max-height: 84vh; transition: opacity .5s, clip-path .9s var(--ease), filter .4s; }
 .piece-cap { display: none; padding-top: .5rem; font-size: .9375rem; }
 .piece-cap small { color: var(--muted); font-size: inherit; display: block; }
-.field.dim .piece:not(.on) img { opacity: .22; filter: grayscale(1); }
+.field.dim .piece:not(.on) img { opacity: .2; }
 .piece.lost .piece-in { position: relative; }
 .piece.lost img { clip-path: circle(0% at 50% 50%); }
 .piece.lost .piece-in::before {

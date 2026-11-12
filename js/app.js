@@ -254,16 +254,16 @@
     const btn = $(".disco-btn"), hud = $(".disco-hud"), end = $(".disco-end"), scoreEl = $(".disco-score"), timeEl = $(".disco-time");
     const NEON = ["255,43,214", "0,229,255", "255,230,0", "140,140,255", "40,255,140"];
     const BASKET = "url(\"data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44"><path d="M9 20 Q22 -2 35 20" fill="none" stroke="#000" stroke-width="5"/><path d="M9 20 Q22 -2 35 20" fill="none" stroke="#EEE9E3" stroke-width="2.5"/><path d="M4 19h36l-4.5 20h-27z" fill="#EEE9E3" stroke="#000" stroke-width="2" stroke-linejoin="round"/><path d="M6 26h32M8 33h28M14 19l2 20M22 19v20M30 19l-2 20" stroke="#000" stroke-width="1.4" fill="none"/></svg>') + "\") 22 26, grab";
-    // disco beams, drawn at half resolution (they are soft, so it doesn't show) to keep things fast
+    // disco beams, drawn at quarter resolution, every other frame, (they are soft, so it doesn't show) to keep things fast
     const lc = $(".disco-lights"), lx2 = lc.getContext("2d");
     const BEAMS = [[0.12, 0, -58, -4, 1.7], [0.3, 1, 34, -40, 2.3], [0.5, 2, -46, 46, 1.9], [0.5, 3, 52, -52, 2.7], [0.7, 4, -30, 42, 2.1], [0.88, 0, 6, 60, 1.5]];
-    let fills = null, t0 = 0;
+    let fills = null, t0 = 0, tick = false;
     function lights(now) {
-      const w = Math.round(W / 2), hh = Math.round(H / 2);
+      const w = Math.round(W / 4), hh = Math.round(H / 4);
       if (lc.width !== w || lc.height !== hh) { lc.width = w; lc.height = hh; fills = null; }
       const len = H * 1.5, bw = H * 0.46, t = (now - t0) / 1000;
       if (!fills) fills = NEON.map((c) => { const g = lx2.createLinearGradient(0, 0, 0, len); g.addColorStop(0, `rgba(${c},.55)`); g.addColorStop(0.82, `rgba(${c},0)`); return g; });
-      lx2.setTransform(0.5, 0, 0, 0.5, 0, 0); lx2.globalCompositeOperation = "source-over"; lx2.clearRect(0, 0, W, H);
+      lx2.setTransform(0.25, 0, 0, 0.25, 0, 0); lx2.globalCompositeOperation = "source-over"; lx2.clearRect(0, 0, W, H);
       lx2.globalCompositeOperation = "lighter"; lx2.globalAlpha = 0.8 + 0.2 * Math.sin(t * 6.283);
       for (const [x, c, a, b, d] of BEAMS) {
         const ang = ((a + (b - a) * (0.5 - 0.5 * Math.cos((Math.PI * t) / d))) * Math.PI) / 180;
@@ -282,35 +282,64 @@
     const line = (img, x, top, bottom, wd, al) => { if (bottom - top < 2) return; ctx.globalAlpha = al; ctx.drawImage(img, x - wd / 2, top, wd, bottom - top); };
     const size = () => { dpr = 1; W = gate.clientWidth; H = gate.clientHeight; cv.width = W * dpr; cv.height = H * dpr; };
 
-    function spawn() {
-      if (!order.length) order = S.projects.map((_, i) => i).sort(() => Math.random() - 0.5);
-      const p = S.projects[order.pop()], w = (small() ? rnd(96, 150) : rnd(170, 290)) * (disco ? 0.72 : 1), fast = disco ? rnd(1.7, 2.5) : 1;
-      if (disco) total++;
-      const el = document.createElement("a");
-      el.className = "faller"; el.href = link(p); el.setAttribute("aria-label", p.title); el.style.width = w + "px";
-      el.innerHTML = `<img src="${esc(p.hero)}" alt="" draggable="false" decoding="async">`;
-      const it = { el, w, h: w * 0.7 };
-      el.firstChild.addEventListener("load", (e) => { const im = e.target; it.h = Math.min(352, (w * im.naturalHeight) / (im.naturalWidth || 1)); });
+    // Each project image is drawn once to a small bitmap. Falling images are pooled elements whose
+    // movement and tumbling run as browser-driven animations, so they stay smooth even when the page is busy.
+    const masters = S.projects.map(() => null), pool = S.projects.map(() => []);
+    S.projects.forEach((p, i) => {
+      const im = new Image(); im.decoding = "async";
+      im.onload = () => {
+        const r = Math.min(1.5, im.naturalHeight / (im.naturalWidth || 1)), c = document.createElement("canvas");
+        c.width = 440; c.height = Math.round(440 * r);
+        const sh = im.naturalWidth * r;
+        c.getContext("2d").drawImage(im, 0, Math.max(0, (im.naturalHeight - sh) / 2), im.naturalWidth, Math.min(sh, im.naturalHeight), 0, 0, c.width, c.height);
+        masters[i] = { c, r };
+        for (let k = 0; k < 2; k++) pool[i].push(make(i));
+      };
+      im.src = p.hero;
+    });
+    function make(i) {
+      const p = S.projects[i], m = masters[i], el = document.createElement("a"), c = document.createElement("canvas");
+      c.width = m.c.width; c.height = m.c.height; c.getContext("2d").drawImage(m.c, 0, 0);
+      el.className = "faller"; el.href = link(p); el.setAttribute("aria-label", p.title);
+      const inner = document.createElement("span"); inner.className = "faller-in"; inner.appendChild(c); el.appendChild(inner);
       el.addEventListener("pointerdown", (e) => { e.preventDefault(); if (disco) return; instant = true; location.hash = link(p); });
       el.addEventListener("click", (e) => e.preventDefault());
       layer.appendChild(el);
-      items.push(Object.assign(it, { x: rnd(0.04, 0.96) * (W - w), y: -w * 1.6, v: H * rnd(0.5, 0.85) * fast, drift: disco ? rnd(-190, 190) : rnd(-40, 40),
-        ax: rnd(25, 55), ay: rnd(35, 65), az: rnd(6, 22), wx: rnd(1.2, 2.6), wy: rnd(1.4, 3), wz: rnd(0.5, 1.2), ph: rnd(0, 6.28), t: 0 }));
+      return el;
+    }
+    function release(it) {
+      if (it.done) return; it.done = true;
+      it.fall.onfinish = null; it.fall.cancel(); it.spin.cancel(); it.el.style.visibility = "hidden"; pool[it.i].push(it.el);
+    }
+    const tilt = (s) => `perspective(700px) rotateX(${rnd(25, 55) * s}deg) rotateY(${rnd(35, 65) * -s}deg) rotateZ(${rnd(6, 22) * s}deg)`;
+    function spawn(now) {
+      if (!order.length) order = S.projects.map((_, i) => i).sort(() => Math.random() - 0.5);
+      const i = order.pop(), m = masters[i];
+      if (!m) return;
+      const w = (small() ? rnd(96, 150) : rnd(170, 290)) * (disco ? 0.72 : 1), h = w * m.r, fast = disco ? rnd(1.7, 2.5) : 1;
+      if (disco) total++;
+      const el = pool[i].pop() || make(i), v = H * rnd(0.5, 0.85) * fast, drift = disco ? rnd(-190, 190) : rnd(-40, 40);
+      const x = rnd(0.04, 0.96) * (W - w), y = -h * 1.5, T = (H + h * 2.6) / v, s = Math.random() < 0.5 ? 1 : -1;
+      el.style.width = w + "px"; el.style.height = h + "px"; el.style.visibility = "visible";
+      const it = { el, i, w, h, x, y, v, drift, T, t0: now, ph: rnd(0, 6.28), done: false };
+      it.fall = el.animate([{ transform: `translate3d(${x}px, ${y}px, 0)` }, { transform: `translate3d(${x + drift * T}px, ${y + v * T}px, 0)` }], { duration: T * 1000, easing: "linear", fill: "both" });
+      it.spin = el.firstChild.animate([tilt(s), tilt(-s), tilt(s), tilt(-s)].map((t) => ({ transform: t })), { duration: T * 1000, easing: "ease-in-out", fill: "both" });
+      it.fall.onfinish = () => release(it);
+      items.push(it);
     }
 
     function frame(now) {
       raf = requestAnimationFrame(frame);
       const dt = Math.min(0.05, (now - prev) / 1000 || 0); prev = now;
-      if (scrollY > innerHeight * 0.9) return;
+      if (scrollY > innerHeight * 0.9 || document.hidden) return;
       if (cv.width !== Math.round(gate.clientWidth * dpr) || cv.height !== Math.round(gate.clientHeight * dpr)) size();
-      if (now > next && items.length < (disco ? 14 : 7)) { spawn(); next = now + (disco ? rnd(110, 260) : rnd(330, 620)); }
+      if (now > next && items.length < (disco ? 14 : 7)) { spawn(now); next = now + (disco ? rnd(110, 260) : rnd(330, 620)); }
       if (disco) {
-        lights(now);
+        if ((tick = !tick)) lights(now);
         const left = Math.max(0, Math.ceil((endAt - now) / 1000));
         if (left !== shown) { shown = left; timeEl.textContent = left; }
         if (now >= endAt) finish();
       }
-      const ink = disco ? "238,233,227" : "0,0,0";
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
       if (!GLOW) GLOW = NEON.map(strip);
       // background: fine lines streaming down
@@ -320,25 +349,18 @@
         line(disco ? GLOW[Math.floor(s.len) % 5] : s.g ? GREEN : INK, s.x * W, y - s.len, y, 1, Math.min(1, disco ? s.a * 3 : s.g ? s.a * 2.2 : s.a));
       }
       items = items.filter((it) => {
-        it.t += dt; it.y += it.v * dt; it.x += it.drift * dt;
-        if (it.y > H + it.w) { it.el.remove(); return false; }
-        if (disco && px > it.x - 26 && px < it.x + it.w + 26 && py > it.y - 26 && py < it.y + it.h + 26) {
-          score++; scoreEl.textContent = score; it.el.remove();
+        if (it.done) return false;
+        const t = (now - it.t0) / 1000, x = it.x + it.drift * t, y = it.y + it.v * t;
+        if (disco && px > x - 26 && px < x + it.w + 26 && py > y - 26 && py < y + it.h + 26) {
+          score++; scoreEl.textContent = score; release(it);
           for (let k = 0; k < 14; k++) { const a = rnd(0, 6.28), sp = rnd(120, 520); sparks.push({ x: px, y: py, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 120, life: 1, c: NEON[k % 5] }); }
           return false;
         }
-        const rx = it.ax * Math.sin(it.t * it.wx + it.ph), ry = it.ay * Math.sin(it.t * it.wy + it.ph * 1.7), rz = it.az * Math.sin(it.t * it.wz + it.ph * 0.6);
-        it.el.style.transform = `translate3d(${it.x}px, ${it.y}px, 0) perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg)`;
-        // speed lines and fading echoes trailing each image
-        const hgt = it.h, cx = it.x + it.w / 2, cy = it.y + hgt / 2, squash = Math.abs(Math.cos((ry * Math.PI) / 180)), tail = it.v * 0.42;
-        for (let k = 0; k < 5; k++) {
-          const lx = cx + (k / 4 - 0.5) * it.w * squash * 0.9, top = it.y - tail * (0.55 + 0.45 * Math.sin(k * 2.4 + it.ph));
-          line(disco ? GLOW[k] : k === 2 ? GREEN : INK, lx, top, it.y + hgt * 0.3, k === 2 ? 1.6 : 1, disco ? 0.7 : k === 2 ? 0.75 : 0.34);
-        }
-        ctx.globalAlpha = 1;
-        for (let k = 1; k <= 2; k++) {
-          ctx.save(); ctx.translate(cx, cy - k * it.v * 0.07); ctx.rotate((rz * Math.PI) / 180); ctx.scale(squash, Math.abs(Math.cos((rx * Math.PI) / 180)));
-          ctx.strokeStyle = `rgba(${ink},${0.2 - k * 0.055})`; ctx.lineWidth = 1; ctx.strokeRect(-it.w / 2, -hgt / 2, it.w, hgt); ctx.restore();
+        // speed lines trailing each image
+        const tail = it.v * 0.42;
+        for (let k = 0; k < 4; k++) {
+          const lx = x + it.w * (0.12 + 0.25 * k), top = y - tail * (0.55 + 0.45 * Math.sin(k * 2.4 + it.ph));
+          line(disco ? GLOW[k] : k === 2 ? GREEN : INK, lx, top, y + it.h * 0.3, k === 2 ? 1.6 : 1, disco ? 0.7 : k === 2 ? 0.75 : 0.34);
         }
         return true;
       });
@@ -350,7 +372,7 @@
         return true;
       });
     }
-    const clear = () => { items.forEach((it) => it.el.remove()); items = []; };
+    const clear = () => { items.forEach(release); items = []; };
     const mode = (on) => {
       disco = on; gate.classList.toggle("disco", on); hud.hidden = !on; btn.setAttribute("aria-pressed", String(on));
       gate.style.cursor = on ? BASKET : ""; cursor.style.visibility = on ? "hidden" : ""; clear();
@@ -378,7 +400,7 @@
     };
     gate.addEventListener("mousemove", edge);
     size(); raf = requestAnimationFrame(frame);
-    return { stop: () => { cancelAnimationFrame(raf); gate.removeEventListener("mousemove", edge); removeEventListener("scroll", away); cursor.style.visibility = ""; } };
+    return { stop: () => { cancelAnimationFrame(raf); gate.removeEventListener("mousemove", edge); removeEventListener("scroll", away); clear(); cursor.style.visibility = ""; } };
   }
 
   const queue = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
