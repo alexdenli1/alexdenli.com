@@ -4,7 +4,6 @@
    in css/style.css and js/app.js and never needs touching.
 
    ADD A PROJECT    copy one { ... } block inside "projects" and change it.
-   ADD A LOG ENTRY  add one line at the TOP of "log".
    ADD TO GALLERY   add one { src: "..." } to "gallery" (the strip at the bottom of the home page).
    IMAGES           put files in /images/<project-name>/ and point "hero"
                     and block "src" at them, e.g. "images/rescue/hero.jpg".
@@ -161,12 +160,4 @@ window.SITE = {
     { src: PH(1), project: "amazon" }, { src: PH(6) }, { src: PH(9), project: "xfly" }, { src: PH(4) }
   ],
 
-  /* Running log of new work. Newest first.
-     "project" is optional: use a project slug to link the entry to its page. */
-  log: [
-    { date: "2026-11-12", title: "Site draft built", note: "Placeholder: first version of this website, with placeholder content throughout." },
-    { date: "2026-11-05", title: "Poster final draft", project: "adverts", note: "Placeholder: what you did this week on the poster.", image: PH(7) },
-    { date: "2026-10-28", title: "Store wireframes signed off", project: "amazon", note: "Placeholder: a short update." },
-    { date: "2026-10-14", title: "First samples arrived", project: "xfly", note: "Placeholder: what the samples showed and what changes next.", image: PH(4) }
-  ]
 };

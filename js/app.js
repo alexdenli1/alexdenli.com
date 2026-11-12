@@ -106,17 +106,10 @@
       <nav class="p-exits" aria-label="Where next"><a class="ul" href="#/">Back home</a><a class="ul" href="#/work/${esc(c.id)}">More ${esc(c.label.toLowerCase())}</a><a class="ul" href="#/archive">Archive</a></nav>${foot()}</article>` };
   }
 
-  const fmt = (d) => new Date(d + "T12:00:00").toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
   function now() {
     const cur = S.projects.filter((p) => p.status === "current");
-    const log = [...S.log].sort((a, b) => (a.date < b.date ? 1 : -1)).map((e) => {
-      const p = S.projects.find((x) => x.slug === e.project);
-      return `<li><time datetime="${esc(e.date)}">${fmt(e.date)}</time><div><h3>${esc(e.title)}</h3><p>${esc(e.note)}</p>
-        ${p ? `<p class="small" style="margin-top:.5rem"><a class="ul" href="${link(p)}">See ${esc(p.title)}</a></p>` : ""}</div>${e.image ? `<img src="${esc(e.image)}" alt="" loading="lazy">` : "<span></span>"}</li>`;
-    }).join("");
-    return { title: "Projects", label: "Projects", html: `<div class="page"><header class="page-head"><h1 class="giant">Projects</h1><p class="small">What I am working on now, and a running log of progress.</p>${cats()}</header>
-      <h2 class="sub">Current projects</h2><div class="current">${cur.map((p) => `<a href="${link(p)}" ><img src="${esc(p.hero)}" alt="" loading="lazy"><b>${esc(p.title)}</b><span class="small">${esc(cat(p.category).label)}</span></a>`).join("")}</div>
-      <h2 class="sub">Log</h2><ol class="log">${log}</ol>${foot()}</div>` };
+    return { title: "Projects", label: "Projects", html: `<div class="page"><header class="page-head"><h1 class="giant">Projects</h1><p class="small">What I am working on now.</p>${cats()}</header>
+      <div class="current">${cur.map((p) => `<a href="${link(p)}" data-cursor><img src="${esc(p.hero)}" alt="" loading="lazy"><b>${esc(p.title)}</b><span class="small">${esc(cat(p.category).label)}</span></a>`).join("")}</div>${foot()}</div>` };
   }
 
   function archive() {
