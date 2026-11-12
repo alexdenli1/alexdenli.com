@@ -12,7 +12,7 @@
   const cat = (id) => S.categories.find((c) => c.id === id) || { id, label: id };
   const link = (p) => "#/project/" + p.slug;
   const found = new Set();
-  let instant = false, seenGate = false, mx = innerWidth / 2, my = innerHeight / 2, queued = false, live = {};
+  let instant = false, seenGate = false, lastY = 0, mx = innerWidth / 2, my = innerHeight / 2, queued = false, live = {};
 
   /* ---------- Page builders ---------- */
   const foot = () => `<footer class="site-foot"><span>© ${new Date().getFullYear()} ${esc(S.owner.name)}, ${esc(S.owner.location)}</span>
@@ -256,7 +256,9 @@
     }
     if (live.run && live.gallery) {
       const top = live.gallery.getBoundingClientRect().top;
-      if (top < vh && top > -live.run - vh) live.track.style.transform = `translate3d(${-Math.max(0, Math.min(live.run, -top * 3))}px, 0, 0)`;
+      // Scrolling up skips straight past the strip; scrolling down plays it through again.
+      if (y < lastY - 1 && top < -2 && top > -live.run / 3 - 2) scrollTo(0, y + top);
+      else if (top < vh && top > -live.run - vh) live.track.style.transform = `translate3d(${-Math.max(0, Math.min(live.run, -top * 3))}px, 0, 0)`;
     }
     for (const el of live.scrubs || []) {
       const r = el.getBoundingClientRect();
@@ -265,6 +267,7 @@
       const lit = Math.round(p * words.length);
       for (let i = 0; i < words.length; i++) words[i].classList.toggle("lit", i < lit);
     }
+    lastY = y;
     if (!reduce) for (const im of live.masks || []) {
       const r = im.parentElement.getBoundingClientRect();
       if (r.bottom < 0 || r.top > vh) continue;
