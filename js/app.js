@@ -107,9 +107,19 @@
   }
 
   function now() {
-    const cur = S.projects.filter((p) => p.status === "current");
-    return { title: "Projects", label: "Projects", html: `<div class="page"><header class="page-head"><h1 class="giant">Projects</h1><p class="small">What I am working on now.</p>${cats()}</header>
-      <div class="current">${cur.map((p) => `<a href="${link(p)}" data-cursor><img src="${esc(p.hero)}" alt="" loading="lazy"><b>${esc(p.title)}</b><span class="small">${esc(cat(p.category).label)}</span></a>`).join("")}</div>${foot()}</div>` };
+    // Projects: key-project images fade in and out behind the page as you scroll into each category.
+    const secs = S.categories.map((c) => {
+      const list = S.projects.filter((p) => p.category === c.id);
+      const key = list.find((p) => p.status === "current") || list[0];
+      return list.length ? { c, list, key } : null;
+    }).filter(Boolean);
+    return { title: "Projects", label: "Projects", html: `<div class="page proj-page">
+      <div class="pbg" aria-hidden="true">${secs.map((s) => `<img src="${esc(s.key.hero)}" alt="">`).join("")}</div>
+      <header class="page-head"><h1 class="giant">Projects</h1><p class="small">All of the work, by category.</p></header>
+      ${secs.map((s) => `<section class="pcat">
+        <h2><a class="giant" href="#/work/${esc(s.c.id)}">${esc(s.c.label)}</a></h2>
+        <ol>${s.list.map((p) => `<li><a href="${link(p)}"><b>${esc(p.title)}</b><span class="small">${esc(p.year)}${p.status === "current" ? " — in progress" : ""}</span></a></li>`).join("")}</ol>
+      </section>`).join("")}${foot()}</div>` };
   }
 
   function archive() {
@@ -174,7 +184,8 @@
       home: key === "home", mark: $(".gate-mark"), field: $(".field"),
       pieces: $$(".piece"), scrubs: $$("[data-scrub]"), masks: $$(".mask img"),
       names: $$(".field-index a"), wheel: $(".field-index ol"), active: -1,
-      gallery: $(".gallery"), track: $(".gallery-track"), run: 0
+      gallery: $(".gallery"), track: $(".gallery-track"), run: 0,
+      secs: $$(".pcat"), bgs: $$(".pbg img"), bgOn: -1
     };
     const spot = (slug, on) => {
       const el = live.pieces.find((p) => p.dataset.slug === slug);
@@ -257,6 +268,12 @@
       // Scrolling up skips straight past the strip; scrolling down plays it through again.
       if (y < lastY - 1 && top < -2 && top > -live.run / 3 - 2) scrollTo(0, y + top);
       else if (top < vh && top > -live.run - vh) live.track.style.transform = `translate3d(${-Math.max(0, Math.min(live.run, -top * 3))}px, 0, 0)`;
+    }
+    // Projects page: fade the background image of the category nearest the middle of the screen
+    if (live.secs && live.secs.length) {
+      let best = -1, bd = 1e9;
+      live.secs.forEach((s, i) => { const r = s.getBoundingClientRect(), d = Math.abs(r.top + r.height / 2 - vh / 2); if (d < bd) { bd = d; best = i; } });
+      if (best !== live.bgOn) { live.bgOn = best; live.bgs.forEach((b, i) => b.classList.toggle("on", i === best)); }
     }
     for (const el of live.scrubs || []) {
       const r = el.getBoundingClientRect();
