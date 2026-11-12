@@ -156,8 +156,9 @@
     };
     peek.classList.remove("on");
     if (first || reduce || instant) { instant = false; return swap(); }
-    // each destination gets its own transition (see style.css)
-    const FX = { home: ["fx-swing", 580], projects: ["fx-blinds", 680], archive: ["fx-drawers", 680], work: ["fx-rise", 680], project: ["fx-iris", 540], contact: ["fx-sweep", 520] };
+    if (key === "home") return swap(); // going home is instant, no transition
+    // the top tabs share the slanted sweep; opening a project zooms from the cursor (see style.css)
+    const FX = { work: ["fx-rise", 680], project: ["fx-iris", 540] };
     const [fx, dur] = FX[key] || ["fx-sweep", 520];
     curtainLabel.textContent = page.label;
     if (fx === "fx-iris") { curtain.style.setProperty("--cx", mx + "px"); curtain.style.setProperty("--cy", my + "px"); }
