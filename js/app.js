@@ -60,7 +60,7 @@
       </section>
       <section class="gallery" aria-label="Gallery of all work"><div class="gallery-pin">
         <h2 class="gallery-head">Let’s explore and discover more</h2>
-        <div class="gallery-band"><div class="gallery-track">${(S.gallery || []).map((g) => { const p = S.projects.find((x) => x.slug === g.project);
+        <div class="gallery-band"><div class="gallery-track">${(S.gallery || []).slice(0, 10).map((g) => { const p = S.projects.find((x) => x.slug === g.project);
           const im = `<img src="${esc(g.src)}" alt="${esc(p ? p.title : "")}" loading="lazy" draggable="false">`;
           return p ? `<a href="${link(p)}" aria-label="${esc(p.title)}">${im}</a>` : `<span class="gallery-item">${im}</span>`; }).join("")}</div></div>
       </div></section>
