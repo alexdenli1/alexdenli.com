@@ -12,7 +12,7 @@
   const cat = (id) => S.categories.find((c) => c.id === id) || { id, label: id };
   const link = (p) => "#/project/" + p.slug;
   const found = new Set();
-  let seenGate = false, mx = innerWidth / 2, my = innerHeight / 2, queued = false, live = {};
+  let instant = false, seenGate = false, mx = innerWidth / 2, my = innerHeight / 2, queued = false, live = {};
 
   /* ---------- Page builders ---------- */
   const foot = () => `<footer class="site-foot"><span>© ${new Date().getFullYear()} ${esc(S.owner.name)}, ${esc(S.owner.location)}</span>
@@ -39,7 +39,7 @@
     return {
       title: "", label: "Back home", scroll: seenGate ? innerHeight : 0,
       html: `<section class="gate" aria-label="Introduction"><h1 class="gate-mark"><svg class="logo" viewBox="0 0 64.91 16.89" role="img" aria-label="Alex Denli Archive"><use href="#logo"/></svg></h1>
-        <canvas class="gate-waves" aria-hidden="true"></canvas><span class="gate-dot" aria-hidden="true"></span></section>
+        <canvas class="gate-fx" aria-hidden="true"></canvas><div class="gate-fall"></div></section>
       <section class="field" style="height:${28 + n * step + 50}vh" aria-label="All work">
         <div class="field-title giant" aria-hidden="true"><span>Work</span></div>
         <ol class="field-index">${index}</ol>
@@ -146,7 +146,7 @@
       if (!first) view.focus({ preventScroll: true });
     };
     peek.classList.remove("on");
-    if (first || reduce) return swap();
+    if (first || reduce || instant) { instant = false; return swap(); }
     curtainLabel.textContent = page.label;
     curtain.className = "curtain cover";
     setTimeout(() => { swap(); curtain.className = "curtain leave"; setTimeout(() => (curtain.className = "curtain"), 460); }, 470);
@@ -156,7 +156,7 @@
   function bind(key) {
     live.waves && live.waves.stop();
     live = {
-      waves: key === "home" ? ripples() : null,
+      waves: key === "home" ? intro() : null,
       home: key === "home", mark: $(".gate-mark"), field: $(".field"), title: $(".field-title"),
       pieces: $$(".piece"), scrubs: $$("[data-scrub]"), masks: $$(".mask img")
     };
@@ -235,113 +235,77 @@
       im.style.transform = `scale(${1.14 - Math.min(.14, Math.abs(p) * .14)}) translate3d(0, ${p * -5}%, 0)`;
     }
   }
-  /* Intro screen: after 5 seconds without scrolling, the circle sends a set of waves up the page.
-     The waves are contour lines of "travel time from the circle", worked out on a grid with the
-     logo as a solid rock, so they wrap round it and close in behind. Five styles, random each time. */
-  const STYLES = [
-    { rings: 4, gap: 34, amp: 16, freq: 1.0, lobes: 0, width: 1.3 },   // long swell
-    { rings: 7, gap: 15, amp: 7, freq: 2.6, lobes: 0, width: 1 },      // tight chop
-    { rings: 3, gap: 44, amp: 10, freq: 0.7, lobes: 5, width: 1.6 },   // scalloped
-    { rings: 5, gap: 24, amp: 26, freq: 0.55, lobes: 2, width: 1.2 },  // lopsided surge
-    { rings: 6, gap: 20, amp: 20, freq: 1.7, lobes: 3, width: 0.9 }    // broken water
-  ];
-  function ripples() {
-    const gate = $(".gate"), cv = $(".gate-waves"), logo = $(".gate-mark .logo"), dot = $(".gate-dot");
-    if (!cv || reduce) return null;
-    const ctx = cv.getContext("2d"), SPEED = 0.21;
-    const EDGES = [, [3, 0], [0, 1], [3, 1], [1, 2], [3, 0, 1, 2], [0, 2], [3, 2], [2, 3], [0, 2], [0, 1, 2, 3], [1, 2], [1, 3], [0, 1], [3, 0]];
-    let waves = [], raf = 0, timer = 0, first = 0, last = -1, W = 0, H = 0, dpr = 1, h = 8, nx = 0, ny = 0, D, F, sx = 0, sy = 0, reach = 0;
+  /* Intro screen: project images fall down the page, tumbling as they go, with speed lines
+     drawn behind them. Click one to open that project. Move the cursor to the bottom edge
+     (or scroll) to enter the home page. */
+  function intro() {
+    const gate = $(".gate"), cv = $(".gate-fx"), layer = $(".gate-fall");
+    if (!gate || reduce) return null;
+    const ctx = cv.getContext("2d"), small = () => innerWidth <= 820;
+    let items = [], raf = 0, prev = 0, next = 0, order = [], W = 0, H = 0, dpr = 1, entered = 0;
+    const rnd = (a, b) => a + Math.random() * (b - a);
+    const streaks = Array.from({ length: 46 }, () => ({ x: Math.random(), y: Math.random(), len: rnd(40, 220), v: rnd(900, 2100), a: rnd(0.05, 0.2), g: Math.random() < 0.15 }));
+    const size = () => { dpr = Math.min(devicePixelRatio || 1, 2); W = gate.clientWidth; H = gate.clientHeight; cv.width = W * dpr; cv.height = H * dpr; };
 
-    // Travel-time field from the circle, flowing round the logo (fast sweeping).
-    function field() {
-      dpr = Math.min(devicePixelRatio || 1, 2); W = gate.clientWidth; H = gate.clientHeight;
-      cv.width = W * dpr; cv.height = H * dpr;
-      h = Math.max(6, Math.max(W, H) / 190); nx = Math.ceil(W / h) + 2; ny = Math.ceil(H / h) + 2;
-      D = new Float32Array(nx * ny).fill(Infinity); F = new Float32Array(nx * ny);
-      const g = gate.getBoundingClientRect(), l = logo.getBoundingClientRect(), d = dot.getBoundingClientRect();
-      const lx = l.left - g.left, ly = l.top - g.top, pad = Math.max(12, l.height * 0.14);
-      // the rock: the two lines of the logo, with rounded padding
-      const boxes = [[lx, ly, lx + l.width, ly + l.height * 0.54], [lx + l.width * 0.32, ly + l.height * 0.5, lx + l.width * 0.69, ly + l.height]];
-      const rock = new Uint8Array(nx * ny);
-      for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
-        const x = i * h, y = j * h;
-        for (const [x0, y0, x1, y1] of boxes) if (Math.hypot(Math.max(x0 - x, 0, x - x1), Math.max(y0 - y, 0, y - y1)) < pad) rock[j * nx + i] = 1;
-      }
-      sx = d.left - g.left + d.width / 2; sy = d.top - g.top + d.height / 2;
-      const si = Math.round(sx / h), sj = Math.round(sy / h);
-      for (let j = sj - 1; j <= sj + 1; j++) for (let i = si - 1; i <= si + 1; i++) if (i >= 0 && j >= 0 && i < nx && j < ny) D[j * nx + i] = Math.hypot(i * h - sx, j * h - sy);
-      for (let pass = 0; pass < 12; pass++) {
-        const fx = pass & 1, fy = pass & 2;
-        for (let jj = 0; jj < ny; jj++) for (let ii = 0; ii < nx; ii++) {
-          const i = fx ? nx - 1 - ii : ii, j = fy ? ny - 1 - jj : jj, q = j * nx + i;
-          if (rock[q]) continue;
-          const a = Math.min(i > 0 ? D[q - 1] : Infinity, i < nx - 1 ? D[q + 1] : Infinity);
-          const b = Math.min(j > 0 ? D[q - nx] : Infinity, j < ny - 1 ? D[q + nx] : Infinity);
-          const lo = Math.min(a, b), hi = Math.max(a, b);
-          if (lo === Infinity) continue;
-          const v = hi - lo >= h ? lo + h : (a + b + Math.sqrt(2 * h * h - (a - b) * (a - b))) / 2;
-          if (v < D[q]) D[q] = v;
-        }
-      }
-      reach = Math.min(Math.hypot(W / 2, H) * 0.78, 1100);
+    function spawn() {
+      if (!order.length) order = S.projects.map((_, i) => i).sort(() => Math.random() - 0.5);
+      const p = S.projects[order.pop()], w = small() ? rnd(96, 150) : rnd(170, 290);
+      const el = document.createElement("a");
+      el.className = "faller"; el.href = link(p); el.setAttribute("aria-label", p.title); el.style.width = w + "px";
+      el.innerHTML = `<img src="${esc(p.hero)}" alt="" draggable="false">`;
+      el.addEventListener("pointerdown", (e) => { e.preventDefault(); instant = true; location.hash = link(p); });
+      el.addEventListener("click", (e) => e.preventDefault());
+      layer.appendChild(el);
+      items.push({ el, w, x: rnd(0.04, 0.96) * (W - w), y: -w * 1.6, v: H * rnd(0.5, 0.85), drift: rnd(-40, 40),
+        ax: rnd(25, 55), ay: rnd(35, 65), az: rnd(6, 22), wx: rnd(1.2, 2.6), wy: rnd(1.4, 3), wz: rnd(0.5, 1.2), ph: rnd(0, 6.28), t: 0 });
     }
 
-    const fire = () => {
-      if (scrollY > innerHeight * 0.4 || document.hidden) return;
-      if (cv.width !== Math.round(gate.clientWidth * dpr) || cv.height !== Math.round(gate.clientHeight * dpr)) field();
-      let s; do { s = Math.floor(Math.random() * STYLES.length); } while (s === last);
-      last = s;
-      const R = () => Math.random() * 6.283;
-      waves.push({ t: performance.now(), st: STYLES[s], p: [R(), R(), R(), R(), R(), R()], lop: 0.6 + Math.random() * 0.8 });
-      dot.classList.remove("ping"); void dot.offsetWidth; dot.classList.add("ping");
-      if (!raf) raf = requestAnimationFrame(draw);
+    function frame(now) {
+      raf = requestAnimationFrame(frame);
+      const dt = Math.min(0.05, (now - prev) / 1000 || 0); prev = now;
+      if (scrollY > innerHeight * 0.9) return;
+      if (cv.width !== Math.round(gate.clientWidth * dpr) || cv.height !== Math.round(gate.clientHeight * dpr)) size();
+      if (now > next && items.length < 7) { spawn(); next = now + rnd(330, 620); }
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H); ctx.lineCap = "round";
+      // background: fine lines streaming down
+      for (const s of streaks) {
+        s.y += (s.v * dt) / H; if (s.y * H - s.len > H) { s.y = -0.05; s.x = Math.random(); }
+        const x = s.x * W, y = s.y * H, gr = ctx.createLinearGradient(0, y - s.len, 0, y);
+        gr.addColorStop(0, "rgba(0,0,0,0)"); gr.addColorStop(1, s.g ? `rgba(9,88,56,${s.a * 2.2})` : `rgba(0,0,0,${s.a})`);
+        ctx.strokeStyle = gr; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x, y - s.len); ctx.lineTo(x, y); ctx.stroke();
+      }
+      items = items.filter((it) => {
+        it.t += dt; it.y += it.v * dt; it.x += it.drift * dt;
+        if (it.y > H + it.w) { it.el.remove(); return false; }
+        const rx = it.ax * Math.sin(it.t * it.wx + it.ph), ry = it.ay * Math.sin(it.t * it.wy + it.ph * 1.7), rz = it.az * Math.sin(it.t * it.wz + it.ph * 0.6);
+        it.el.style.transform = `translate3d(${it.x}px, ${it.y}px, 0) perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg)`;
+        // speed lines and fading echoes trailing each image
+        const hgt = it.el.offsetHeight || it.w, cx = it.x + it.w / 2, cy = it.y + hgt / 2, squash = Math.abs(Math.cos((ry * Math.PI) / 180)), tail = it.v * 0.42;
+        for (let k = 0; k < 6; k++) {
+          const lx = cx + (k / 5 - 0.5) * it.w * squash * 0.9, top = it.y - tail * (0.55 + 0.45 * Math.sin(k * 2.4 + it.ph));
+          const gr = ctx.createLinearGradient(0, top, 0, it.y + hgt * 0.3);
+          gr.addColorStop(0, "rgba(0,0,0,0)"); gr.addColorStop(1, k === 2 ? "rgba(9,88,56,.75)" : "rgba(0,0,0,.34)");
+          ctx.strokeStyle = gr; ctx.lineWidth = k === 2 ? 1.6 : 1; ctx.beginPath(); ctx.moveTo(lx, top); ctx.lineTo(lx, it.y + hgt * 0.3); ctx.stroke();
+        }
+        for (let k = 1; k <= 3; k++) {
+          ctx.save(); ctx.translate(cx, cy - k * it.v * 0.07); ctx.rotate((rz * Math.PI) / 180); ctx.scale(squash, Math.abs(Math.cos((rx * Math.PI) / 180)));
+          ctx.strokeStyle = `rgba(0,0,0,${0.2 - k * 0.055})`; ctx.lineWidth = 1; ctx.strokeRect(-it.w / 2, -hgt / 2, it.w, hgt); ctx.restore();
+        }
+        return true;
+      });
+    }
+    // cursor reaching the bottom edge enters the home page
+    const edge = (e) => {
+      if (scrollY > 10 || e.clientY < innerHeight - 26 || e.movementY <= 0 || performance.now() - entered < 1500) return;
+      entered = performance.now(); scrollTo({ top: innerHeight, behavior: "smooth" });
     };
-    const arm = () => { clearInterval(timer); timer = setInterval(fire, 5000); };
-
-    function draw(now) {
-      raf = 0;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H); ctx.lineCap = "round"; ctx.lineJoin = "round";
-      waves = waves.filter((w) => (now - w.t) * SPEED - w.st.rings * w.st.gap < reach);
-      for (const w of waves) {
-        const { st, p } = w, age = (now - w.t) / 1000, lead = (now - w.t) * SPEED;
-        const k1 = (st.freq * 6.283) / 420, k2 = k1 * 1.9, k3 = k1 * 0.47;
-        // bend the travel-time field so the fronts come out uneven, and keep them shifting as they move
-        for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
-          const q = j * nx + i, d0 = D[q];
-          if (d0 === Infinity) { F[q] = Infinity; continue; }
-          const x = i * h, y = j * h, grow = Math.min(1, d0 / 160);
-          let n = Math.sin(x * k1 + p[0] + age * 0.7) * Math.cos(y * k1 * 1.3 + p[1]) + 0.5 * Math.sin((x + y) * k2 + p[2] - age) + 0.6 * Math.cos((x - y * 0.6) * k3 + p[3]);
-          if (st.lobes) n += w.lop * Math.sin(Math.atan2(y - sy, x - sx) * st.lobes + p[4] + age * 0.4);
-          F[q] = d0 + n * st.amp * grow;
-        }
-        for (let r = 0; r < st.rings; r++) {
-          const L = lead - r * st.gap * (1 + 0.35 * Math.sin(p[5] + r * 1.7));
-          if (L < 10 || L > reach) continue;
-          const fade = 1 - L / reach, al = 0.95 * Math.pow(fade, 0.8) * (1 - (r / st.rings) * 0.5) * Math.min(1, L / 60);
-          ctx.strokeStyle = `rgba(0,0,0,${al.toFixed(3)})`; ctx.lineWidth = st.width * (1 + 0.5 * Math.sin(p[r % 6] + r)); ctx.beginPath();
-          for (let j = 0; j < ny - 1; j++) for (let i = 0; i < nx - 1; i++) {
-            const q = j * nx + i, a = F[q], b = F[q + 1], c = F[q + nx + 1], d = F[q + nx];
-            const idx = (a > L ? 1 : 0) | (b > L ? 2 : 0) | (c > L ? 4 : 0) | (d > L ? 8 : 0);
-            if (!idx || idx === 15 || a + b + c + d === Infinity) continue;
-            const x = i * h, y = j * h, e = EDGES[idx];
-            for (let s = 0; s < e.length; s += 2) for (let m = 0; m < 2; m++) {
-              const ed = e[s + m];
-              const px = ed === 0 ? x + (h * (L - a)) / (b - a) : ed === 1 ? x + h : ed === 2 ? x + (h * (L - d)) / (c - d) : x;
-              const py = ed === 0 ? y : ed === 1 ? y + (h * (L - b)) / (c - b) : ed === 2 ? y + h : y + (h * (L - a)) / (d - a);
-              m ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
-            }
-          }
-          ctx.stroke();
-        }
-      }
-      if (waves.length) raf = requestAnimationFrame(draw);
-    }
-    field(); arm(); first = setTimeout(fire, 1500);
-    return { arm, stop: () => { clearInterval(timer); clearTimeout(first); cancelAnimationFrame(raf); } };
+    gate.addEventListener("mousemove", edge);
+    size(); raf = requestAnimationFrame(frame);
+    return { stop: () => { cancelAnimationFrame(raf); gate.removeEventListener("mousemove", edge); } };
   }
 
   const queue = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
-  addEventListener("scroll", () => { queue(); live.waves && live.waves.arm(); }, { passive: true });
+  addEventListener("scroll", queue, { passive: true });
   addEventListener("resize", queue);
   addEventListener("mousemove", (e) => {
     mx = e.clientX; my = e.clientY;
