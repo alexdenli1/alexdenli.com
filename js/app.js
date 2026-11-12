@@ -20,28 +20,29 @@
 
   // Scatter pattern for the home page. New projects drop into the next slot automatically.
   const SLOTS = [
-    { x: 5, w: 40, s: .07 }, { x: 50, w: 28, s: -.06 }, { x: 20, w: 32, s: .11 }, { x: 52, w: 26, s: -.09 },
-    { x: 4, w: 28, s: .05 }, { x: 30, w: 42, s: -.05 }, { x: 12, w: 26, s: .1 }, { x: 44, w: 32, s: -.07 }
+    { x: 4, w: 54, s: .06 }, { x: 30, w: 46, s: -.05 }, { x: 8, w: 50, s: .08 }, { x: 34, w: 44, s: -.07 },
+    { x: 4, w: 46, s: .05 }, { x: 26, w: 54, s: -.05 }, { x: 12, w: 48, s: .07 }
   ];
+  const ZAP = `<svg class="zap" aria-hidden="true"><rect width="100%" height="100%" pathLength="1"/><rect width="100%" height="100%" pathLength="1"/></svg>`;
 
   function home() {
-    const n = S.projects.length, step = 52;
+    const n = S.projects.length, step = 84;
     const pieces = S.projects.map((p, i) => {
       const t = SLOTS[i % SLOTS.length];
       return `<a class="piece${p.hidden ? " lost" : ""}${found.has(p.slug) ? " got" : ""}" href="${link(p)}" data-slug="${esc(p.slug)}"
-        data-title="${esc(p.title)}" data-speed="${t.s}" data-cursor style="left:${t.x}%;top:${28 + i * step}vh;width:${t.w}vw">
-        <span class="piece-in"><img src="${esc(p.hero)}" alt="${esc(p.title)}" loading="${i < 2 ? "eager" : "lazy"}"></span>
+        data-title="${esc(p.title)}" data-speed="${t.s}" style="left:${t.x}%;top:${28 + i * step}vh;width:${t.w}vw">
+        <span class="piece-in"><img src="${esc(p.hero)}" alt="${esc(p.title)}" loading="${i < 2 ? "eager" : "lazy"}">${ZAP}</span>
         <span class="piece-cap">${esc(p.title)}<small>${esc(cat(p.category).label)}, ${esc(p.year)}</small></span></a>`;
     }).join("");
     const index = S.projects.map((p) => `<li><a href="${link(p)}" data-slug="${esc(p.slug)}" class="${p.hidden ? "lost" : ""}${found.has(p.slug) ? " got" : ""}">
-      <b>${p.hidden && !found.has(p.slug) ? "·····" : esc(p.title)}</b><small>${esc(p.year)}</small></a></li>`).join("");
+      <b>${p.hidden && !found.has(p.slug) ? "·····" : esc(p.title)}</b></a></li>`).join("");
     return {
       title: "", label: "Back home", scroll: seenGate ? innerHeight : 0,
       html: `<section class="gate" aria-label="Introduction"><h1 class="gate-mark"><svg class="logo" viewBox="0 0 64.91 16.89" role="img" aria-label="Alex Denli Archive"><use href="#logo"/></svg></h1>
         <div class="gate-foot"><span>${esc(S.owner.role)}</span><span class="gate-hint"><i></i>Scroll to enter</span></div></section>
       <section class="field" style="height:${28 + n * step + 50}vh" aria-label="All work">
         <div class="field-title giant" aria-hidden="true"><span>Work</span></div>
-        <ol class="field-index"><p>${n} projects. Some are hidden, move around to find them.</p>${index}</ol>
+        <ol class="field-index">${index}</ol>
         ${pieces}
       </section>
       <section class="home-end"><p>${esc(S.owner.intro)}</p>
@@ -58,7 +59,7 @@
     const c = S.categories.find((x) => x.id === id);
     if (!c) return null;
     const list = S.projects.filter((p) => p.category === id);
-    const rows = list.map((p) => `<a class="row" href="${link(p)}" data-cursor><span class="row-img"><img src="${esc(p.hero)}" alt="" loading="lazy"></span>
+    const rows = list.map((p) => `<a class="row" href="${link(p)}" ><span class="row-img"><img src="${esc(p.hero)}" alt="" loading="lazy"></span>
       <span class="row-txt"><h2>${esc(p.title)}</h2><span class="small">${esc(p.summary)} ${esc(p.year)}.</span></span></a>`).join("");
     return { title: c.label, label: c.label, html: `<div class="page"><header class="page-head"><h1 class="giant">${esc(c.label)}</h1>
       <p class="small">${list.length} project${list.length === 1 ? "" : "s"}</p>${cats(id)}</header>
@@ -85,7 +86,7 @@
         <h1 class="giant">${esc(p.title)}</h1><p class="p-sum">${esc(p.summary)}</p></header>
       <div class="p-hero mask"><img src="${esc(p.hero)}" alt="${esc(p.title)}"></div>
       <div class="blocks">${(p.blocks || []).map((b) => (BLOCK[b.type] ? BLOCK[b.type](b) : "")).join("")}</div>
-      <a class="p-next" href="${link(next)}" data-cursor><small>Next project</small><span class="giant">${esc(next.title)}</span><img src="${esc(next.hero)}" alt=""></a>
+      <a class="p-next" href="${link(next)}" ><small>Next project</small><span class="giant">${esc(next.title)}</span><img src="${esc(next.hero)}" alt=""></a>
       <nav class="p-exits" aria-label="Where next"><a class="ul" href="#/">Back home</a><a class="ul" href="#/work/${esc(c.id)}">More ${esc(c.label.toLowerCase())}</a><a class="ul" href="#/archive">Archive</a></nav>${foot()}</article>` };
   }
 
@@ -98,7 +99,7 @@
         ${p ? `<p class="small" style="margin-top:.5rem"><a class="ul" href="${link(p)}">See ${esc(p.title)}</a></p>` : ""}</div>${e.image ? `<img src="${esc(e.image)}" alt="" loading="lazy">` : "<span></span>"}</li>`;
     }).join("");
     return { title: "Projects", label: "Projects", html: `<div class="page"><header class="page-head"><h1 class="giant">Projects</h1><p class="small">What I am working on now, and a running log of progress.</p>${cats()}</header>
-      <h2 class="sub">Current projects</h2><div class="current">${cur.map((p) => `<a href="${link(p)}" data-cursor><img src="${esc(p.hero)}" alt="" loading="lazy"><b>${esc(p.title)}</b><span class="small">${esc(cat(p.category).label)}</span></a>`).join("")}</div>
+      <h2 class="sub">Current projects</h2><div class="current">${cur.map((p) => `<a href="${link(p)}" ><img src="${esc(p.hero)}" alt="" loading="lazy"><b>${esc(p.title)}</b><span class="small">${esc(cat(p.category).label)}</span></a>`).join("")}</div>
       <h2 class="sub">Log</h2><ol class="log">${log}</ol>${foot()}</div>` };
   }
 
@@ -144,7 +145,7 @@
       update();
       if (!first) view.focus({ preventScroll: true });
     };
-    cursor.classList.remove("big"); peek.classList.remove("on");
+    peek.classList.remove("on");
     if (first || reduce) return swap();
     curtainLabel.textContent = page.label;
     curtain.className = "curtain cover";
@@ -178,10 +179,6 @@
       a.addEventListener("blur", () => spot(a.dataset.slug, false));
     });
     $$("[data-top]").forEach((a) => a.addEventListener("click", (e) => { e.preventDefault(); scrollTo({ top: live.home ? innerHeight : 0, behavior: reduce ? "auto" : "smooth" }); }));
-    $$("[data-cursor]").forEach((a) => {
-      a.addEventListener("mouseenter", () => cursor.classList.add("big"));
-      a.addEventListener("mouseleave", () => cursor.classList.remove("big"));
-    });
     $$("[data-peek]").forEach((a) => {
       a.addEventListener("mouseenter", () => { peek.src = a.dataset.peek; peek.classList.add("on"); });
       a.addEventListener("mouseleave", () => peek.classList.remove("on"));

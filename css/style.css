@@ -7,7 +7,7 @@
 }
 :root {
   --bg: #000000; --fg: #EEE9E3; --panel: #EEE9E3; --accent: #095838;
-  --muted: #C1C1CB; --line: rgba(238, 233, 227, .2);
+  --muted: #C1C1CB; --zap: #B4B4FF; --zap-glow: #6E6EFF; --line: rgba(238, 233, 227, .2);
   --nav-h: 4.25rem;
   --pad: clamp(1rem, 3vw, 2.75rem);
   --ease: cubic-bezier(.7, 0, .2, 1);
@@ -87,18 +87,22 @@ main:focus { outline: none; }
 .field-title.on { color: rgba(238, 233, 227, .95); }
 .field-index {
   position: sticky; top: calc(var(--nav-h) + 4vh); z-index: 3; height: 0; margin-left: auto;
-  width: 13.5rem; margin-right: var(--pad); font-size: .9375rem;
+  width: fit-content; margin-right: var(--pad); font-size: .9375rem; text-align: right;
 }
-.field-index p { color: var(--muted); padding-bottom: .5rem; border-bottom: 1px solid var(--line); margin-bottom: .5rem; }
-.field-index a { display: flex; justify-content: space-between; gap: 1rem; padding: .16rem 0; }
+.field-index a { display: block; padding: .16rem 0; }
 .field-index a:hover, .field-index a.on { font-weight: 700; }
-.field-index small { color: var(--muted); font-size: inherit; font-weight: 400; }
-.field-index a.lost:not(.got) b { font-weight: inherit; letter-spacing: .3em; color: var(--muted); }
 .field-index b { font-weight: inherit; }
 
 .piece { position: absolute; z-index: 1; display: block; }
-.piece-in { display: block; will-change: transform; }
-.piece img { width: 100%; transition: opacity .5s, clip-path .9s var(--ease), filter .4s; }
+.piece-in { display: inline-block; position: relative; will-change: transform; }
+/* Hover: a quick electric outline drawn round the image */
+.zap { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; fill: none; filter: url(#zap) drop-shadow(0 0 4px var(--zap-glow)) drop-shadow(0 0 14px var(--zap-glow)); }
+.zap rect { stroke: var(--zap); stroke-width: 2.5; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.zap rect + rect { stroke: #fff; stroke-width: 1; }
+.piece:hover .zap rect, .piece:focus-visible .zap rect, .piece.on .zap rect { stroke-dashoffset: 0; transition: stroke-dashoffset .38s cubic-bezier(.3, 0, .1, 1); }
+.piece:hover .zap, .piece.on .zap { animation: flicker .9s steps(1) infinite; }
+@keyframes flicker { 0%, 100% { opacity: 1; } 8% { opacity: .35; } 12% { opacity: 1; } 55% { opacity: .7; } 60% { opacity: 1; } }
+.piece img { width: auto; max-width: 100%; max-height: 84vh; transition: opacity .5s, clip-path .9s var(--ease), filter .4s; }
 .piece-cap { display: none; padding-top: .5rem; font-size: .9375rem; }
 .piece-cap small { color: var(--muted); font-size: inherit; display: block; }
 .field.dim .piece:not(.on) img { opacity: .22; filter: grayscale(1); }
@@ -241,12 +245,8 @@ main:focus { outline: none; }
 .curtain.cover { transform: none; transition: transform .45s var(--ease); pointer-events: auto; }
 .curtain.leave { transform: translateY(-101%); transition: transform .45s var(--ease); }
 
-.cursor { position: fixed; left: 0; top: 0; z-index: 90; width: 5.25rem; height: 5.25rem; margin: -2.625rem 0 0 -2.625rem; color: var(--fg); display: none; place-items: center; font-size: .9375rem; font-weight: 700; pointer-events: none; }
-.cursor i { position: absolute; inset: 0; border-radius: 50%; background: var(--accent); transform: scale(.16); transition: transform .3s var(--ease); }
-.cursor.big i { transform: none; }
-.cursor span { position: relative; opacity: 0; transition: opacity .2s; }
-.cursor.big span { opacity: 1; }
-@media (hover: hover) and (pointer: fine) { .cursor { display: grid; } }
+.cursor { position: fixed; left: 0; top: 0; z-index: 90; width: .8rem; height: .8rem; margin: -.4rem 0 0 -.4rem; border-radius: 50%; background: var(--accent); display: none; pointer-events: none; }
+@media (hover: hover) and (pointer: fine) { .cursor { display: block; } }
 
 /* ---------- Small screens ---------- */
 @media (max-width: 820px) {
@@ -260,6 +260,8 @@ main:focus { outline: none; }
   .field { height: auto !important; padding: 12vh var(--pad) 0; display: grid; gap: 14vh; }
   .field-title, .field-index { display: none; }
   .piece { position: static; width: 86% !important; }
+  .piece img { max-height: none; width: 100%; }
+  .zap { display: none; }
   .piece:nth-child(3n) { width: 62% !important; justify-self: end; }
   .piece:nth-child(3n + 1) { width: 74% !important; justify-self: center; }
   .piece-cap { display: block; }

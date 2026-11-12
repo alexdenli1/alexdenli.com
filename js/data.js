@@ -96,7 +96,7 @@ window.SITE = {
     },
     {
       slug: "rescue", title: "Rescue", category: "ux-ui",
-      year: 2023, status: "archive", hidden: true, hero: PH(9),
+      year: 2023, status: "archive", hero: PH(9),
       summary: "Placeholder: a children's app, designed as a university UX/UI project.",
       blocks: [
         { type: "statement", text: "Placeholder: what Rescue is and who it is for." },
@@ -120,7 +120,7 @@ window.SITE = {
     },
     {
       slug: "brand-identity", title: "Brand Identity", category: "graphic-design",
-      year: 2025, status: "archive", hidden: true, hero: PH(13),
+      year: 2025, status: "archive", hero: PH(13),
       summary: "Placeholder: logos, colour and type systems.",
       blocks: [
         { type: "statement", text: "Placeholder: the idea behind the identity." },
