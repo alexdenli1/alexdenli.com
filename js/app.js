@@ -37,7 +37,7 @@
       <b>${p.hidden && !found.has(p.slug) ? "·····" : esc(p.title)}</b><small>${esc(p.year)}</small></a></li>`).join("");
     return {
       title: "", label: "Back home", scroll: seenGate ? innerHeight : 0,
-      html: `<section class="gate" aria-label="Introduction"><h1 class="gate-mark">Alex<br>Denli</h1>
+      html: `<section class="gate" aria-label="Introduction"><h1 class="gate-mark"><svg class="logo" viewBox="0 0 64.91 16.89" role="img" aria-label="Alex Denli Archive"><use href="#logo"/></svg></h1>
         <div class="gate-foot"><span>${esc(S.owner.role)}</span><span class="gate-hint"><i></i>Scroll to enter</span></div></section>
       <section class="field" style="height:${28 + n * step + 50}vh" aria-label="All work">
         <div class="field-title giant" aria-hidden="true"><span>Work</span></div>
@@ -45,7 +45,7 @@
         ${pieces}
       </section>
       <section class="home-end"><p>${esc(S.owner.intro)}</p>
-        <a class="giant" href="#/now">Now</a><a class="giant" href="#/archive">Archive</a><a class="giant" href="#/contact">Contact</a></section>${foot()}`,
+        <a class="giant" href="#/projects">Projects</a><a class="giant" href="#/archive">Archive</a><a class="giant" href="#/contact">Contact</a></section>${foot()}`,
       after: () => { seenGate = true; }
     };
   }
@@ -93,7 +93,7 @@
       return `<li><time datetime="${esc(e.date)}">${fmt(e.date)}</time><div><h3>${esc(e.title)}</h3><p>${esc(e.note)}</p>
         ${p ? `<p class="small" style="margin-top:.5rem"><a class="ul" href="${link(p)}">See ${esc(p.title)}</a></p>` : ""}</div>${e.image ? `<img src="${esc(e.image)}" alt="" loading="lazy">` : "<span></span>"}</li>`;
     }).join("");
-    return { title: "Now", label: "Now", html: `<div class="page"><header class="page-head"><h1 class="giant">Now</h1><p class="small">What I am working on, and a running log of progress.</p></header>
+    return { title: "Projects", label: "Projects", html: `<div class="page"><header class="page-head"><h1 class="giant">Projects</h1><p class="small">What I am working on now, and a running log of progress.</p></header>
       <h2 class="sub">Current projects</h2><div class="current">${cur.map((p) => `<a href="${link(p)}" data-cursor><img src="${esc(p.hero)}" alt="" loading="lazy"><b>${esc(p.title)}</b><span class="small">${esc(cat(p.category).label)}</span></a>`).join("")}</div>
       <h2 class="sub">Log</h2><ol class="log">${log}</ol>${foot()}</div>` };
   }
@@ -115,7 +115,7 @@
   const lost = () => ({ title: "Out of bounds", label: "Out of bounds", bare: true, html: `<div class="lost-page"><h1 class="giant">Out of bounds</h1>
     <p>This page is not on the course. Take a drop and carry on from the clubhouse.</p><a class="ul" href="#/">Back home</a></div>` });
 
-  const PAGES = { home, work, project, now, archive, contact };
+  const PAGES = { home, work, project, projects: now, archive, contact };
   function resolve() {
     const [a = "", b] = location.hash.replace(/^#\/?/, "").split("/");
     const key = a || "home";
@@ -237,14 +237,14 @@
   addEventListener("resize", queue);
   addEventListener("mousemove", (e) => {
     mx = e.clientX; my = e.clientY;
-    cursor.style.transform = `translate3d(${mx}px, ${my}px, 0) scale(${cursor.classList.contains("big") ? 1 : .16})`;
+    cursor.style.transform = `translate3d(${mx}px, ${my}px, 0)`;
     peek.style.transform = `translate3d(${Math.min(mx + 28, innerWidth - 330)}px, ${my - 110}px, 0)`;
     queue();
   }, { passive: true });
 
   /* ---------- Start ---------- */
   $("#nav-cats").innerHTML = S.categories.map((c) => `<a href="#/work/${esc(c.id)}" data-cat="${esc(c.id)}">${esc(c.label)}</a>`).join("");
-  cursor.style.transform = "translate3d(-200px,-200px,0) scale(.16)";
+  cursor.style.transform = "translate3d(-200px,-200px,0)";
   addEventListener("hashchange", () => show(false));
   show(true);
 })();

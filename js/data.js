@@ -13,7 +13,7 @@
      title     shown everywhere
      category  one of the ids in "categories" below
      year      e.g. 2026
-     status    "current" (shows on Now) or "archive" (shows on Archive)
+     status    "current" (shows on Projects) or "archive" (shows on Archive)
      hidden    true = on the home page visitors have to find it with the cursor
      hero      main image
      summary   one or two short sentences
