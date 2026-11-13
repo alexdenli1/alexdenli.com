@@ -136,7 +136,7 @@ main:focus { outline: none; }
 }
 .field-index {
   position: sticky; top: 50vh; z-index: 4; height: 0; margin-left: auto;
-  width: fit-content; margin-right: var(--pad); text-align: right;
+  width: fit-content; max-width: 13vw; margin-right: var(--pad); text-align: right;
 }
 .field-index ol { transition: transform .45s var(--ease); }
 .field-index a { display: block; padding: .2rem 0; font-size: .9375rem; line-height: 1.15; opacity: .3; transition: opacity .35s, font-size .35s var(--ease); }

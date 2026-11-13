@@ -325,7 +325,7 @@
     const secR = live.secs && live.secs.length ? live.secs.map((s) => s.getBoundingClientRect()) : null;
     const scrR = (live.scrubs || []).map((el) => el.getBoundingClientRect());
     const maskR = reduce ? [] : (live.masks || []).map((im) => im.parentElement.getBoundingClientRect());
-    if (big && live.wheel && live.names && !live.nameOff) live.nameOff = live.names.map((a) => a.parentElement.offsetTop + a.parentElement.offsetHeight / 2);
+    if (big && live.wheel && live.names && !live.nameOff) live.nameOff = live.names.map((a) => a.parentElement.offsetTop + 19);
 
     // ---- writes ----
     if (live.mark) {
