@@ -96,7 +96,7 @@ window.SITE = {
     },
     {
       slug: "rescue", title: "Rescue", category: "ux-ui",
-      year: 2023, status: "archive", hero: PH(9),
+      year: 2023, status: "archive", hero: "images/rescue/hero.jpg",
       summary: "Placeholder: a children's app, designed as a university UX/UI project.",
       blocks: [
         { type: "statement", text: "Placeholder: what Rescue is and who it is for." },
@@ -153,7 +153,7 @@ window.SITE = {
      "project" is optional: give a project slug and the image links to that project's page. */
   gallery: [
     { src: "images/xfly/hero.jpg", project: "xfly" }, { src: "images/adverts/hero.jpg", project: "adverts" }, { src: PH(9), project: "signature-logo" },
-    { src: PH(4), project: "ball-cabinet" }, { src: PH(10), project: "rescue" }, { src: PH(13), project: "brand-identity" },
+    { src: PH(4), project: "ball-cabinet" }, { src: "images/rescue/hero.jpg", project: "rescue" }, { src: PH(13), project: "brand-identity" },
     { src: PH(5), project: "amazon" }, { src: PH(2), project: "adverts" }, { src: PH(3), project: "xfly" },
     { src: PH(14), project: "brand-identity" }
   ],
