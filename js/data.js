@@ -79,7 +79,7 @@ window.SITE = {
     },
     {
       slug: "adverts", title: "Adverts", category: "graphic-design",
-      year: "2022 – now", status: "current", hero: "images/adverts/hero.jpg",
+      year: "2025 – now", status: "current", hero: "images/adverts/hero.jpg",
       summary: "Magazine adverts for print and online, produced monthly.",
       blocks: [
         { type: "statement", text: "Placeholder: what makes a golf advert work on a crowded magazine page." },
