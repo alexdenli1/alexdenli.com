@@ -6,7 +6,7 @@
    ADD A PROJECT    copy one { ... } block inside "projects" and change it.
    ADD TO GALLERY   add one { src: "..." } to "gallery" (the strip at the bottom of the home page, first 10 shown).
    IMAGES           put files in /images/<project-name>/ and point "hero"
-                    and block "src" at them, e.g. "images/rescue/hero.jpg".
+                    and block "src" at them, e.g. "images/rescue/hero-1920.jpg".
 
    Project fields
      slug      short-name-with-dashes (used in the web address, must be unique)
@@ -105,7 +105,7 @@ window.SITE = {
     },
     {
       slug: "rescue", title: "Rescue", category: "ux-ui",
-      year: "2026 redevelopment", status: "archive", hero: "images/rescue/hero.jpg",
+      year: "2026 redevelopment", status: "archive", hero: "images/rescue/hero-1920.jpg",
       summary: "A children's app for learning about energy saving, designed at university and redone in 2026.",
       blocks: [
         
@@ -157,7 +157,7 @@ window.SITE = {
 
   gallery: [
     { src: "images/xfly/hero.jpg", project: "xfly" }, { src: "images/adverts/hero.jpg", project: "adverts" }, { src: "images/signature-logo/hero.jpg", project: "signature-logo" },
-    { src: PH(4), project: "ball-cabinet" }, { src: "images/rescue/hero.jpg", project: "rescue" }, { src: PH(13), project: "brand-identity" },
+    { src: PH(4), project: "ball-cabinet" }, { src: "images/rescue/hero-1920.jpg", project: "rescue" }, { src: PH(13), project: "brand-identity" },
     { src: PH(6), project: "signature-logo" }, { src: PH(2), project: "adverts" }, { src: PH(3), project: "xfly" },
     { src: PH(14), project: "brand-identity" }
   ],

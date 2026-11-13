@@ -138,10 +138,21 @@
       const key = list.find((p) => p.status === "current") || list[0];
       return list.length ? { c, list, key } : null;
     }).filter(Boolean);
-    return { title: "Projects", label: "Projects", html: `<div class="page proj-page">
+    const TABS = [{ id: "product-design", label: "Product" }, { id: "graphic-design", label: "Graphic" }, { id: "ux-ui", label: "UX/UI" }, { id: "e-commerce", label: "E-commerce" }];
+    return { title: "Projects", label: "Projects", after: () => {
+      const imgs = $$(".pbg img");
+      $$(".pj-tabs a").forEach((a) => {
+        const i = +a.dataset.i;
+        a.addEventListener("mouseenter", () => { if (imgs[i]) { imgs[i].classList.add("peek"); $(".pbg").classList.add("hov"); } });
+        a.addEventListener("mouseleave", () => { if (imgs[i]) { imgs[i].classList.remove("peek"); $(".pbg").classList.remove("hov"); } });
+        a.addEventListener("click", (e) => { const sec = $("#pc-" + a.dataset.id); if (sec) { e.preventDefault(); sec.scrollIntoView({ behavior: "smooth", block: "start" }); } });
+      });
+    }, html: `<div class="page proj-page">
       <div class="pbg" aria-hidden="true">${secs.map((s) => `<img src="${esc(s.key.hero)}" alt="">`).join("")}</div>
-      <header class="page-head"><h1 class="giant">Projects</h1><p class="small">All of the work, by category.</p></header>
-      ${secs.map((s) => `<section class="pcat">
+      <header class="pj-hero"><h1 class="giant">Projects</h1>
+        <nav class="pj-tabs" aria-label="Project categories">${TABS.map((t) => { const i = secs.findIndex((s) => s.c.id === t.id); return `<a href="#/work/${esc(t.id)}" data-i="${i}" data-id="${esc(t.id)}">${esc(t.label)}</a>`; }).join("")}</nav>
+      </header>
+      ${secs.map((s) => `<section class="pcat" id="pc-${esc(s.c.id)}">
         <h2><a class="giant" href="#/work/${esc(s.c.id)}">${esc(s.c.label)}</a></h2>
         <ol>${s.list.map((p) => `<li><a href="${link(p)}"><b>${esc(p.title)}</b><span class="small">${esc(p.year)}${p.status === "current" ? " — in progress" : ""}</span></a></li>`).join("")}</ol>
       </section>`).join("")}${foot()}</div>` };
