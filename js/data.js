@@ -87,7 +87,7 @@ window.SITE = {
     },
     {
       slug: "signature-logo", title: "Signature Logo", category: "graphic-design",
-      year: 2026, status: "current", hero: PH(3),
+      year: 2026, status: "current", hero: "images/signature-logo/hero.jpg",
       summary: "Placeholder: one line on the Signature Logo collection and the brochure.",
       blocks: [
         { type: "statement", text: "Placeholder: what the collection is and who it is for." },
@@ -166,7 +166,7 @@ window.SITE = {
   ],
 
   gallery: [
-    { src: "images/xfly/hero.jpg", project: "xfly" }, { src: "images/adverts/hero.jpg", project: "adverts" }, { src: PH(9), project: "signature-logo" },
+    { src: "images/xfly/hero.jpg", project: "xfly" }, { src: "images/adverts/hero.jpg", project: "adverts" }, { src: "images/signature-logo/hero.jpg", project: "signature-logo" },
     { src: PH(4), project: "ball-cabinet" }, { src: "images/rescue/hero.jpg", project: "rescue" }, { src: PH(13), project: "brand-identity" },
     { src: PH(5), project: "amazon" }, { src: PH(2), project: "adverts" }, { src: PH(3), project: "xfly" },
     { src: PH(14), project: "brand-identity" }
