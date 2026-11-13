@@ -114,7 +114,7 @@ window.SITE = {
     {
       slug: "ball-cabinet", title: "Ball Cabinet", category: "product-design",
       year: 2025, status: "archive", hero: PH(4),
-      summary: "Placeholder: one line on the ball cabinet.",
+      summary: "Redesigning a flat-pack golf ball cabinet for efficient shipping, logistics and storage, for a top-selling product.",
       blocks: [
         { type: "statement", text: "Placeholder: the problem the cabinet solves." },
         { type: "steps", items: [
