@@ -36,13 +36,14 @@ window.SITE = {
     role: "Product, graphic and e-commerce design",
     location: "London",
     email: "alexdenli200@gmail.com", // the address shown on the contact page and in the footer
-    intro: "I design golf products, the adverts that sell them and the online stores they sell through.",
+    intro: "Graphic and product designer with 3–4 years' experience, taking products from first concept to launch.",
+    photo: "images/placeholder/portrait.svg",  // your portrait for the contact page (about 800x1000, portrait)
     headline: "Creative Designer",                               // the big line at the top of the home page
     disciplines: ["Graphic", "Product", "UX/UI", "E-commerce"],  // the small line spread evenly beneath it
     collage: "images/collage/collage.jpg",  // 1920x1080 (or larger) collage of your work, frosted behind the headline
     about: [
-      "Placeholder: a short paragraph about who you are and the kind of work you do. Two or three sentences is plenty.",
-      "Placeholder: a second paragraph about how you work — from first sketch and supplier sample through to the advert, the listing and the sales figures."
+      "I work across product development, packaging, branding, marketing and Amazon e-commerce, from sketch and supplier sourcing through manufacturing, launch and promotion.",
+      "I balance creativity, user appeal and commercial results, using Adobe Creative Suite, product photography, video and email marketing to build products and brands people connect with."
     ],
     links: [
       { label: "LinkedIn", url: "#" },
