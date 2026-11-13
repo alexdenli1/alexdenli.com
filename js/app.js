@@ -41,6 +41,7 @@
           <span class="piece-line">${esc(p.line || p.summary || "")}</span></span></span></span></a>`;
     };
     const slides = S.projects.map(piece).join("");
+    const rows = S.projects.map((p, i) => piece(p, i).replace('loading="eager"', 'loading="lazy"')).join("");
     const index = S.projects.map((p) => `<li><a href="${link(p)}" data-slug="${esc(p.slug)}" class="${p.hidden ? "lost" : ""}${found.has(p.slug) ? " got" : ""}">
       <b>${p.hidden && !found.has(p.slug) ? "·····" : esc(p.title)}</b></a></li>`).join("");
     return {
@@ -73,6 +74,7 @@
           <h2 class="pintro-word">Projects</h2><canvas class="pintro-cover" aria-hidden="true"></canvas><div class="pintro-dark" aria-hidden="true"></div>
           ${slides}
         </div></section>
+        <section class="field" aria-label="Projects list">${rows}</section>
       </div>
       <section class="gallery" aria-label="Gallery of all work"><div class="gallery-pin">
         <h2 class="gallery-head">Let’s explore and discover more</h2>
@@ -201,7 +203,7 @@
       waves: key === "home" ? intro() : null,
       home: key === "home", mark: $(".gate-mark"), field: $(".work"), pintro: $(".pintro"), pword: $(".pintro-word"), pdark: $(".pintro-dark"), pcover: $(".pintro-cover"),
       pfirst: $(".pintro .piece"), pindex: $(".field-index"),
-      pieces: $$(".piece"), scrubs: $$("[data-scrub]"), masks: $$(".mask img"),
+      pieces: $$(".pintro .piece"), rows: $$(".field .piece"), scrubs: $$("[data-scrub]"), masks: $$(".mask img"),
       names: $$(".field-index a"), wheel: $(".field-index ol"), active: -1,
       gallery: $(".gallery"), track: $(".gallery-track"), run: 0,
       lead: $(".lead"), leadArt: $(".lead-art"), lens: $(".lead-lens"), lensImg: $(".lead-lens img"),
@@ -209,13 +211,13 @@
       secs: $$(".pcat"), bgs: $$(".pbg img"), bgOn: -1
     };
     const spot = (slug, on) => {
-      const el = live.pieces.find((p) => p.dataset.slug === slug);
+      const els = $$(".piece").filter((p) => p.dataset.slug === slug), el = els[0];
       if (!el) return;
       if (on && el.classList.contains("lost")) reveal(el);
-      el.classList.toggle("on", on); live.field.classList.toggle("dim", on);
+      els.forEach((e) => e.classList.toggle("on", on)); live.field.classList.toggle("dim", on);
       $$(".field-index a").forEach((a) => a.classList.toggle("on", on && a.dataset.slug === slug));
     };
-    live.pieces.forEach((el) => {
+    live.pieces.concat(live.rows).forEach((el) => {
       el.addEventListener("mouseenter", () => spot(el.dataset.slug, true));
       el.addEventListener("mouseleave", () => spot(el.dataset.slug, false));
       el.addEventListener("focus", () => reveal(el));
@@ -346,7 +348,7 @@
     // so a quick flick still plays smoothly.
     const clamp01 = (x) => Math.max(0, Math.min(1, x));
     let grow = 1;
-    if (introR && big && !reduce) {
+    if (introR && big && !reduce && !live.list) {
       const tt = clamp01(-introR.top / (1.15 * vh));
       if (live.pT === undefined || up) live.pT = tt;
       live.pT += (tt - live.pT) * 0.2;
@@ -366,10 +368,49 @@
       }
       live.pindex.style.opacity = up ? "1" : clamp01((grow - 0.35) / 0.4).toFixed(3);
     }
+    // Scrolling up through the projects shows them as a plain list you can scroll freely, instead of
+    // stepping back through each slide. Scrolling down plays the slide showcase. The two layouts have
+    // different heights, so each switch re-aims the scroll at the same project.
+    if (big && !reduce && live.rows && live.rows.length && introR) {
+      const N = live.pieces.length, wr = live.field.getBoundingClientRect();
+      const inWork = wr.top < vh && wr.bottom > 0;
+      if (!live.list && up && inWork && introR.top < vh * 0.9) {
+        const scrolled = -introR.top, sp = Math.max(0, (scrolled - 1.15 * vh) / (0.8 * vh));
+        const idx = introR.bottom < vh + 1 ? N - 1 : Math.min(N - 1, Math.max(0, Math.round(sp - 0.1)));
+        live.list = true; live.field.classList.add("listmode");
+        const r = live.rows[idx].getBoundingClientRect();
+        const to = scrollY + r.top + r.height / 2 - vh / 2;
+        scrollTo(0, Math.max(0, to)); lastY = scrollY; live.fix = 2; queue(); return;
+      }
+      if (live.list && !up) {
+        const fr = $(".field", live.field).getBoundingClientRect();
+        let idx = 0, best = 1e9;
+        live.rows.forEach((el, k) => { const r = el.getBoundingClientRect(), d = Math.abs(r.top + r.height / 2 - vh / 2); if (d < best) { best = d; idx = k; } });
+        const aboveList = fr.top > 0;
+        live.list = false; live.field.classList.remove("listmode");
+        live.pT = undefined; live.sS = undefined;
+        if (!aboveList) {
+          const pr = live.pintro.getBoundingClientRect();
+          scrollTo(0, Math.max(0, scrollY + pr.top + (1.15 + 0.8 * idx + 0.1) * vh));
+        }
+        lastY = scrollY; live.fix = 2; queue(); return;
+      }
+      if (live.list) {
+        // names list follows the row nearest the middle of the screen
+        let near = 0, best = 1e9;
+        live.rows.forEach((el, k) => { const r = el.getBoundingClientRect(), d = Math.abs(r.top + r.height / 2 - vh / 2); if (d < best) { best = d; near = k; } });
+        if (live.wheel && live.nameOff && near !== live.active) {
+          live.active = near;
+          live.names.forEach((a, i) => { a.classList.toggle("cur", i === near); a.classList.toggle("next", Math.abs(i - near) === 1); a.classList.toggle("past", i <= near); });
+          live.wheel.style.transform = `translateY(${-live.nameOff[near]}px)`;
+        }
+        live.pindex.style.opacity = "1";
+      }
+    }
     // Slides: every project sits in the same spot on the pinned stage. Scrolling hands over from one to the next:
     // the picture, the name and the line each fly off in their own direction while the next project's parts
     // fly in from the edges. Directions are drawn at random per page load.
-    if (big && live.pieces && live.pieces.length && introR) {
+    if (big && !live.list && live.pieces && live.pieces.length && introR) {
       const N = live.pieces.length, scrolled = Math.max(0, -introR.top);
       if (live.sS === undefined) live.sS = scrolled;
       live.sS = (reduce || up) ? scrolled : live.sS + (scrolled - live.sS) * 0.18;

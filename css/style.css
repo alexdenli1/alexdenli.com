@@ -112,6 +112,10 @@ main:focus { outline: none; }
 /* one tall pinned stage: the word, then each project in turn. 115vh for the intro, 80vh per project, 40vh to finish */
 .pintro { position: relative; height: calc(100vh + 115vh + (var(--n) - 1) * 80vh + 40vh); }
 .pintro-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: var(--bg); }
+.field { display: none; }
+.work.listmode .pintro { display: none; }
+.work.listmode .field { display: flex; flex-direction: column; gap: var(--gap); padding: 14vh 0 22vh; }
+.field .piece { position: relative; display: block; width: var(--pw); }
 .pintro-word {
   position: absolute; left: 50%; top: 50%; z-index: 1; margin: 0; pointer-events: none; transform-origin: 50% 50%;
   transform: translate(-50%, calc(-50% + var(--wty, 0px))) scale(1, var(--wsy, 1));
