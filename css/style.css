@@ -72,12 +72,35 @@ main:focus { outline: none; }
 }
 .gate-mark { align-self: center; justify-self: center; position: relative; width: min(52vw, 90vh); transform-origin: 50% 50%; will-change: transform, opacity; }
 .gate-mark .logo { width: 100%; height: auto; }
+/* paper grain and a soft vignette, so the creme isn't flat */
+.gate::before { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; transition: opacity .4s;
+  background:
+    radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(60, 45, 25, .13) 100%),
+    url("../images/texture/grain.png") 0 0 / 256px 256px,
+    url("../images/texture/mottle.png") 0 0 / 1400px 1400px; }
+.gate.disco::before { opacity: 0; }
+/* while magnifying: everything else falls into shade */
+.gate::after { content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none; opacity: 0; transition: opacity .45s;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, .1), rgba(0, 0, 0, .5)); }
+.gate.magnify::after { opacity: 1; }
+.gate.magnify { cursor: none; }
+.zoom { position: absolute; left: 0; top: 0; z-index: 4; transform-origin: 50% 50%; will-change: transform; cursor: none;
+  transition: transform .5s cubic-bezier(.16, 1, .3, 1); box-shadow: 0 2rem 4.5rem rgba(0, 0, 0, .4); }
+.zoom.out { transition: transform .3s cubic-bezier(.6, 0, .4, 1); }
+.zoom img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.lens { position: absolute; left: 0; top: 0; z-index: 5; width: 13.5rem; height: 13.5rem; border-radius: 50%; pointer-events: none;
+  opacity: 0; transform: translate3d(-999px, -999px, 0); transition: opacity .18s; background-color: #000; background-repeat: no-repeat;
+  box-shadow: 0 0 0 2px var(--panel), 0 0 0 6px rgba(0, 0, 0, .7), 0 1.4rem 3rem rgba(0, 0, 0, .5), inset 0 0 1.8rem rgba(0, 0, 0, .35); }
+.lens::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 30% 26%, rgba(255, 255, 255, .32), transparent 42%); }
+.lens.on { opacity: 1; }
 .gate-fx { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
 .gate-fall { position: absolute; inset: 0; z-index: 1; overflow: hidden; contain: strict; }
 .faller { position: absolute; left: 0; top: 0; display: block; visibility: hidden; will-change: transform; contain: layout style; cursor: pointer; touch-action: manipulation; }
 .faller-in { display: block; width: 100%; height: 100%; will-change: transform; box-shadow: 0 .9rem 1.4rem rgba(0, 0, 0, .22); }
 .faller canvas { display: block; width: 100%; height: 100%; pointer-events: none; }
 .gate-mark { z-index: 2; pointer-events: none; }
+/* a creme edge drawn into the logo: invisible on the creme, it keeps the letters readable over dark images passing behind */
+.gate:not(.disco) .gate-mark .logo { stroke: var(--panel); stroke-width: .26; stroke-linejoin: round; paint-order: stroke fill; }
 
 /* ---------- Home: disco mode (20-second catch game on the intro) ---------- */
 .btn { font: inherit; color: inherit; background: none; border: 1.5px solid currentColor; border-radius: 99px; padding: .6rem 1.3rem; cursor: pointer; }
