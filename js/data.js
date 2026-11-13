@@ -35,6 +35,8 @@ window.SITE = {
     location: "London",
     email: "alexdenli200@gmail.com", // the address shown on the contact page and in the footer
     intro: "I design golf products, the adverts that sell them and the online stores they sell through.",
+    headline: "Creative Designer",                               // the big line at the top of the home page
+    disciplines: ["Graphic", "Product", "UX/UI", "E-commerce"],  // the small line spread evenly beneath it
     about: [
       "Placeholder: a short paragraph about who you are and the kind of work you do. Two or three sentences is plenty.",
       "Placeholder: a second paragraph about how you work — from first sketch and supplier sample through to the advert, the listing and the sales figures."
@@ -151,6 +153,21 @@ window.SITE = {
   /* Gallery strip at the bottom of the home page: it slides to the left as the visitor scrolls.
      The first 10 are shown. List them from current and archived work, in the order they should appear.
      "project" is optional: give a project slug and the image links to that project's page. */
+  /* Brands and organisations you have worked with or for: the wheel on the home page (first 10 shown).
+     Logos look best as transparent PNG or SVG, in colour or white — they sit on black. */
+  brands: [
+    { name: "Brand 01", logo: "images/brands/placeholder-01.svg" },
+    { name: "Brand 02", logo: "images/brands/placeholder-02.svg" },
+    { name: "Brand 03", logo: "images/brands/placeholder-03.svg" },
+    { name: "Brand 04", logo: "images/brands/placeholder-04.svg" },
+    { name: "Brand 05", logo: "images/brands/placeholder-05.svg" },
+    { name: "Brand 06", logo: "images/brands/placeholder-06.svg" },
+    { name: "Brand 07", logo: "images/brands/placeholder-07.svg" },
+    { name: "Brand 08", logo: "images/brands/placeholder-08.svg" },
+    { name: "Brand 09", logo: "images/brands/placeholder-09.svg" },
+    { name: "Brand 10", logo: "images/brands/placeholder-10.svg" }
+  ],
+
   gallery: [
     { src: "images/xfly/hero.jpg", project: "xfly" }, { src: "images/adverts/hero.jpg", project: "adverts" }, { src: PH(9), project: "signature-logo" },
     { src: PH(4), project: "ball-cabinet" }, { src: "images/rescue/hero.jpg", project: "rescue" }, { src: PH(13), project: "brand-identity" },

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 140" width="320" height="140">
+<rect x="18" y="34" width="72" height="72" rx="16" fill="#F4A6C0"/>
+<path d="M38 70h32M54 54v32" stroke="#0b0b0b" stroke-width="8" stroke-linecap="round"/>
+<text x="108" y="82" font-family="Helvetica,Arial,sans-serif" font-size="40" font-weight="700" fill="#F4A6C0">Brand 10</text>
+<text x="110" y="108" font-family="Helvetica,Arial,sans-serif" font-size="15" letter-spacing="2" fill="#F4A6C0" fill-opacity=".75">PLACEHOLDER</text>
+</svg>

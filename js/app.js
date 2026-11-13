@@ -54,6 +54,16 @@
         <div class="disco-hud" hidden><span>Caught <b class="disco-score">0</b></span><span class="disco-time">20</span></div>
         <div class="disco-end" hidden><p>Time</p><p class="giant"><span class="disco-final">0</span> caught</p><p class="disco-of"></p>
           <div class="disco-acts"><button class="btn" type="button" data-again>Play again</button><button class="btn" type="button" data-enter>Enter the site</button></div></div></section>`}
+      <section class="lead" aria-label="Introduction">
+        <div class="lead-in"><h1 class="lead-title">${esc(S.owner.headline || "Creative Designer")}</h1>
+        <ul class="lead-disc">${(S.owner.disciplines || []).map((t) => `<li>${esc(t)}</li>`).join("")}</ul></div>
+      </section>
+      ${(S.brands || []).length ? `<section class="brands" style="--n:${Math.min(10, S.brands.length)}" aria-label="Brands I have worked with"><div class="brands-pin">
+        <div class="brands-text"><h2>Brands I’ve worked with</h2>
+          <p class="small">Golf brands, distributors and organisations I have designed for and alongside.</p>
+          <p class="brands-now" aria-live="polite"></p></div>
+        <ul class="wheel">${S.brands.slice(0, 10).map((b) => `<li><img src="${esc(b.logo)}" alt="${esc(b.name)}" draggable="false"></li>`).join("")}</ul>
+      </div></section>` : ""}
       <section class="field" style="--n:${n}" aria-label="All work">
         <nav class="field-index" aria-label="Projects"><ol>${index}</ol></nav>
         ${pieces}
@@ -187,6 +197,7 @@
       pieces: $$(".piece"), scrubs: $$("[data-scrub]"), masks: $$(".mask img"),
       names: $$(".field-index a"), wheel: $(".field-index ol"), active: -1,
       gallery: $(".gallery"), track: $(".gallery-track"), run: 0,
+      brandsEl: $(".brands"), logos: $$(".wheel li"), wheelEl: $(".wheel"), brandNow: $(".brands-now"), brandOn: -1,
       secs: $$(".pcat"), bgs: $$(".pbg img"), bgOn: -1
     };
     const spot = (slug, on) => {
@@ -221,6 +232,15 @@
       live.fit = fit; fit();
       if (window.ResizeObserver) { live.ro = new ResizeObserver(fit); live.ro.observe(live.track); }
       else $$("img", live.track).forEach((im) => im.addEventListener("load", fit));
+    }
+    if (live.wheelEl) {
+      const geo = () => {
+        const w = live.wheelEl.clientWidth, h = live.wheelEl.clientHeight;
+        const R = Math.min(w * 0.38, h * 0.4);
+        live.wheelGeo = { cx: w * 0.5 + w * 0.06, cy: h * 0.5, R };
+        queue();
+      };
+      live.geo = geo; geo();
     }
     $$("[data-top]").forEach((a) => a.addEventListener("click", (e) => { e.preventDefault(); scrollTo({ top: live.mark ? innerHeight : 0, behavior: reduce ? "auto" : "smooth" }); }));
     $$("[data-peek]").forEach((a) => {
@@ -278,6 +298,28 @@
       live.names.forEach((a, i) => { a.classList.toggle("cur", i === near); a.classList.toggle("next", Math.abs(i - near) === 1); a.classList.toggle("past", i <= near); });
       const li = live.names[near].parentElement;
       live.wheel.style.transform = `translateY(${-(li.offsetTop + li.offsetHeight / 2)}px)`;
+    }
+    if (live.logos && live.logos.length && live.wheelGeo) {
+      const r = live.brandsEl.getBoundingClientRect(), span = r.height - vh;
+      if (r.top < vh && r.bottom > 0) {
+        const N = live.logos.length, step = (Math.PI * 2) / N;
+        const s = (span > 0 ? Math.max(0, Math.min(1, -r.top / span)) : 0) * (N - 1);
+        const { cx, cy, R } = live.wheelGeo;
+        let on = -1, top = -1;
+        live.logos.forEach((el, k) => {
+          const a = Math.PI + (s - k) * step, gap = Math.abs(s - k), d = Math.min(gap, N - gap);
+          const f = Math.max(0, 1 - d), e = f * f * (3 - 2 * f);
+          if (f > top) { top = f; on = k; }
+          el.style.transform = `translate3d(${(cx + R * Math.cos(a)).toFixed(1)}px, ${(cy + R * Math.sin(a)).toFixed(1)}px, 0) translate(-50%, -50%) scale(${(0.6 + 0.75 * e).toFixed(3)})`;
+          el.style.filter = `grayscale(${(1 - e).toFixed(3)}) brightness(${(0.32 + 0.68 * e).toFixed(3)})`;
+          el.style.opacity = (0.45 + 0.55 * e).toFixed(3);
+          el.style.zIndex = String(Math.round(e * 10));
+        });
+        if (on !== live.brandOn) {
+          live.brandOn = on;
+          live.brandNow.textContent = on >= 0 ? S.brands[on].name : "";
+        }
+      }
     }
     if (live.run && live.gallery) {
       const top = live.gallery.getBoundingClientRect().top;
@@ -639,7 +681,7 @@
     gate.remove(); scrollTo(0, Math.max(0, scrollY - h));
   }
   addEventListener("scroll", () => { if (live.mark) enter(); queue(); }, { passive: true });
-  addEventListener("resize", () => { live.fit && live.fit(); queue(); });
+  addEventListener("resize", () => { live.fit && live.fit(); live.geo && live.geo(); queue(); });
   addEventListener("mousemove", (e) => {
     mx = e.clientX; my = e.clientY;
     cursor.style.transform = `translate3d(${mx}px, ${my}px, 0)`;
