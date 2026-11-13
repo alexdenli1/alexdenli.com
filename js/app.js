@@ -520,19 +520,23 @@
       if (it.done) return; it.done = true;
       it.fall.onfinish = null; it.fall.cancel(); it.spin.cancel(); it.el.style.visibility = "hidden"; pool[it.i].push(it.el);
     }
-    const tilt = (s) => `perspective(700px) rotateX(${rnd(25, 55) * s}deg) rotateY(${rnd(35, 65) * -s}deg) rotateZ(${rnd(6, 22) * s}deg)`;
+    // one slow, continuous turn across the whole fall, rather than a fast twist back and forth
+    const tilt = (rx, ry, rz) => `perspective(1000px) rotateX(${rx.toFixed(1)}deg) rotateY(${ry.toFixed(1)}deg) rotateZ(${rz.toFixed(1)}deg)`;
     function spawn(now) {
       if (!order.length) order = S.projects.map((_, i) => i).sort(() => Math.random() - 0.5);
       const i = order.pop(), m = masters[i];
       if (!m) return;
-      const w = (small() ? rnd(96, 150) : rnd(170, 290)) * (disco ? 0.72 : 1), h = w * m.r, fast = disco ? rnd(1.7, 2.5) : 1;
+      const w = (small() ? rnd(120, 188) : rnd(212, 362)) * (disco ? 0.72 : 1), h = w * m.r, fast = disco ? rnd(1.7, 2.5) : 1;
       if (disco) total++;
-      const el = pool[i].pop() || make(i), v = H * rnd(0.5, 0.85) * fast, drift = disco ? rnd(-190, 190) : rnd(-40, 40);
+      const el = pool[i].pop() || make(i), v = H * rnd(0.5, 0.85) * fast, drift = disco ? rnd(-190, 190) : rnd(-18, 18);
       const x = rnd(0.04, 0.96) * (W - w), y = -h * 1.5, T = (H + h * 2.6) / v, s = Math.random() < 0.5 ? 1 : -1;
       el.style.width = w + "px"; el.style.height = h + "px"; el.style.visibility = "visible";
       const it = { el, i, w, h, x, y, v, drift, T, t0: now, ph: rnd(0, 6.28), done: false };
       it.fall = el.animate([{ transform: `translate3d(${x}px, ${y}px, 0)` }, { transform: `translate3d(${x + drift * T}px, ${y + v * T}px, 0)` }], { duration: T * 1000, easing: "linear", fill: "both" });
-      it.spin = el.firstChild.animate([tilt(s), tilt(-s), tilt(s), tilt(-s)].map((t) => ({ transform: t })), { duration: T * 1000, easing: "ease-in-out", fill: "both" });
+      const rx = rnd(9, 17) * s, ry = rnd(13, 24) * s, rz = rnd(2, 6) * s;
+      it.spin = el.firstChild.animate(
+        [{ transform: tilt(rx, -ry, -rz) }, { transform: tilt(-rx * 0.65, ry, rz) }],
+        { duration: T * 1000, easing: "linear", fill: "both" });
       it.fall.onfinish = () => release(it);
       items.push(it);
     }
