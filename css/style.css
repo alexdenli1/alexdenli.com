@@ -1,5 +1,7 @@
 /* Alex Denli — portfolio styles
    Colours: black page, creme text and panels, green as the small feature colour, grey for quiet text */
+@font-face { font-family: "Fraunces"; src: url("../fonts/fraunces.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
+@font-face { font-family: "Fraunces"; src: url("../fonts/fraunces-italic.woff2") format("woff2"); font-weight: 100 900; font-style: italic; font-display: swap; }
 @font-face {
   font-family: "Bricolage";
   src: url("../fonts/bricolage.woff2") format("woff2");
@@ -158,10 +160,25 @@ main:focus { outline: none; }
 .piece.lost.got .piece-in::before { opacity: 0; }
 
 /* ---------- Home: opening line ---------- */
-.lead { position: relative; z-index: 1; background: var(--bg); padding: calc(var(--nav-h) + var(--sy)) var(--pad) 0; }
-.lead-in { width: fit-content; max-width: 100%; }
-.lead-title { font-size: clamp(3.4rem, 11vw, 13.5rem); font-weight: 800; font-stretch: 75%; line-height: .86; letter-spacing: -.025em; }
-.lead-disc { display: flex; justify-content: space-between; gap: 1rem; margin-top: clamp(1.25rem, 3vh, 2.5rem); font-size: clamp(.9375rem, 1.35vw, 1.25rem); color: var(--muted); }
+/* a full screen: a frosted, colour-washed collage of the work, with the headline centred on it.
+   Moving the pointer clears a lens through the frost to the sharp work underneath. */
+.lead { position: relative; z-index: 1; background: #050505; height: 100vh; height: 100svh; min-height: 560px; overflow: hidden;
+  display: grid; place-items: center; padding: var(--nav-h) var(--pad) 0; }
+.lead-art { position: absolute; inset: 0; z-index: 0; transform-origin: 50% 40%; will-change: transform; }
+.lead-frost { position: absolute; inset: 0; background: #050505; }
+.lead-frost canvas { display: block; width: 100%; height: 100%; opacity: 0; transition: opacity .8s; }
+.lead-frost canvas.ready { opacity: 1; }
+.lead-lens { position: absolute; left: 0; top: 0; width: clamp(300px, 22vw, 460px); aspect-ratio: 1; border-radius: 50%; overflow: hidden;
+  opacity: 0; transition: opacity .35s; pointer-events: none; will-change: transform, opacity;
+  -webkit-mask-image: radial-gradient(circle, #000 58%, transparent 71%); mask-image: radial-gradient(circle, #000 58%, transparent 71%); }
+.lead-lens img { position: absolute; left: 0; top: 0; max-width: none; object-fit: cover; transform-origin: 0 0; will-change: transform; }
+.lead.lensing .lead-lens { opacity: 1; }
+.lead.lensing { cursor: none; }
+.lead-in { position: relative; z-index: 2; width: fit-content; max-width: 100%; text-align: center; pointer-events: none; }
+.lead-title { font-family: "Fraunces", Georgia, serif; font-weight: 300; font-size: clamp(3.6rem, 9.6vw, 12.5rem); line-height: .92; letter-spacing: -.035em;
+  font-variation-settings: "opsz" 144, "SOFT" 100, "WONK" 1; color: var(--fg); }
+.lead-disc { display: flex; justify-content: space-between; gap: 1rem; margin-top: clamp(1.4rem, 3.4vh, 2.75rem); padding: 0 .6em;
+  font-size: clamp(.9375rem, 1.15vw, 1.25rem); letter-spacing: .04em; color: rgba(238, 233, 227, .78); }
 
 /* ---------- Home: brand wheel — logos orbit an invisible circle as you scroll ---------- */
 .brands { position: relative; z-index: 1; background: var(--bg); height: calc(100vh + (var(--n) - 1) * 26vh); }
@@ -357,7 +374,7 @@ main:focus { outline: none; }
   .nav-pages a { padding: 0 0 .4rem; }
   .gate-mark { width: 62vw; }
   .field { height: auto; padding: var(--sy) var(--pad) 0; display: grid; gap: 12vh; }
-  .lead-title { font-size: clamp(3rem, 17vw, 6rem); }
+  .lead-title { font-size: clamp(3rem, 15vw, 6rem); }
   .lead-disc { gap: .5rem; font-size: .875rem; }
   .brands { height: calc(100svh + (var(--n) - 1) * 22vh); }
   .brands-pin { grid-template-columns: 1fr; grid-template-rows: auto 1fr; align-items: start; gap: 0; }

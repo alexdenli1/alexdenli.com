@@ -55,6 +55,8 @@
         <div class="disco-end" hidden><p>Time</p><p class="giant"><span class="disco-final">0</span> caught</p><p class="disco-of"></p>
           <div class="disco-acts"><button class="btn" type="button" data-again>Play again</button><button class="btn" type="button" data-enter>Enter the site</button></div></div></section>`}
       <section class="lead" aria-label="Introduction">
+        ${S.owner.collage ? `<div class="lead-art" aria-hidden="true"><div class="lead-frost"><canvas></canvas></div>
+          <div class="lead-lens"><img src="${esc(S.owner.collage)}" alt="" decoding="async" draggable="false"></div></div>` : ""}
         <div class="lead-in"><h1 class="lead-title">${esc(S.owner.headline || "Creative Designer")}</h1>
         <ul class="lead-disc">${(S.owner.disciplines || []).map((t) => `<li>${esc(t)}</li>`).join("")}</ul></div>
       </section>
@@ -197,6 +199,7 @@
       pieces: $$(".piece"), scrubs: $$("[data-scrub]"), masks: $$(".mask img"),
       names: $$(".field-index a"), wheel: $(".field-index ol"), active: -1,
       gallery: $(".gallery"), track: $(".gallery-track"), run: 0,
+      lead: $(".lead"), leadArt: $(".lead-art"), lens: $(".lead-lens"), lensImg: $(".lead-lens img"),
       brandsEl: $(".brands"), logos: $$(".wheel li"), wheelEl: $(".wheel"), brandNow: $(".brands-now"), brandOn: -1,
       secs: $$(".pcat"), bgs: $$(".pbg img"), bgOn: -1
     };
@@ -233,6 +236,20 @@
       if (window.ResizeObserver) { live.ro = new ResizeObserver(fit); live.ro.observe(live.track); }
       else $$("img", live.track).forEach((im) => im.addEventListener("load", fit));
     }
+    // Headline: a frosted, colour-washed copy of the work collage, painted once. A round lens follows the
+    // pointer showing the sharp collage, lined up with the page and slightly magnified. Moving it is
+    // two transforms, so it stays smooth.
+    if (live.leadArt) {
+      paintFrost($(".lead-frost canvas"), S.owner.collage);
+      const sizeLens = () => { if (!live.lensImg) return; live.lensImg.style.width = live.lead.clientWidth + "px"; live.lensImg.style.height = live.lead.clientHeight + "px"; live.lensD = live.lens.offsetWidth; };
+      live.sizeLens = sizeLens; sizeLens();
+      if (fine) {
+        // the window's mouse listener already schedules the lens update; here we only switch it on once
+        live.lead.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse") live.lead.classList.add("lensing"); });
+        live.lead.addEventListener("mousemove", () => { if (!live.lead.classList.contains("lensing")) live.lead.classList.add("lensing"); }, { passive: true });
+        live.lead.addEventListener("pointerleave", () => live.lead.classList.remove("lensing"));
+      }
+    }
     if (live.wheelEl) {
       const geo = () => {
         // the circle sits on the bottom of the panel, so the gap after it matches the gaps above
@@ -261,7 +278,20 @@
   /* ---------- Scroll and pointer motion ---------- */
   function update() {
     queued = false;
-    const y = scrollY, vh = innerHeight;
+    const y = scrollY, vh = innerHeight, big = wide();
+    // Read every position first, then write. Interleaving the two forces the browser to lay the
+    // page out again after each write, which is what made moving the mouse on the home page slow.
+    const pr = (live.pieces || []).map((el) => el.getBoundingClientRect());
+    const leadR = live.leadArt ? live.lead.getBoundingClientRect() : null;
+    const brandsR = live.logos && live.logos.length && live.wheelGeo ? live.brandsEl.getBoundingClientRect() : null;
+    const navH = brandsR ? nav.offsetHeight : 0;
+    const galTop = live.run && live.gallery ? live.gallery.getBoundingClientRect().top : null;
+    const secR = live.secs && live.secs.length ? live.secs.map((s) => s.getBoundingClientRect()) : null;
+    const scrR = (live.scrubs || []).map((el) => el.getBoundingClientRect());
+    const maskR = reduce ? [] : (live.masks || []).map((im) => im.parentElement.getBoundingClientRect());
+    if (big && live.wheel && live.names && !live.nameOff) live.nameOff = live.names.map((a) => a.parentElement.offsetTop + a.parentElement.offsetHeight / 2);
+
+    // ---- writes ----
     if (live.mark) {
       const p = Math.min(1, y / vh);
       if (!reduce) live.mark.style.transform = `scale(${1 + p * 0.9})`;
@@ -269,12 +299,11 @@
     }
     nav.classList.toggle("nav-away", !!live.mark && y < vh * 0.85);
     flag.classList.toggle("flag-away", live.home && y < vh * (live.mark ? 1.5 : 0.5));
-    const big = wide();
-    let near = -1, best = 1e9, n = 0;
-    for (const el of live.pieces || []) {
-      const r = el.getBoundingClientRect(), off0 = Math.abs(r.top + r.height / 2 - vh / 2), k = n++;
+    let near = -1, best = 1e9;
+    (live.pieces || []).forEach((el, k) => {
+      const r = pr[k], off0 = Math.abs(r.top + r.height / 2 - vh / 2);
       if (off0 < best) { best = off0; near = k; }
-      if (r.bottom < -vh || r.top > vh * 2) continue;
+      if (r.bottom < -vh || r.top > vh * 2) return;
       if (!reduce) {
         // each image grows from almost nothing to full size as you scroll down to it, then stays
         const p = Math.max(0, Math.min(1, (vh - r.top) / (vh * 0.58)));
@@ -283,7 +312,7 @@
         if (big) {
           const off = (r.top + r.height / 2 - vh / 2) * parseFloat(el.dataset.speed);
           const drift = parseFloat(el.dataset.speed) * 4;
-          inner.style.transform = `translate3d(${((mx / innerWidth) - .5) * 60 * drift}px, ${off + ((my / vh) - .5) * 40 * drift}px, 0) scale(${sc})`;
+          inner.style.transform = `translate3d(${(((mx / innerWidth) - .5) * 60 * drift).toFixed(1)}px, ${(off + ((my / vh) - .5) * 40 * drift).toFixed(1)}px, 0) scale(${sc})`;
         } else inner.style.transform = `scale(${sc})`;
         inner.style.opacity = p < 1 ? (0.2 + 0.8 * p).toFixed(3) : "";
       }
@@ -293,71 +322,76 @@
           if (Math.hypot(dx, dy) < 70) reveal(el);
         } else if (r.top < vh * 0.55 && r.bottom > vh * 0.35) reveal(el);
       }
-    }
+    });
     // the project list works like a wheel: names passed are solid, the one on screen is largest
-    if (big && live.wheel && near !== live.active) {
+    if (big && live.wheel && live.nameOff && near >= 0 && near !== live.active) {
       live.active = near;
       live.names.forEach((a, i) => { a.classList.toggle("cur", i === near); a.classList.toggle("next", Math.abs(i - near) === 1); a.classList.toggle("past", i <= near); });
-      const li = live.names[near].parentElement;
-      live.wheel.style.transform = `translateY(${-(li.offsetTop + li.offsetHeight / 2)}px)`;
+      live.wheel.style.transform = `translateY(${-live.nameOff[near]}px)`;
     }
-    if (live.logos && live.logos.length && live.wheelGeo) {
-      const r = live.brandsEl.getBoundingClientRect(), navH = nav.offsetHeight, span = r.height - (vh - navH);
-      if (r.top < vh && r.bottom > 0) {
-        const N = live.logos.length, step = (Math.PI * 2) / N;
-        const s = (span > 0 ? Math.max(0, Math.min(1, (navH - r.top) / span)) : 0) * (N - 1);
-        const { cx, cy, R } = live.wheelGeo;
-        let on = -1, top = -1;
-        live.logos.forEach((el, k) => {
-          const a = Math.PI + (s - k) * step, gap = Math.abs(s - k), d = Math.min(gap, N - gap);
-          const f = Math.max(0, 1 - d), e = f * f * (3 - 2 * f);
-          if (f > top) { top = f; on = k; }
-          el.style.transform = `translate3d(${(cx + R * Math.cos(a)).toFixed(1)}px, ${(cy + R * Math.sin(a)).toFixed(1)}px, 0) translate(-50%, -50%) scale(${(0.6 + 0.75 * e).toFixed(3)})`;
-          el.style.filter = `grayscale(${(1 - e).toFixed(3)}) brightness(${(0.32 + 0.68 * e).toFixed(3)})`;
-          el.style.opacity = (0.45 + 0.55 * e).toFixed(3);
-          el.style.zIndex = String(Math.round(e * 10));
-        });
-        if (on !== live.brandOn) {
-          live.brandOn = on;
-          live.brandNow.textContent = on >= 0 ? S.brands[on].name : "";
-        }
+    if (leadR && leadR.bottom > 0 && leadR.top < vh) {
+      if (live.lens && live.lead.classList.contains("lensing")) {
+        const d = live.lensD || 400, cx = mx - leadR.left, cy = my - leadR.top, s = 1.12;
+        live.lens.style.transform = `translate3d(${(cx - d / 2).toFixed(1)}px, ${(cy - d / 2).toFixed(1)}px, 0)`;
+        live.lensImg.style.transform = `translate3d(${(d / 2 - cx * s).toFixed(1)}px, ${(d / 2 - cy * s).toFixed(1)}px, 0) scale(${s})`;
+      }
+      // the frosted art settles into place as the section rises over the intro
+      const p = Math.max(0, Math.min(1, (vh - leadR.top) / vh));
+      if (!reduce) live.leadArt.style.transform = p < 1 ? `scale(${(1.1 - 0.1 * p).toFixed(4)})` : "";
+    }
+    if (brandsR && brandsR.top < vh && brandsR.bottom > 0) {
+      const span = brandsR.height - (vh - navH), N = live.logos.length, step = (Math.PI * 2) / N;
+      const s = (span > 0 ? Math.max(0, Math.min(1, (navH - brandsR.top) / span)) : 0) * (N - 1);
+      const { cx, cy, R } = live.wheelGeo;
+      let on = -1, top = -1;
+      live.logos.forEach((el, k) => {
+        const a = Math.PI + (s - k) * step, gap = Math.abs(s - k), d = Math.min(gap, N - gap);
+        const f = Math.max(0, 1 - d), e = f * f * (3 - 2 * f);
+        if (f > top) { top = f; on = k; }
+        el.style.transform = `translate3d(${(cx + R * Math.cos(a)).toFixed(1)}px, ${(cy + R * Math.sin(a)).toFixed(1)}px, 0) translate(-50%, -50%) scale(${(0.6 + 0.75 * e).toFixed(3)})`;
+        el.style.filter = `grayscale(${(1 - e).toFixed(3)}) brightness(${(0.32 + 0.68 * e).toFixed(3)})`;
+        el.style.opacity = (0.45 + 0.55 * e).toFixed(3);
+        el.style.zIndex = String(Math.round(e * 10));
+      });
+      if (on !== live.brandOn) {
+        live.brandOn = on;
+        live.brandNow.textContent = on >= 0 ? S.brands[on].name : "";
       }
     }
-    if (live.run && live.gallery) {
-      const top = live.gallery.getBoundingClientRect().top;
+    if (galTop !== null) {
       // Scrolling up skips straight past the strip; scrolling down plays it through again.
-      if (y < lastY - 1 && top < -2 && top > -live.run / 3 - 2) scrollTo(0, y + top);
-      else if (top < vh && top > -live.run - vh) {
-        const t = Math.max(0, Math.min(live.run, -top * 3)), mid = innerWidth / 2;
+      if (y < lastY - 1 && galTop < -2 && galTop > -live.run / 3 - 2) scrollTo(0, y + galTop);
+      else if (galTop < vh && galTop > -live.run - vh) {
+        const t = Math.max(0, Math.min(live.run, -galTop * 3)), mid = innerWidth / 2;
         live.track.style.transform = `translate3d(${-t}px, 0, 0)`;
         // the image passing through the middle grows; the rest stay small and a touch faded
-        for (const s of live.shots || []) {
-          const k = Math.max(0, 1 - Math.abs(s.c - t - mid) / live.span);
-          s.el.style.transform = `scale(${(1 + 0.25 * k).toFixed(3)})`;
-          s.el.style.opacity = (0.72 + 0.28 * k).toFixed(3);
+        for (const sh of live.shots || []) {
+          const k = Math.max(0, 1 - Math.abs(sh.c - t - mid) / live.span);
+          sh.el.style.transform = `scale(${(1 + 0.25 * k).toFixed(3)})`;
+          sh.el.style.opacity = (0.72 + 0.28 * k).toFixed(3);
         }
       }
     }
     // Projects page: fade the background image of the category nearest the middle of the screen
-    if (live.secs && live.secs.length) {
-      let best = -1, bd = 1e9;
-      live.secs.forEach((s, i) => { const r = s.getBoundingClientRect(), d = Math.abs(r.top + r.height / 2 - vh / 2); if (d < bd) { bd = d; best = i; } });
-      if (best !== live.bgOn) { live.bgOn = best; live.bgs.forEach((b, i) => b.classList.toggle("on", i === best)); }
+    if (secR) {
+      let bi = -1, bd = 1e9;
+      secR.forEach((r, i) => { const d = Math.abs(r.top + r.height / 2 - vh / 2); if (d < bd) { bd = d; bi = i; } });
+      if (bi !== live.bgOn) { live.bgOn = bi; live.bgs.forEach((b, i) => b.classList.toggle("on", i === bi)); }
     }
-    for (const el of live.scrubs || []) {
-      const r = el.getBoundingClientRect();
-      if (r.bottom < 0 || r.top > vh) continue;
+    (live.scrubs || []).forEach((el, k) => {
+      const r = scrR[k];
+      if (r.bottom < 0 || r.top > vh) return;
       const words = el.children, p = Math.max(0, Math.min(1, (vh * 0.9 - r.top) / (vh * 0.55 + r.height)));
       const lit = Math.round(p * words.length);
       for (let i = 0; i < words.length; i++) words[i].classList.toggle("lit", i < lit);
-    }
+    });
     lastY = y;
-    if (!reduce) for (const im of live.masks || []) {
-      const r = im.parentElement.getBoundingClientRect();
-      if (r.bottom < 0 || r.top > vh) continue;
+    if (!reduce) (live.masks || []).forEach((im, k) => {
+      const r = maskR[k];
+      if (r.bottom < 0 || r.top > vh) return;
       const p = (r.top + r.height / 2 - vh / 2) / vh;
       im.style.transform = `scale(${1.14 - Math.min(.14, Math.abs(p) * .14)}) translate3d(0, ${p * -5}%, 0)`;
-    }
+    });
   }
   /* Intro screen: project images fall down the page, tumbling as they go, with speed lines
      drawn behind them. Click one to open that project. Move the cursor to the bottom edge
@@ -492,6 +526,37 @@
         ctx = null; out = null;
       }
     };
+  }
+
+  function paintFrost(cv, src) {
+    if (!cv) return;
+    const im = new Image(); im.decoding = "async";
+    im.onload = () => {
+      const W = 960, H = 540, g = cv.getContext("2d");
+      cv.width = W; cv.height = H;
+      // a heavy, smooth blur by shrinking right down and scaling back up in two steps
+      const a = document.createElement("canvas"); a.width = 48; a.height = 27; a.getContext("2d").drawImage(im, 0, 0, 48, 27);
+      const b = document.createElement("canvas"); b.width = 192; b.height = 108;
+      const bg = b.getContext("2d"); bg.imageSmoothingQuality = "high"; bg.drawImage(a, 0, 0, 192, 108);
+      g.imageSmoothingQuality = "high"; g.drawImage(b, -24, -14, W + 48, H + 28);
+      // richer colour, then most of the way down to black
+      g.globalCompositeOperation = "saturation"; g.globalAlpha = 0.4; g.fillStyle = "hsl(0 100% 50%)"; g.fillRect(0, 0, W, H);
+      g.globalAlpha = 1; g.globalCompositeOperation = "multiply"; g.fillStyle = "#4f4f4f"; g.fillRect(0, 0, W, H);
+      // soft colour glows
+      g.globalCompositeOperation = "screen";
+      for (const [x, y, rr, c, al] of [[0.16, 0.28, 0.42, "9,88,56", 0.6], [0.84, 0.74, 0.38, "70,90,255", 0.42], [0.62, 0.12, 0.3, "255,120,40", 0.26], [0.3, 0.86, 0.3, "180,60,200", 0.2]]) {
+        const gr = g.createRadialGradient(x * W, y * H, 0, x * W, y * H, rr * W);
+        gr.addColorStop(0, `rgba(${c},${al})`); gr.addColorStop(1, `rgba(${c},0)`);
+        g.fillStyle = gr; g.fillRect(0, 0, W, H);
+      }
+      g.globalCompositeOperation = "source-over";
+      // grain
+      const d = g.getImageData(0, 0, W, H), px = d.data;
+      for (let i = 0; i < px.length; i += 4) { const n = (Math.random() - 0.5) * 28; px[i] += n; px[i + 1] += n; px[i + 2] += n; }
+      g.putImageData(d, 0, 0);
+      cv.classList.add("ready");
+    };
+    im.src = src;
   }
 
   function intro() {
@@ -695,7 +760,7 @@
     if (down && r.bottom > vh + 2) { e.preventDefault(); scrollTo(0, scrollY + r.bottom - vh); }
     else if (!down && r.top < navH - 2) { e.preventDefault(); scrollTo(0, scrollY + r.top - navH); }
   }, { passive: false });
-  addEventListener("resize", () => { live.fit && live.fit(); live.geo && live.geo(); queue(); });
+  addEventListener("resize", () => { live.fit && live.fit(); live.geo && live.geo(); live.sizeLens && live.sizeLens(); live.nameOff = null; queue(); });
   addEventListener("mousemove", (e) => {
     mx = e.clientX; my = e.clientY;
     cursor.style.transform = `translate3d(${mx}px, ${my}px, 0)`;

@@ -37,6 +37,7 @@ window.SITE = {
     intro: "I design golf products, the adverts that sell them and the online stores they sell through.",
     headline: "Creative Designer",                               // the big line at the top of the home page
     disciplines: ["Graphic", "Product", "UX/UI", "E-commerce"],  // the small line spread evenly beneath it
+    collage: "images/collage/collage.jpg",  // 1920x1080 (or larger) collage of your work, frosted behind the headline
     about: [
       "Placeholder: a short paragraph about who you are and the kind of work you do. Two or three sentences is plenty.",
       "Placeholder: a second paragraph about how you work — from first sketch and supplier sample through to the advert, the listing and the sales figures."
