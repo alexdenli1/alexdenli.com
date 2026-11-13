@@ -354,7 +354,7 @@
       grow = out(clamp01((t - 0.14) / 0.5));
       if (introR.bottom > 0 && introR.top < vh) {
         // the word dissolves in, square by square, as the section rises into view
-        const dis = clamp01((1 - introR.top / vh) / 0.5);
+        const dis = clamp01((1 - introR.top / vh) / 0.85);
         if (live.cover) live.drawCover(dis);
         live.pword.style.opacity = (0.25 + 0.75 * dis).toFixed(3);
         live.pdark.style.transform = `scale(${(1.3 * soft(clamp01((t - 0.03) / 0.3))).toFixed(4)})`;
