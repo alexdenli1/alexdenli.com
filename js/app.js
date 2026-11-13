@@ -34,14 +34,13 @@
     // Every piece: the image, then below it the name (large), the category and year, and one line about the project.
     const piece = (p, i) => {
       const t = SLOTS[i % SLOTS.length];
-      return `<a class="piece${i === 0 ? " first" : ""}${p.hidden ? " lost" : ""}${found.has(p.slug) ? " got" : ""}" href="${link(p)}" data-slug="${esc(p.slug)}"
-        data-title="${esc(p.title)}" data-speed="${t.s}" style="left:${t.x}%;--i:${Math.max(0, i - 1)}">
+      return `<a class="piece${p.hidden ? " lost" : ""}${found.has(p.slug) ? " got" : ""}" href="${link(p)}" data-slug="${esc(p.slug)}"
+        data-title="${esc(p.title)}" style="left:${t.x}%">
         <span class="piece-in"><span class="piece-img"><img src="${esc(p.hero)}" alt="${esc(p.title)}" loading="${i < 2 ? "eager" : "lazy"}">${ZAP}</span>
-          <span class="piece-cap"><span class="piece-name">${esc(p.title)}</span><span class="piece-meta">${esc(p.scope || cat(p.category).label)}, ${esc(p.year)}</span>
-          <span class="piece-line">${esc(p.line || p.summary || "")}</span></span></span></a>`;
+          <span class="piece-cap"><span class="piece-name">${esc(p.title)}</span><span class="piece-sub"><span class="piece-meta">${esc(p.scope || cat(p.category).label)}, ${esc(p.year)}</span>
+          <span class="piece-line">${esc(p.line || p.summary || "")}</span></span></span></span></a>`;
     };
-    const first = n ? piece(S.projects[0], 0) : "";
-    const rest = S.projects.slice(1).map((p, i) => piece(p, i + 1)).join("");
+    const slides = S.projects.map(piece).join("");
     const index = S.projects.map((p) => `<li><a href="${link(p)}" data-slug="${esc(p.slug)}" class="${p.hidden ? "lost" : ""}${found.has(p.slug) ? " got" : ""}">
       <b>${p.hidden && !found.has(p.slug) ? "·····" : esc(p.title)}</b></a></li>`).join("");
     return {
@@ -68,13 +67,12 @@
           <p class="brands-sub">Designing for, and working alongside, some of golf’s most trusted names.</p></div>
         <ul class="wheel">${S.brands.slice(0, 12).map((b) => `<li${b.size ? ` style="--lw:${b.size}"` : ""}><img src="${esc(b.logo)}" alt="${esc(b.name)}" draggable="false"></li>`).join("")}</ul>
       </div></section>` : ""}
-      <div class="work" style="--n:${Math.max(1, n - 1)}">
+      <div class="work" style="--n:${Math.max(1, n)}">
         <nav class="field-index" aria-label="Projects"><ol>${index}</ol></nav>
         <section class="pintro" aria-label="Projects"><div class="pintro-stage">
           <h2 class="pintro-word">Projects</h2><canvas class="pintro-cover" aria-hidden="true"></canvas><div class="pintro-dark" aria-hidden="true"></div>
-          ${first}
+          ${slides}
         </div></section>
-        <section class="field" aria-label="All work">${rest}</section>
       </div>
       <section class="gallery" aria-label="Gallery of all work"><div class="gallery-pin">
         <h2 class="gallery-head">Let’s explore and discover more</h2>
@@ -321,7 +319,7 @@
     const y = scrollY, vh = innerHeight, big = wide();
     // Read every position first, then write. Interleaving the two forces the browser to lay the
     // page out again after each write, which is what made moving the mouse on the home page slow.
-    const pr = (live.pieces || []).map((el) => el.getBoundingClientRect());
+    const r0 = live.pfirst ? live.pfirst.getBoundingClientRect() : null;
     const leadR = live.leadArt ? live.lead.getBoundingClientRect() : null;
     const brandsR = live.logos && live.logos.length ? live.brandsEl.getBoundingClientRect() : null;
     const introR = live.pintro ? live.pintro.getBoundingClientRect() : null;
@@ -346,7 +344,7 @@
     const clamp01 = (x) => Math.max(0, Math.min(1, x));
     let grow = 1;
     if (introR && big && !reduce) {
-      const span = introR.height - vh, tt = span > 0 ? clamp01(-introR.top / span) : 1;
+      const tt = clamp01(-introR.top / (1.15 * vh));
       if (live.pT === undefined) live.pT = tt;
       live.pT += (tt - live.pT) * 0.2;
       if (Math.abs(tt - live.pT) > 0.0005) queue(); else live.pT = tt;
@@ -361,45 +359,51 @@
       }
       live.pindex.style.opacity = clamp01((grow - 0.35) / 0.4).toFixed(3);
     }
-    let near = -1, best = 1e9;
-    (live.pieces || []).forEach((el, k) => {
-      const r = pr[k], off0 = Math.abs(r.top + r.height / 2 - vh / 2);
-      if (off0 < best) { best = off0; near = k; }
-      if (el === live.pfirst) {
-        if (big && !reduce) {
-          const inner = el.firstElementChild, g = grow;
-          const dx = (innerWidth / 2 - (r.left + r.width / 2)) * (1 - g), dy = (vh / 2 - (r.top + r.width / 3)) * (1 - g);
-          inner.style.transform = `translate3d(${dx.toFixed(1)}px, ${dy.toFixed(1)}px, 0) scale(${Math.max(0.001, g).toFixed(4)})`;
-          inner.style.opacity = Math.min(1, g * 4).toFixed(3);
-          const cap = inner.lastElementChild; if (cap) cap.style.opacity = clamp01((g - 0.6) / 0.4).toFixed(3);
-        }
-        return;
+    // Slides: every project sits in the same spot on the pinned stage. Scrolling hands over from one to the next:
+    // the picture, the name and the line each fly off in their own direction while the next project's parts
+    // fly in from the edges. Directions are drawn at random per page load.
+    if (big && live.pieces && live.pieces.length && introR) {
+      const N = live.pieces.length, scrolled = Math.max(0, -introR.top);
+      if (live.sS === undefined) live.sS = scrolled;
+      live.sS = reduce ? scrolled : live.sS + (scrolled - live.sS) * 0.18;
+      if (Math.abs(scrolled - live.sS) > 0.5) queue(); else live.sS = scrolled;
+      const sp = Math.max(0, (live.sS - 1.15 * vh) / (0.8 * vh));
+      const idx = Math.min(N - 1, Math.floor(sp)), u = idx >= N - 1 ? 0 : sp - idx;
+      let v = clamp01((u - 0.25) / 0.75);
+      if (reduce) v = v > 0.5 ? 1 : 0;
+      const ease = (x) => x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+      if (!live.fly) {
+        const D = [[-1, 0], [1, 0], [0, -1], [0, 1]], pick = () => D.slice().sort(() => Math.random() - 0.5).slice(0, 3);
+        live.fly = Array.from({ length: N }, () => ({ out: pick(), in: pick() }));
+        live.parts = live.pieces.map((el) => [$(".piece-img", el), $(".piece-name", el), $(".piece-sub", el)]);
       }
-      if (r.bottom < -vh || r.top > vh * 2) return;
+      const DL = [0, 0.07, 0.14], put = (k, dirs, f0, delay) => live.parts[k].forEach((part, i) => {
+        if (!part) return;
+        const f = reduce ? 0 : delay(f0, i);
+        const d = dirs[i], x = d[0] * 0.95 * innerWidth * f, yy = d[1] * 1.1 * vh * f;
+        part.style.transform = f > 0.001 ? `translate3d(${x.toFixed(1)}px, ${yy.toFixed(1)}px, 0)` : "";
+        part.style.opacity = f > 0.9 ? (1 - (f - 0.9) * 10).toFixed(2) : "";
+      });
+      const cur = v > 0.5 ? idx + 1 : idx;
+      live.pieces.forEach((el, k) => {
+        const show = k === idx || (k === idx + 1 && v > 0);
+        if (show !== (el.style.visibility === "visible")) el.style.visibility = show ? "visible" : "hidden";
+        if (k === cur !== el.classList.contains("act")) el.classList.toggle("act", k === cur);
+        if (k === idx) put(k, live.fly[idx].out, v, (vv, i) => ease(clamp01((vv - DL[i]) / 0.55)));
+        else if (k === idx + 1) put(k, live.fly[idx].in, v, (vv, i) => 1 - ease(clamp01((vv - 0.3 - DL[i]) / 0.55)));
+        else live.parts[k].forEach((p) => { if (p) { p.style.transform = ""; p.style.opacity = ""; } });
+      });
+      const first = live.pfirst.firstElementChild;
       if (!reduce) {
-        // each image grows from almost nothing to full size as you scroll down to it, then stays
-        const p = Math.max(0, Math.min(1, (vh - r.top) / (vh * 0.58)));
-        const sc = (0.12 + 0.88 * (1 - Math.pow(1 - p, 3))).toFixed(4);
-        const inner = el.firstElementChild;
-        if (big) {
-          const off = (r.top + r.height / 2 - vh / 2) * parseFloat(el.dataset.speed);
-          const drift = parseFloat(el.dataset.speed) * 4;
-          inner.style.transform = `translate3d(${(((mx / innerWidth) - .5) * 60 * drift).toFixed(1)}px, ${(off + ((my / vh) - .5) * 40 * drift).toFixed(1)}px, 0) scale(${sc})`;
-        } else inner.style.transform = `scale(${sc})`;
-        inner.style.opacity = p < 1 ? (0.2 + 0.8 * p).toFixed(3) : "";
+        const g = grow, dx = (innerWidth / 2 - (r0.left + r0.width / 2)) * (1 - g), dy = (vh / 2 - (r0.top + r0.width / 3)) * (1 - g);
+        first.style.transform = `translate3d(${dx.toFixed(1)}px, ${dy.toFixed(1)}px, 0) scale(${Math.max(0.001, g).toFixed(4)})`;
+        first.style.opacity = Math.min(1, g * 4).toFixed(3);
       }
-      if (el.classList.contains("lost") && !el.classList.contains("got")) {
-        if (fine && big) {
-          const dx = Math.max(r.left - mx, 0, mx - r.right), dy = Math.max(r.top - my, 0, my - r.bottom);
-          if (Math.hypot(dx, dy) < 70) reveal(el);
-        } else if (r.top < vh * 0.55 && r.bottom > vh * 0.35) reveal(el);
+      if (live.wheel && live.nameOff && cur !== live.active) {
+        live.active = cur;
+        live.names.forEach((a, i) => { a.classList.toggle("cur", i === cur); a.classList.toggle("next", Math.abs(i - cur) === 1); a.classList.toggle("past", i <= cur); });
+        live.wheel.style.transform = `translateY(${-live.nameOff[cur]}px)`;
       }
-    });
-    // the project list works like a wheel: names passed are solid, the one on screen is largest
-    if (big && live.wheel && live.nameOff && near >= 0 && near !== live.active) {
-      live.active = near;
-      live.names.forEach((a, i) => { a.classList.toggle("cur", i === near); a.classList.toggle("next", Math.abs(i - near) === 1); a.classList.toggle("past", i <= near); });
-      live.wheel.style.transform = `translateY(${-live.nameOff[near]}px)`;
     }
     if (leadR && leadR.bottom > 0 && leadR.top < vh) {
       if (live.lens && live.lead.classList.contains("lensing")) {

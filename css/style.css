@@ -109,7 +109,8 @@ main:focus { outline: none; }
 /* ---------- Home: the work — "Projects" intro, then the field of scattered work ---------- */
 /* every home image: same size, landscape 3:2, evenly spaced; the name, category and one line sit below it */
 .work { position: relative; z-index: 2; margin-top: -30vh; background: var(--bg); --pw: min(52vw, 111vh); --ph: calc(var(--pw) / 1.5); --gap: 28vh; --cap: 10rem; }
-.pintro { position: relative; height: 215vh; }
+/* one tall pinned stage: the word, then each project in turn. 115vh for the intro, 80vh per project, 40vh to finish */
+.pintro { position: relative; height: calc(100vh + 115vh + (var(--n) - 1) * 80vh + 40vh); }
 .pintro-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: var(--bg); }
 .pintro-word {
   position: absolute; left: 50%; top: 50%; z-index: 1; margin: 0; pointer-events: none; transform-origin: 50% 50%;
@@ -124,16 +125,15 @@ main:focus { outline: none; }
   position: absolute; left: 50%; top: 50%; z-index: 3; width: 260vmax; height: 260vmax; margin: -130vmax 0 0 -130vmax; pointer-events: none;
   background: radial-gradient(circle closest-side, #000 0, #000 40%, rgba(0, 0, 0, 0) 100%); transform: scale(0); will-change: transform;
 }
-.pintro .piece.first { top: calc((100vh - var(--ph) - var(--cap)) / 2 + 2vh); z-index: 4; pointer-events: none; }
-.pintro .piece.first .piece-in { pointer-events: auto; transform-origin: 50% calc(var(--ph) / 2); }
+.pintro .piece { top: calc((100vh - var(--ph) - var(--cap)) / 2 + 2vh); z-index: 4; pointer-events: none; visibility: hidden; }
+.pintro .piece:first-of-type { visibility: visible; }
+.pintro .piece.act .piece-in { pointer-events: auto; }
+.pintro .piece:first-of-type .piece-in { transform-origin: 50% calc(var(--ph) / 2); }
+.piece-img, .piece-name, .piece-sub { will-change: transform, opacity; }
 @media (min-width: 821px) and (prefers-reduced-motion: no-preference) {
-  .pintro .piece.first .piece-in { transform: scale(.001); opacity: 0; }
+  .pintro .piece:first-of-type .piece-in { transform: scale(.001); opacity: 0; }
 }
-.field {
-  position: relative; z-index: 1; background: var(--bg);
-  --first: 5vh;
-  height: calc(var(--first) + var(--n) * (var(--ph) + var(--cap)) + (var(--n) - 1) * (var(--gap) - var(--cap)));
-}
+@media (prefers-reduced-motion: reduce) { .pintro-word, .pintro-cover, .pintro-dark { display: none; } }
 .field-index {
   position: sticky; top: 50vh; z-index: 4; height: 0; margin-left: auto;
   width: fit-content; max-width: 13vw; margin-right: var(--pad); text-align: right;
@@ -146,8 +146,8 @@ main:focus { outline: none; }
 .field-index a:hover, .field-index a.on { opacity: 1; text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: .2em; }
 .field-index b { font-weight: inherit; }
 
-.piece { position: absolute; z-index: 1; display: block; width: var(--pw); top: calc(var(--first) + var(--i) * (var(--ph) + var(--gap))); }
-.piece-in { display: block; position: relative; will-change: transform; }
+.piece { position: absolute; display: block; width: var(--pw); }
+.piece-in { display: block; position: relative; }
 .piece-img { display: block; position: relative; }
 /* Hover: a quick electric outline drawn round the image */
 .zap { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; fill: none; visibility: hidden; }
@@ -162,6 +162,7 @@ main:focus { outline: none; }
 /* the name, large, below the image, then the category and year, then one line about the project */
 .piece-cap { display: block; padding-top: clamp(.9rem, 1.6vh, 1.4rem); transition: opacity .4s; }
 .piece-name { display: block; font-size: clamp(2.2rem, 3.7vw, 4.4rem); font-weight: 700; font-stretch: 75%; line-height: .95; letter-spacing: -.02em; white-space: nowrap; }
+.piece-sub { display: block; }
 .piece-meta { display: block; margin-top: .6rem; font-size: clamp(.875rem, .95vw, 1.0625rem); color: var(--muted); }
 .piece-line { display: block; margin-top: .3rem; max-width: 100%; font-size: clamp(.9375rem, 1.05vw, 1.1875rem); line-height: 1.35; }
 .work.dim .piece:not(.on) .piece-cap { opacity: .2; }
@@ -393,16 +394,15 @@ main:focus { outline: none; }
   .pintro-stage { position: static; height: auto; padding: var(--sy) var(--pad) 0; display: grid; gap: 4vh; }
   .pintro-word { position: static; transform: none; font-size: 17vw; line-height: .9; }
   .pintro-dark, .pintro-cover { display: none; }
-  .pintro .piece.first { position: static; width: 90%; pointer-events: auto; }
-  .field { height: auto; padding: 12vh var(--pad) 0; display: grid; gap: 12vh; }
+  .pintro-stage { gap: 12vh; overflow: visible; }
+  .pintro .piece { position: static; width: 90%; pointer-events: auto; visibility: visible; }
   .lead-title { font-size: clamp(3rem, 15vw, 6rem); }
   .lead-disc { gap: .5rem; font-size: .875rem; }
   .brands { height: calc(100svh + (var(--n) + 2) * 11vh); }
   .brands-head h2 { font-size: clamp(1.6rem, 7.2vw, 2.6rem); }
   .wheel li { width: 36vw; }
   .field-index { display: none; }
-  .piece { position: static; width: 90%; }
-  .piece:nth-of-type(even) { justify-self: end; }
+  .pintro .piece:nth-of-type(even) { justify-self: end; }
   .piece-name { font-size: clamp(1.8rem, 9vw, 2.6rem); }
   .row, .p-head, .b-steps li, .about { grid-template-columns: 1fr; }
   .row > *, .p-head > *, .b-steps li > *, .about > * { grid-column: 1 / -1 !important; order: 0 !important; }
