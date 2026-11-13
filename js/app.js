@@ -476,7 +476,7 @@
         lx2.beginPath(); lx2.moveTo(-bw * 0.03, 0); lx2.lineTo(bw * 0.03, 0); lx2.lineTo(bw / 2, len); lx2.lineTo(-bw / 2, len); lx2.fill(); lx2.restore();
       }
     }
-    let disco = false, score = 0, total = 0, endAt = 0, px = -999, py = -999, sparks = [], shown = -1;
+    let disco = false, score = 0, total = 0, endAt = 0, px = -9999, py = -9999, sparks = [], shown = -1, lift = 0;
     const mute = $(".mute-btn"), band = music();
     const showMute = () => { mute.classList.toggle("off", band.muted); mute.setAttribute("aria-pressed", String(band.muted)); mute.setAttribute("aria-label", band.muted ? "Turn the music on" : "Mute the music"); };
     showMute();
@@ -526,7 +526,7 @@
       if (!order.length) order = S.projects.map((_, i) => i).sort(() => Math.random() - 0.5);
       const i = order.pop(), m = masters[i];
       if (!m) return;
-      const w = (small() ? rnd(120, 188) : rnd(212, 362)) * (disco ? 0.72 : 1), h = w * m.r, fast = disco ? rnd(1.7, 2.5) : 1;
+      const w = (small() ? rnd(120, 188) : rnd(212, 362)) * (disco ? 0.576 : 1), h = w * m.r, fast = disco ? rnd(1.7, 2.5) : 1;
       if (disco) total++;
       const el = pool[i].pop() || make(i), v = H * rnd(0.5, 0.85) * fast, drift = disco ? rnd(-190, 190) : rnd(-18, 18);
       const x = rnd(0.04, 0.96) * (W - w), y = -h * 1.5, T = (H + h * 2.6) / v, s = Math.random() < 0.5 ? 1 : -1;
@@ -564,7 +564,8 @@
       items = items.filter((it) => {
         if (it.done) return false;
         const t = (now - it.t0) / 1000, x = it.x + it.drift * t, y = it.y + it.v * t;
-        if (disco && px > x - 26 && px < x + it.w + 26 && py > y - 26 && py < y + it.h + 26) {
+        const reach = fine ? 26 : 44;
+        if (disco && px > x - reach && px < x + it.w + reach && py > y - reach && py < y + it.h + reach) {
           score++; scoreEl.textContent = score; release(it);
           for (let k = 0; k < 14; k++) { const a = rnd(0, 6.28), sp = rnd(120, 520); sparks.push({ x: px, y: py, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 120, life: 1, c: NEON[k % 5] }); }
           return false;
@@ -593,7 +594,7 @@
       on ? band.start() : band.stop();
     };
     function start() {
-      scrollTo(0, 0); score = 0; total = 0; shown = -1; sparks = []; scoreEl.textContent = "0"; end.hidden = true;
+      scrollTo(0, 0); score = 0; total = 0; shown = -1; sparks = []; scoreEl.textContent = "0"; end.hidden = true; park();
       mode(true); t0 = performance.now(); endAt = t0 + 20000;
     }
     function finish() {
@@ -604,8 +605,16 @@
     btn.addEventListener("click", () => (disco ? mode(false) : start()));
     $("[data-again]").addEventListener("click", start);
     $("[data-enter]").addEventListener("click", () => { end.hidden = true; scrollTo({ top: innerHeight, behavior: "smooth" }); });
-    const track = (e) => { const g = gate.getBoundingClientRect(); px = e.clientX - g.left; py = e.clientY - g.top; };
+    const park = () => { px = -9999; py = -9999; clearTimeout(lift); lift = 0; };
+    const track = (e) => {
+      // pressing or hovering a control must not leave the basket sitting there catching images
+      if (e.target && e.target.closest && e.target.closest(".disco-btn, .mute-btn, .disco-hud, .disco-end")) return park();
+      const g = gate.getBoundingClientRect(); px = e.clientX - g.left; py = e.clientY - g.top;
+    };
     gate.addEventListener("pointermove", track); gate.addEventListener("pointerdown", track);
+    // a lifted finger keeps catching briefly, so a quick tap still connects with what is falling past
+    gate.addEventListener("pointerup", (e) => { if (e.pointerType !== "mouse") { clearTimeout(lift); lift = setTimeout(park, 320); } });
+    gate.addEventListener("pointercancel", park); gate.addEventListener("pointerleave", park);
     const away = () => { if (disco && scrollY > innerHeight * 0.5) mode(false); };
     const hide = () => { if (disco && document.hidden) mode(false); };   // stop the sound if the tab is left
     document.addEventListener("visibilitychange", hide);
