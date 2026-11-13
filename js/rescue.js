@@ -83,7 +83,7 @@
     return `<article class="page rs locked"><header class="p-head">
       <p class="p-meta small"><a class="ul" href="#/work/ux-ui">UX / UI</a><span>${p.year}</span><span>Completed</span></p>
       <h1 class="giant">Rescue</h1><p class="p-sum">${p.summary}</p></header>
-      <div class="rs-hero"><img class="bg" src="${p.hero}" alt="" aria-hidden="true"><img class="fg" src="${p.hero}" alt="Rescue: the app, Pip the red panda and the world to save"></div>
+      <div class="rs-hero"><img src="images/rescue/hero-wide.jpg" alt="Rescue: the app, Pip the red panda and the world to save"></div>
 
       <section class="rs-brief">
         <p class="rs-q-big">How might we make saving energy at home something a seven-year-old chooses to do, every day, without a parent pushing?</p>
