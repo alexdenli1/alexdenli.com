@@ -355,6 +355,8 @@ main:focus { outline: none; }
 .about-side { grid-column: 8 / span 5; display: grid; gap: 2.2rem; align-content: start; }
 .about-links {  display: grid; gap: .35rem; align-content: start; font-size: 1.25rem; }
 .about-links a { width: fit-content; }
+.closer { display: block; max-width: 11em; margin: 16vh 0 14vh; font-weight: 700; font-stretch: 75%; line-height: .92; letter-spacing: -.02em; font-size: clamp(2.6rem, 8vw, 9rem); transition: color .3s; }
+.closer:hover { color: var(--zap); }
 
 /* ---------- Out of bounds ---------- */
 .lost-page { min-height: 100vh; display: grid; align-content: center; gap: 2rem; padding: var(--pad); background: var(--panel); color: var(--bg); }
