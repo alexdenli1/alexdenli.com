@@ -23,7 +23,6 @@
   // Only the left edge varies: x = left edge (% of width), s = drift speed (the same for all, so gaps stay even),
   // v = where the title sits beside the image.
   // The title goes on whichever side of the image has more room.
-  const RIGHT_EDGE = 84, PIECE_W = 52;
   const SLOTS = [
     { x: 3, s: .03, v: "bot" }, { x: 31, s: .03, v: "top" }, { x: 7, s: .03, v: "mid" }, { x: 27, s: .03, v: "bot" },
     { x: 4, s: .03, v: "top" }, { x: 30, s: .03, v: "mid" }, { x: 8, s: .03, v: "bot" }, { x: 28, s: .03, v: "top" }
@@ -32,14 +31,17 @@
 
   function home() {
     const n = S.projects.length;
-    const pieces = S.projects.map((p, i) => {
-      const t = SLOTS[i % SLOTS.length], roomL = t.x, roomR = RIGHT_EDGE - (t.x + PIECE_W), side = roomR >= roomL ? "right" : "left";
-      return `<a class="piece${p.hidden ? " lost" : ""}${found.has(p.slug) ? " got" : ""}" href="${link(p)}" data-slug="${esc(p.slug)}"
-        data-title="${esc(p.title)}" data-speed="${t.s}" style="left:${t.x}%;--i:${i}">
-        <span class="piece-in"><img src="${esc(p.hero)}" alt="${esc(p.title)}" loading="${i < 2 ? "eager" : "lazy"}">${ZAP}
-          <span class="piece-title giant t-${side} v-${t.v}" style="width:${Math.max(roomL, roomR) - 4}vw">${esc(p.title)}</span></span>
-        <span class="piece-cap">${esc(p.title)}<small>${esc(cat(p.category).label)}, ${esc(p.year)}</small></span></a>`;
-    }).join("");
+    // Every piece: the image, then below it the name (large), the category and year, and one line about the project.
+    const piece = (p, i) => {
+      const t = SLOTS[i % SLOTS.length];
+      return `<a class="piece${i === 0 ? " first" : ""}${p.hidden ? " lost" : ""}${found.has(p.slug) ? " got" : ""}" href="${link(p)}" data-slug="${esc(p.slug)}"
+        data-title="${esc(p.title)}" data-speed="${t.s}" style="left:${t.x}%;--i:${Math.max(0, i - 1)}">
+        <span class="piece-in"><span class="piece-img"><img src="${esc(p.hero)}" alt="${esc(p.title)}" loading="${i < 2 ? "eager" : "lazy"}">${ZAP}</span>
+          <span class="piece-cap"><span class="piece-name">${esc(p.title)}</span><span class="piece-meta">${esc(cat(p.category).label)}, ${esc(p.year)}</span>
+          <span class="piece-line">${esc(p.line || p.summary || "")}</span></span></span></a>`;
+    };
+    const first = n ? piece(S.projects[0], 0) : "";
+    const rest = S.projects.slice(1).map((p, i) => piece(p, i + 1)).join("");
     const index = S.projects.map((p) => `<li><a href="${link(p)}" data-slug="${esc(p.slug)}" class="${p.hidden ? "lost" : ""}${found.has(p.slug) ? " got" : ""}">
       <b>${p.hidden && !found.has(p.slug) ? "·····" : esc(p.title)}</b></a></li>`).join("");
     return {
@@ -66,10 +68,14 @@
           <p class="brands-sub">Designing for, and working alongside, some of golf’s most trusted names.</p></div>
         <ul class="wheel">${S.brands.slice(0, 12).map((b) => `<li${b.size ? ` style="--lw:${b.size}"` : ""}><img src="${esc(b.logo)}" alt="${esc(b.name)}" draggable="false"></li>`).join("")}</ul>
       </div></section>` : ""}
-      <section class="field" style="--n:${n}" aria-label="All work">
+      <div class="work" style="--n:${Math.max(1, n - 1)}">
         <nav class="field-index" aria-label="Projects"><ol>${index}</ol></nav>
-        ${pieces}
-      </section>
+        <section class="pintro" aria-label="Projects"><div class="pintro-stage">
+          <h2 class="pintro-word">Projects</h2><div class="pintro-dark" aria-hidden="true"></div>
+          ${first}
+        </div></section>
+        <section class="field" aria-label="All work">${rest}</section>
+      </div>
       <section class="gallery" aria-label="Gallery of all work"><div class="gallery-pin">
         <h2 class="gallery-head">Let’s explore and discover more</h2>
         <div class="gallery-band"><div class="gallery-track">${(S.gallery || []).slice(0, 10).map((g) => { const p = S.projects.find((x) => x.slug === g.project);
@@ -195,7 +201,8 @@
     live.waves && live.waves.stop(); live.ro && live.ro.disconnect();
     live = {
       waves: key === "home" ? intro() : null,
-      home: key === "home", mark: $(".gate-mark"), field: $(".field"),
+      home: key === "home", mark: $(".gate-mark"), field: $(".work"), pintro: $(".pintro"), pword: $(".pintro-word"), pdark: $(".pintro-dark"),
+      pfirst: $(".pintro .piece"), pindex: $(".field-index"),
       pieces: $$(".piece"), scrubs: $$("[data-scrub]"), masks: $$(".mask img"),
       names: $$(".field-index a"), wheel: $(".field-index ol"), active: -1,
       gallery: $(".gallery"), track: $(".gallery-track"), run: 0,
@@ -273,6 +280,7 @@
     const pr = (live.pieces || []).map((el) => el.getBoundingClientRect());
     const leadR = live.leadArt ? live.lead.getBoundingClientRect() : null;
     const brandsR = live.logos && live.logos.length ? live.brandsEl.getBoundingClientRect() : null;
+    const introR = live.pintro ? live.pintro.getBoundingClientRect() : null;
     const navH = brandsR ? nav.offsetHeight : 0;
     const galTop = live.run && live.gallery ? live.gallery.getBoundingClientRect().top : null;
     const secR = live.secs && live.secs.length ? live.secs.map((s) => s.getBoundingClientRect()) : null;
@@ -288,10 +296,38 @@
     }
     nav.classList.toggle("nav-away", !!live.mark && y < vh * 0.85);
     flag.classList.toggle("flag-away", live.home && y < vh * (live.mark ? 1.5 : 0.5));
+    // "Projects" intro: the word sits big on screen, a dark disc grows from its middle and swallows it,
+    // and the first project grows out of that dark from nothing into its place. The scroll input is damped
+    // so a quick flick still plays smoothly.
+    const clamp01 = (x) => Math.max(0, Math.min(1, x));
+    let grow = 1;
+    if (introR && big && !reduce) {
+      const span = introR.height - vh, tt = span > 0 ? clamp01(-introR.top / span) : 1;
+      if (live.pT === undefined) live.pT = tt;
+      live.pT += (tt - live.pT) * 0.16;
+      if (Math.abs(tt - live.pT) > 0.0005) queue(); else live.pT = tt;
+      const t = live.pT, out = (x) => 1 - Math.pow(1 - x, 3), soft = (x) => x * x * (3 - 2 * x);
+      grow = out(clamp01((t - 0.3) / 0.5));
+      if (introR.bottom > 0 && introR.top < vh) {
+        live.pword.style.transform = `scale(${(1 + 0.12 * (1 - out(clamp01(1 - introR.top / vh)))).toFixed(4)})`;
+        live.pdark.style.transform = `scale(${(0.02 + 1.3 * soft(clamp01((t - 0.18) / 0.5))).toFixed(4)})`;
+      }
+      live.pindex.style.opacity = clamp01((grow - 0.35) / 0.4).toFixed(3);
+    }
     let near = -1, best = 1e9;
     (live.pieces || []).forEach((el, k) => {
       const r = pr[k], off0 = Math.abs(r.top + r.height / 2 - vh / 2);
       if (off0 < best) { best = off0; near = k; }
+      if (el === live.pfirst) {
+        if (big && !reduce) {
+          const inner = el.firstElementChild, g = grow;
+          const dx = (innerWidth / 2 - (r.left + r.width / 2)) * (1 - g), dy = (vh / 2 - (r.top + r.width / 3)) * (1 - g);
+          inner.style.transform = `translate3d(${dx.toFixed(1)}px, ${dy.toFixed(1)}px, 0) scale(${Math.max(0.001, g).toFixed(4)})`;
+          inner.style.opacity = Math.min(1, g * 4).toFixed(3);
+          const cap = inner.lastElementChild; if (cap) cap.style.opacity = clamp01((g - 0.6) / 0.4).toFixed(3);
+        }
+        return;
+      }
       if (r.bottom < -vh || r.top > vh * 2) return;
       if (!reduce) {
         // each image grows from almost nothing to full size as you scroll down to it, then stays

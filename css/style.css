@@ -106,16 +106,32 @@ main:focus { outline: none; }
 .disco-end { position: absolute; inset: 0; z-index: 7; background: #000; color: var(--fg); display: grid; place-content: center; justify-items: center; gap: 1.25rem; text-align: center; padding: var(--pad); }
 .disco-acts { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin-top: 1.5rem; }
 
-/* ---------- Home: the field of scattered work ---------- */
-/* every home image: same size, landscape 3:2, evenly spaced */
+/* ---------- Home: the work — "Projects" intro, then the field of scattered work ---------- */
+/* every home image: same size, landscape 3:2, evenly spaced; the name, category and one line sit below it */
+.work { position: relative; z-index: 1; background: var(--bg); --pw: min(52vw, 111vh); --ph: calc(var(--pw) / 1.5); --gap: 28vh; --cap: 9rem; }
+.pintro { position: relative; height: 330vh; }
+.pintro-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: var(--bg); }
+.pintro-word {
+  position: absolute; inset: 0; z-index: 1; display: grid; place-items: center; margin: 0; pointer-events: none; will-change: transform;
+  font-size: 32vw; font-weight: 700; font-stretch: 75%; line-height: .8; letter-spacing: -.035em; color: var(--fg); white-space: nowrap;
+}
+/* a black disc with a soft edge, scaled up from the middle: it swallows the word from the centre outwards */
+.pintro-dark {
+  position: absolute; left: 50%; top: 50%; z-index: 2; width: 260vmax; height: 260vmax; margin: -130vmax 0 0 -130vmax; pointer-events: none;
+  background: radial-gradient(circle closest-side, #000 0, #000 40%, rgba(0, 0, 0, 0) 100%); transform: scale(0); will-change: transform;
+}
+.pintro .piece.first { top: calc((100vh - var(--ph) - var(--cap)) / 2 + 2vh); z-index: 3; pointer-events: none; }
+.pintro .piece.first .piece-in { pointer-events: auto; transform-origin: 50% calc(var(--ph) / 2); }
+@media (min-width: 821px) and (prefers-reduced-motion: no-preference) {
+  .pintro .piece.first .piece-in { transform: scale(.001); opacity: 0; }
+}
 .field {
   position: relative; z-index: 1; background: var(--bg);
-  --pw: min(52vw, 111vh); --ph: calc(var(--pw) / 1.5); --gap: 20vh;
-  --first: var(--sy);
-  height: calc(var(--first) + var(--n) * var(--ph) + (var(--n) - 1) * var(--gap));
+  --first: 5vh;
+  height: calc(var(--first) + var(--n) * (var(--ph) + var(--cap)) + (var(--n) - 1) * (var(--gap) - var(--cap)));
 }
 .field-index {
-  position: sticky; top: 50vh; z-index: 3; height: 0; margin-left: auto;
+  position: sticky; top: 50vh; z-index: 4; height: 0; margin-left: auto;
   width: fit-content; margin-right: var(--pad); text-align: right;
 }
 .field-index ol { transition: transform .45s var(--ease); }
@@ -128,6 +144,7 @@ main:focus { outline: none; }
 
 .piece { position: absolute; z-index: 1; display: block; width: var(--pw); top: calc(var(--first) + var(--i) * (var(--ph) + var(--gap))); }
 .piece-in { display: block; position: relative; will-change: transform; }
+.piece-img { display: block; position: relative; }
 /* Hover: a quick electric outline drawn round the image */
 .zap { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; fill: none; visibility: hidden; }
 /* the electric filter is only switched on while a project is hovered: it is costly to leave running */
@@ -138,26 +155,22 @@ main:focus { outline: none; }
 .piece:hover .zap, .piece.on .zap { animation: flicker .9s steps(1) infinite; }
 @keyframes flicker { 0%, 100% { opacity: 1; } 8% { opacity: .35; } 12% { opacity: 1; } 55% { opacity: .7; } 60% { opacity: 1; } }
 .piece img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; transition: opacity .5s, clip-path .9s var(--ease), filter .4s; }
-/* project name, set beside its image on whichever side has room */
-.piece-title { position: absolute; font-size: clamp(2rem, 4.4vw, 5rem); line-height: .88; transition: opacity .4s; }
-.piece-title.t-right { left: calc(100% + 2.2vw); text-align: left; }
-.piece-title.t-left { right: calc(100% + 2.2vw); text-align: right; }
-.piece-title.v-top { top: 0; }
-.piece-title.v-bot { bottom: 0; }
-.piece-title.v-mid { top: 50%; transform: translateY(-50%); }
-.field.dim .piece:not(.on) .piece-title { opacity: .2; }
-.piece-cap { display: none; padding-top: .5rem; font-size: .9375rem; }
-.piece-cap small { color: var(--muted); font-size: inherit; display: block; }
-.field.dim .piece:not(.on) img { opacity: .2; }
-.piece.lost .piece-in { position: relative; }
+/* the name, large, below the image, then the category and year, then one line about the project */
+.piece-cap { display: block; padding-top: clamp(.9rem, 1.6vh, 1.4rem); transition: opacity .4s; }
+.piece-name { display: block; font-size: clamp(2.2rem, 3.7vw, 4.4rem); font-weight: 700; font-stretch: 75%; line-height: .95; letter-spacing: -.02em; white-space: nowrap; }
+.piece-meta { display: block; margin-top: .6rem; font-size: clamp(.875rem, .95vw, 1.0625rem); color: var(--muted); }
+.piece-line { display: block; margin-top: .3rem; max-width: 100%; font-size: clamp(.9375rem, 1.05vw, 1.1875rem); line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.work.dim .piece:not(.on) .piece-cap { opacity: .2; }
+.work.dim .piece:not(.on) img { opacity: .2; }
+.piece.lost:not(.got) .piece-cap { visibility: hidden; }
 .piece.lost img { clip-path: circle(0% at 50% 50%); }
-.piece.lost .piece-in::before {
+.piece.lost .piece-img::before {
   content: "Something is hidden here"; position: absolute; inset: 0; display: grid; place-items: center;
   border: 1.5px dashed var(--muted); color: var(--muted); font-size: .9375rem; text-align: center; padding: 1rem;
   transition: opacity .4s;
 }
 .piece.lost.got img { clip-path: circle(75% at 50% 50%); }
-.piece.lost.got .piece-in::before { opacity: 0; }
+.piece.lost.got .piece-img::before { opacity: 0; }
 
 /* ---------- Home: opening line ---------- */
 /* a full screen: a frosted, colour-washed collage of the work, with the headline centred on it.
@@ -371,16 +384,22 @@ main:focus { outline: none; }
   .nav-pages { grid-row: 2; justify-self: center; align-self: start; }
   .nav-pages a { padding: 0 0 .4rem; }
   .gate-mark { width: 62vw; }
-  .field { height: auto; padding: var(--sy) var(--pad) 0; display: grid; gap: 12vh; }
+  .pintro { height: auto; }
+  .pintro-stage { position: static; height: auto; padding: var(--sy) var(--pad) 0; display: grid; gap: 4vh; }
+  .pintro-word { position: static; display: block; font-size: 24vw; line-height: .9; }
+  .pintro-dark { display: none; }
+  .pintro .piece.first { position: static; width: 90%; pointer-events: auto; }
+  .field { height: auto; padding: 12vh var(--pad) 0; display: grid; gap: 12vh; }
   .lead-title { font-size: clamp(3rem, 15vw, 6rem); }
   .lead-disc { gap: .5rem; font-size: .875rem; }
   .brands { height: calc(100svh + (var(--n) + 2) * 11vh); }
   .brands-head h2 { font-size: clamp(1.6rem, 7.2vw, 2.6rem); }
   .wheel li { width: 36vw; }
-  .field-index, .piece-title { display: none; }
+  .field-index { display: none; }
   .piece { position: static; width: 90%; }
   .piece:nth-of-type(even) { justify-self: end; }
-  .piece-cap { display: block; }
+  .piece-name { font-size: clamp(1.8rem, 9vw, 2.6rem); }
+  .piece-line { white-space: normal; }
   .row, .p-head, .b-steps li, .about { grid-template-columns: 1fr; }
   .row > *, .p-head > *, .b-steps li > *, .about > * { grid-column: 1 / -1 !important; order: 0 !important; }
   .b-steps .step-txt { position: static; }

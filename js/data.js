@@ -17,6 +17,7 @@
      hidden    true = on the home page visitors have to find it with the cursor
      hero      main image
      summary   one or two short sentences
+     line      optional: the single line shown under the name on the home page (falls back to summary)
      blocks    the project page, top to bottom. Block types:
        { type: "statement", text }                 big text for the key point
        { type: "text", heading, text }             small text (heading optional)
@@ -131,23 +132,6 @@ window.SITE = {
         { type: "pair", images: [PH(15), PH(16)] },
         { type: "text", text: "Placeholder: where the identity is used." }
       ]
-    },
-    {
-      slug: "amazon", title: "Amazon", category: "e-commerce",
-      year: 2026, status: "current", hero: PH(5),
-      summary: "Placeholder: brand stores, listings and advertising on Amazon.",
-      blocks: [
-        { type: "statement", text: "Placeholder: what the Amazon work set out to change." },
-        { type: "stats", items: [
-          { value: "+00%", label: "Placeholder: sales" },
-          { value: "+00%", label: "Placeholder: conversion rate" },
-          { value: "000", label: "Placeholder: listings updated" }
-        ] },
-        { type: "image", src: PH(9), size: "full", caption: "Placeholder: before and after" },
-        { type: "text", heading: "What changed", text: "Placeholder: the main decisions — layout, photography, copy — and why." },
-        { type: "image", src: PH(10), size: "left" },
-        { type: "statement", text: "Placeholder: where the numbers are projected to go next." }
-      ]
     }
   ],
 
@@ -169,7 +153,7 @@ window.SITE = {
   gallery: [
     { src: "images/xfly/hero.jpg", project: "xfly" }, { src: "images/adverts/hero.jpg", project: "adverts" }, { src: "images/signature-logo/hero.jpg", project: "signature-logo" },
     { src: PH(4), project: "ball-cabinet" }, { src: "images/rescue/hero.jpg", project: "rescue" }, { src: PH(13), project: "brand-identity" },
-    { src: PH(5), project: "amazon" }, { src: PH(2), project: "adverts" }, { src: PH(3), project: "xfly" },
+    { src: PH(6), project: "signature-logo" }, { src: PH(2), project: "adverts" }, { src: PH(3), project: "xfly" },
     { src: PH(14), project: "brand-identity" }
   ],
 
