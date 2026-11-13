@@ -181,16 +181,14 @@ main:focus { outline: none; }
   font-size: clamp(.9375rem, 1.15vw, 1.25rem); letter-spacing: .04em; color: rgba(238, 233, 227, .78); }
 
 /* ---------- Home: brand wheel — logos orbit an invisible circle as you scroll ---------- */
-.brands { position: relative; z-index: 1; background: var(--bg); height: calc(100vh + (var(--n) - 1) * 26vh); }
-.brands-pin { position: sticky; top: var(--nav-h); height: calc(100vh - var(--nav-h)); height: calc(100svh - var(--nav-h)); overflow: hidden; display: grid; grid-template-columns: 5fr 7fr; align-items: stretch; gap: 2rem; padding: var(--sy) var(--pad) 0; }
-.brands-text { align-self: start; }
-.brands-text h2 { font-size: clamp(2.4rem, 5.4vw, 6rem); font-weight: 700; font-stretch: 75%; line-height: .9; letter-spacing: -.02em; max-width: 7em; margin-bottom: 1.25rem; }
-.brands-text .small { max-width: 24rem; }
-.brands-now { margin-top: 2.5rem; min-height: 1.2em; font-size: clamp(1.25rem, 2.1vw, 2rem); font-weight: 700; font-stretch: 80%; color: var(--fg); }
-.brands-now::before { content: ""; display: inline-block; width: .5em; height: .5em; margin-right: .5em; border-radius: 50%; background: var(--accent); vertical-align: .1em; }
-.brands-now:empty::before { display: none; }
-.wheel { position: relative; height: 100%; }
-.wheel li { position: absolute; left: 0; top: 0; width: clamp(96px, 11vw, 190px); aspect-ratio: 16 / 7; will-change: transform, filter, opacity; }
+.brands { position: relative; z-index: 1; background: var(--bg); height: calc(100vh + (var(--n) + 2) * 13vh); }
+.brands-pin { position: sticky; top: var(--nav-h); height: calc(100vh - var(--nav-h)); height: calc(100svh - var(--nav-h)); overflow: hidden; display: flex; flex-direction: column; align-items: center; padding: var(--sy) var(--pad); }
+.brands-head { text-align: center; }
+.brands-head h2 { font-size: clamp(2.2rem, 4.4vw, 5rem); font-weight: 700; font-stretch: 75%; line-height: 1; letter-spacing: -.02em; white-space: nowrap; }
+.brands-rule { width: 3.25rem; height: 2px; background: var(--accent); margin: 1.35rem auto 1.1rem; }
+.brands-sub { font-size: clamp(.9375rem, 1.1vw, 1.1875rem); color: var(--muted); }
+.wheel { flex: 1; width: 100%; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: clamp(1.5rem, 4.5vh, 3.75rem) clamp(2rem, 4vw, 4.5rem); }
+.wheel li { width: clamp(140px, 17vw, 330px); aspect-ratio: 16 / 7; opacity: 0; will-change: transform, filter, opacity; }
 .wheel img { width: 100%; height: 100%; object-fit: contain; }
 
 /* ---------- Home: gallery strip that slides left as you scroll ---------- */
@@ -376,10 +374,9 @@ main:focus { outline: none; }
   .field { height: auto; padding: var(--sy) var(--pad) 0; display: grid; gap: 12vh; }
   .lead-title { font-size: clamp(3rem, 15vw, 6rem); }
   .lead-disc { gap: .5rem; font-size: .875rem; }
-  .brands { height: calc(100svh + (var(--n) - 1) * 22vh); }
-  .brands-pin { grid-template-columns: 1fr; grid-template-rows: auto 1fr; align-items: start; gap: 0; }
-  .brands-text h2 { font-size: clamp(2.2rem, 11vw, 3.4rem); }
-  .brands-now { margin-top: 1.25rem; }
+  .brands { height: calc(100svh + (var(--n) + 2) * 11vh); }
+  .brands-head h2 { font-size: clamp(1.6rem, 7.2vw, 2.6rem); }
+  .wheel li { width: 36vw; }
   .field-index, .piece-title { display: none; }
   .piece { position: static; width: 90%; }
   .piece:nth-of-type(even) { justify-self: end; }

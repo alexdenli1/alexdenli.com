@@ -61,9 +61,9 @@
         <ul class="lead-disc">${(S.owner.disciplines || []).map((t) => `<li>${esc(t)}</li>`).join("")}</ul></div>
       </section>
       ${(S.brands || []).length ? `<section class="brands" style="--n:${Math.min(10, S.brands.length)}" aria-label="Brands I have worked with"><div class="brands-pin">
-        <div class="brands-text"><h2>Brands I’ve worked with</h2>
-          <p class="small">Golf brands, distributors and organisations I have designed for and alongside.</p>
-          <p class="brands-now" aria-live="polite"></p></div>
+        <div class="brands-head"><h2>Brands I’ve worked with</h2>
+          <div class="brands-rule" aria-hidden="true"></div>
+          <p class="brands-sub">Designing for, and working alongside, some of golf’s most trusted names.</p></div>
         <ul class="wheel">${S.brands.slice(0, 10).map((b) => `<li><img src="${esc(b.logo)}" alt="${esc(b.name)}" draggable="false"></li>`).join("")}</ul>
       </div></section>` : ""}
       <section class="field" style="--n:${n}" aria-label="All work">
@@ -200,7 +200,7 @@
       names: $$(".field-index a"), wheel: $(".field-index ol"), active: -1,
       gallery: $(".gallery"), track: $(".gallery-track"), run: 0,
       lead: $(".lead"), leadArt: $(".lead-art"), lens: $(".lead-lens"), lensImg: $(".lead-lens img"),
-      brandsEl: $(".brands"), logos: $$(".wheel li"), wheelEl: $(".wheel"), brandNow: $(".brands-now"), brandOn: -1,
+      brandsEl: $(".brands"), logos: $$(".wheel li"),
       secs: $$(".pcat"), bgs: $$(".pbg img"), bgOn: -1
     };
     const spot = (slug, on) => {
@@ -250,17 +250,6 @@
         live.lead.addEventListener("pointerleave", () => live.lead.classList.remove("lensing"));
       }
     }
-    if (live.wheelEl) {
-      const geo = () => {
-        // the circle sits on the bottom of the panel, so the gap after it matches the gaps above
-        const w = live.wheelEl.clientWidth, h = live.wheelEl.clientHeight;
-        const lh = (live.logos[0] ? live.logos[0].offsetHeight : 60) * 0.6 / 2;
-        const R = Math.max(60, Math.min(w * 0.4, h / 2 - lh));
-        live.wheelGeo = { cx: w * 0.53, cy: h - R - lh, R };
-        queue();
-      };
-      live.geo = geo; geo();
-    }
     $$("[data-top]").forEach((a) => a.addEventListener("click", (e) => { e.preventDefault(); scrollTo({ top: live.mark ? innerHeight : 0, behavior: reduce ? "auto" : "smooth" }); }));
     $$("[data-peek]").forEach((a) => {
       a.addEventListener("mouseenter", () => { peek.src = a.dataset.peek; peek.classList.add("on"); });
@@ -283,7 +272,7 @@
     // page out again after each write, which is what made moving the mouse on the home page slow.
     const pr = (live.pieces || []).map((el) => el.getBoundingClientRect());
     const leadR = live.leadArt ? live.lead.getBoundingClientRect() : null;
-    const brandsR = live.logos && live.logos.length && live.wheelGeo ? live.brandsEl.getBoundingClientRect() : null;
+    const brandsR = live.logos && live.logos.length ? live.brandsEl.getBoundingClientRect() : null;
     const navH = brandsR ? nav.offsetHeight : 0;
     const galTop = live.run && live.gallery ? live.gallery.getBoundingClientRect().top : null;
     const secR = live.secs && live.secs.length ? live.secs.map((s) => s.getBoundingClientRect()) : null;
@@ -340,23 +329,22 @@
       if (!reduce) live.leadArt.style.transform = p < 1 ? `scale(${(1.1 - 0.1 * p).toFixed(4)})` : "";
     }
     if (brandsR && brandsR.top < vh && brandsR.bottom > 0) {
-      const span = brandsR.height - (vh - navH), N = live.logos.length, step = (Math.PI * 2) / N;
-      const s = (span > 0 ? Math.max(0, Math.min(1, (navH - brandsR.top) / span)) : 0) * (N - 1);
-      const { cx, cy, R } = live.wheelGeo;
-      let on = -1, top = -1;
+      // Each logo zooms in from small, overshoots a touch, and settles into its slot.
+      // The scroll input is damped so a fast flick still plays the sequence smoothly.
+      const span = brandsR.height - (vh - navH), N = live.logos.length;
+      const t = span > 0 ? Math.max(0, Math.min(1, (navH - brandsR.top) / span)) : 1;
+      if (live.brandT === undefined) live.brandT = t;
+      live.brandT += (t - live.brandT) * 0.14;
+      if (Math.abs(t - live.brandT) > 0.001) queue(); else live.brandT = t;
+      const dur = 2.6 / (N + 1.6), gap0 = N > 1 ? (1 - dur) / (N - 1) : 1;
       live.logos.forEach((el, k) => {
-        const a = Math.PI + (s - k) * step, gap = Math.abs(s - k), d = Math.min(gap, N - gap);
-        const f = Math.max(0, 1 - d), e = f * f * (3 - 2 * f);
-        if (f > top) { top = f; on = k; }
-        el.style.transform = `translate3d(${(cx + R * Math.cos(a)).toFixed(1)}px, ${(cy + R * Math.sin(a)).toFixed(1)}px, 0) translate(-50%, -50%) scale(${(0.6 + 0.75 * e).toFixed(3)})`;
-        el.style.filter = `grayscale(${(1 - e).toFixed(3)}) brightness(${(0.32 + 0.68 * e).toFixed(3)})`;
-        el.style.opacity = (0.45 + 0.55 * e).toFixed(3);
-        el.style.zIndex = String(Math.round(e * 10));
+        if (reduce) { el.style.transform = ""; el.style.opacity = "1"; el.style.filter = ""; return; }
+        const p = Math.max(0, Math.min(1, (live.brandT - k * gap0) / dur));
+        const b = 1 + 2.70158 * Math.pow(p - 1, 3) + 1.70158 * Math.pow(p - 1, 2); // ease-out-back
+        el.style.transform = `translate3d(0, ${(36 * (1 - b)).toFixed(1)}px, 0) scale(${(0.3 + 0.7 * b).toFixed(3)})`;
+        el.style.opacity = Math.min(1, p * 1.8).toFixed(3);
+        el.style.filter = p < 1 ? `grayscale(${(1 - p).toFixed(3)}) brightness(${(0.4 + 0.6 * p).toFixed(3)})` : "";
       });
-      if (on !== live.brandOn) {
-        live.brandOn = on;
-        live.brandNow.textContent = on >= 0 ? S.brands[on].name : "";
-      }
     }
     if (galTop !== null) {
       // Scrolling up skips straight past the strip; scrolling down plays it through again.
@@ -748,18 +736,6 @@
     gate.remove(); scrollTo(0, Math.max(0, scrollY - h));
   }
   addEventListener("scroll", () => { if (live.mark) enter(); queue(); }, { passive: true });
-  // Brand wheel: scrolling with the pointer over the text side skips straight past the wheel;
-  // scrolling over the circle turns it.
-  addEventListener("wheel", (e) => {
-    const sec = live.brandsEl;
-    if (!sec || !live.wheelEl || !wide() || e.ctrlKey) return;
-    const vh = innerHeight, navH = nav.offsetHeight, r = sec.getBoundingClientRect();
-    if (r.top > navH + 1 || r.bottom < vh - 1) return;                       // not pinned
-    if (e.clientX >= live.wheelEl.getBoundingClientRect().left) return;     // over the circle
-    const down = e.deltaY > 0;
-    if (down && r.bottom > vh + 2) { e.preventDefault(); scrollTo(0, scrollY + r.bottom - vh); }
-    else if (!down && r.top < navH - 2) { e.preventDefault(); scrollTo(0, scrollY + r.top - navH); }
-  }, { passive: false });
   addEventListener("resize", () => { live.fit && live.fit(); live.geo && live.geo(); live.sizeLens && live.sizeLens(); live.nameOff = null; queue(); });
   addEventListener("mousemove", (e) => {
     mx = e.clientX; my = e.clientY;
