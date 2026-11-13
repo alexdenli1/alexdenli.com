@@ -264,22 +264,27 @@
         const base = (F - (fa + fd)) / 2 + fa, off = base - capH / 2 - F / 2;
         w.style.setProperty("--wf", F.toFixed(1) + "px"); w.style.setProperty("--wsy", sy.toFixed(4));
         w.style.setProperty("--wty", (-off * sy + 34).toFixed(1) + "px");
-        // the grid of squares
-        const W = cv.width = Math.round(vw), H = cv.height = Math.round(vh);
-        const cell = Math.max(12, Math.round(vw / 80)), cols = Math.ceil(W / cell), rows = Math.ceil(H / cell), N = cols * rows;
-        const order = Array.from({ length: N }, (_, i) => i);
-        for (let i = N - 1; i > 0; i--) { const j = (Math.random() * (i + 1)) | 0; [order[i], order[j]] = [order[j], order[i]]; }
-        live.cover = { ctx, W, H, cell, cols, N, order, shown: -1 };
-        live.drawCover = (count) => {
-          const cv2 = live.cover; if (!cv2) return;
-          count = Math.max(0, Math.min(cv2.N, count | 0));
-          if (count === cv2.shown) return;
-          const c2 = cv2.ctx, from = cv2.shown >= 0 && count > cv2.shown ? cv2.shown : 0;
-          if (from === 0) { c2.fillStyle = "#000"; c2.fillRect(0, 0, cv2.W, cv2.H); }
-          for (let i = from; i < count; i++) { const id = cv2.order[i]; c2.clearRect((id % cv2.cols) * cv2.cell, ((id / cv2.cols) | 0) * cv2.cell, cv2.cell, cv2.cell); }
-          cv2.shown = count;
+        // fine grain: a small noise map (one cell = 3 screen pixels) that is scaled up crisply. Each cell has its own
+        // moment to appear, a little earlier towards the bottom, and fades in rather than snapping, so the word
+        // dissolves in like film grain instead of blocks.
+        const gw = cv.width = Math.ceil(vw / 3), gh = cv.height = Math.ceil(vh / 3);
+        const thr = new Float32Array(gw * gh);
+        for (let y = 0; y < gh; y++) for (let x = 0; x < gw; x++) thr[y * gw + x] = 0.78 * Math.random() + 0.22 * (1 - y / gh);
+        const img = ctx.createImageData(gw, gh), d32 = new Uint32Array(img.data.buffer);
+        live.cover = { ctx, img, d32, thr, n: gw * gh, shown: -1 };
+        live.drawCover = (p) => {
+          const c2 = live.cover; if (!c2) return;
+          const key = Math.round(Math.max(0, Math.min(1, p)) * 600);
+          if (key === c2.shown) return;
+          c2.shown = key;
+          const q = (key / 600) * 1.14, th = c2.thr, out = c2.d32;
+          for (let i = 0; i < c2.n; i++) {
+            const f = (q - th[i]) * 7;                      // 0 = still hidden, 1 = fully shown
+            out[i] = (f >= 1 ? 0 : f <= 0 ? 255 : ((1 - f) * 255) | 0) << 24;
+          }
+          c2.ctx.putImageData(c2.img, 0, 0);
         };
-        live.drawCover(0); live.cover.shown = -1; live.drawCover(0);
+        live.drawCover(0);
         queue();
       };
       live.fitWord = fit;
@@ -349,8 +354,8 @@
       grow = out(clamp01((t - 0.14) / 0.5));
       if (introR.bottom > 0 && introR.top < vh) {
         // the word dissolves in, square by square, as the section rises into view
-        const dis = clamp01((1 - introR.top / vh) / 0.85);
-        if (live.cover) live.drawCover(Math.round(dis * live.cover.N));
+        const dis = clamp01((1 - introR.top / vh) / 0.5);
+        if (live.cover) live.drawCover(dis);
         live.pword.style.opacity = (0.25 + 0.75 * dis).toFixed(3);
         live.pdark.style.transform = `scale(${(1.3 * soft(clamp01((t - 0.03) / 0.3))).toFixed(4)})`;
       }

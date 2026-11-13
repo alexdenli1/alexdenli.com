@@ -117,8 +117,8 @@ main:focus { outline: none; }
   font-size: var(--wf, 20vw); font-weight: 700; font-stretch: 75%; line-height: 1; letter-spacing: -.02em; text-transform: uppercase;
   color: #fff; white-space: nowrap;
 }
-/* black squares laid over the word and removed in random order: the word dissolves in, pixel by pixel */
-.pintro-cover { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; pointer-events: none; }
+/* a layer of fine black grain over the word, thinned out as you scroll, so the word dissolves in */
+.pintro-cover { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; pointer-events: none; image-rendering: pixelated; }
 /* a black disc with a soft edge, scaled up from the middle: it swallows the word from the centre outwards */
 .pintro-dark {
   position: absolute; left: 50%; top: 50%; z-index: 3; width: 260vmax; height: 260vmax; margin: -130vmax 0 0 -130vmax; pointer-events: none;
