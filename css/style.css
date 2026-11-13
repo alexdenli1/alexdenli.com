@@ -353,7 +353,7 @@ main:focus { outline: none; }
 .about { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3rem 1.5rem; }
 .about-txt { grid-column: 1 / span 5; display: grid; align-content: start; gap: 1.1rem; font-size: 1.25rem; }
 .about-side { grid-column: 8 / span 5; display: grid; gap: 2.2rem; align-content: start; }
-.about-photo { display: block; width: min(100%, 15vw); aspect-ratio: 4 / 5; object-fit: cover; }
+.about-photo { display: block; width: min(100%, 19vw); aspect-ratio: 3 / 4; object-position: 50% 30%; object-fit: cover; }
 .about-links {  display: grid; gap: .35rem; align-content: start; font-size: 1.25rem; }
 .about-links a { width: fit-content; }
 

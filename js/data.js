@@ -36,9 +36,9 @@ window.SITE = {
     role: "Product, graphic and e-commerce design",
     location: "London",
     email: "alexdenli200@gmail.com", // the address shown on the contact page and in the footer
-    phone: "+44 7000 000000",         // placeholder: shown on the contact page
+    phone: "+44 7 568 599 300",       // shown on the contact page
     intro: "Graphic and product designer with 3–4 years' experience, taking products from first concept to launch.",
-    photo: "images/placeholder/portrait.svg",  // your portrait for the contact page (about 800x1000, portrait)
+    photo: "images/profile/alex.jpg",  // your portrait for the contact page (portrait)
     headline: "Creative Designer",                               // the big line at the top of the home page
     disciplines: ["Graphic", "Product", "UX/UI", "E-commerce"],  // the small line spread evenly beneath it
     collage: "images/collage/collage.jpg",  // 1920x1080 (or larger) collage of your work, frosted behind the headline
