@@ -71,7 +71,7 @@
       <div class="work" style="--n:${Math.max(1, n - 1)}">
         <nav class="field-index" aria-label="Projects"><ol>${index}</ol></nav>
         <section class="pintro" aria-label="Projects"><div class="pintro-stage">
-          <h2 class="pintro-word">Projects</h2><div class="pintro-dark" aria-hidden="true"></div>
+          <h2 class="pintro-word">Projects</h2><canvas class="pintro-cover" aria-hidden="true"></canvas><div class="pintro-dark" aria-hidden="true"></div>
           ${first}
         </div></section>
         <section class="field" aria-label="All work">${rest}</section>
@@ -201,7 +201,7 @@
     live.waves && live.waves.stop(); live.ro && live.ro.disconnect();
     live = {
       waves: key === "home" ? intro() : null,
-      home: key === "home", mark: $(".gate-mark"), field: $(".work"), pintro: $(".pintro"), pword: $(".pintro-word"), pdark: $(".pintro-dark"),
+      home: key === "home", mark: $(".gate-mark"), field: $(".work"), pintro: $(".pintro"), pword: $(".pintro-word"), pdark: $(".pintro-dark"), pcover: $(".pintro-cover"),
       pfirst: $(".pintro .piece"), pindex: $(".field-index"),
       pieces: $$(".piece"), scrubs: $$("[data-scrub]"), masks: $$(".mask img"),
       names: $$(".field-index a"), wheel: $(".field-index ol"), active: -1,
@@ -246,6 +246,45 @@
     // Headline: a frosted, colour-washed copy of the work collage, painted once. A round lens follows the
     // pointer showing the sharp collage, lined up with the page and slightly magnified. Moving it is
     // two transforms, so it stays smooth.
+    // "Projects" word: sized so its capitals fill the screen (stretched upwards to reach the top and bottom),
+    // and a grid of black squares that are lifted off in random order to dissolve it in.
+    if (live.pword && wide()) {
+      const cv = live.pcover, ctx = cv.getContext("2d");
+      const fit = () => {
+        const w = live.pword, vw = innerWidth, vh = innerHeight, k = 200;
+        w.style.setProperty("--wf", k + "px"); w.style.setProperty("--wsy", "1"); w.style.setProperty("--wty", "0px");
+        const rg = document.createRange(); rg.selectNodeContents(w);
+        const W0 = rg.getBoundingClientRect().width;
+        const m = document.createElement("canvas").getContext("2d"); m.font = `700 ${k}px Bricolage`;
+        const cap = m.measureText("H"), mt = m.measureText("Hg");
+        if (!W0 || !cap.actualBoundingBoxAscent) return;
+        const F = k * (0.985 * vw) / W0, s = F / k, capH = cap.actualBoundingBoxAscent * s;
+        const sy = (0.84 * vh) / capH;
+        const fa = (mt.fontBoundingBoxAscent || k * 0.9) * s, fd = (mt.fontBoundingBoxDescent || k * 0.25) * s;
+        const base = (F - (fa + fd)) / 2 + fa, off = base - capH / 2 - F / 2;
+        w.style.setProperty("--wf", F.toFixed(1) + "px"); w.style.setProperty("--wsy", sy.toFixed(4));
+        w.style.setProperty("--wty", (-off * sy + 34).toFixed(1) + "px");
+        // the grid of squares
+        const W = cv.width = Math.round(vw), H = cv.height = Math.round(vh);
+        const cell = Math.max(12, Math.round(vw / 80)), cols = Math.ceil(W / cell), rows = Math.ceil(H / cell), N = cols * rows;
+        const order = Array.from({ length: N }, (_, i) => i);
+        for (let i = N - 1; i > 0; i--) { const j = (Math.random() * (i + 1)) | 0; [order[i], order[j]] = [order[j], order[i]]; }
+        live.cover = { ctx, W, H, cell, cols, N, order, shown: -1 };
+        live.drawCover = (count) => {
+          const cv2 = live.cover; if (!cv2) return;
+          count = Math.max(0, Math.min(cv2.N, count | 0));
+          if (count === cv2.shown) return;
+          const c2 = cv2.ctx, from = cv2.shown >= 0 && count > cv2.shown ? cv2.shown : 0;
+          if (from === 0) { c2.fillStyle = "#000"; c2.fillRect(0, 0, cv2.W, cv2.H); }
+          for (let i = from; i < count; i++) { const id = cv2.order[i]; c2.clearRect((id % cv2.cols) * cv2.cell, ((id / cv2.cols) | 0) * cv2.cell, cv2.cell, cv2.cell); }
+          cv2.shown = count;
+        };
+        live.drawCover(0); live.cover.shown = -1; live.drawCover(0);
+        queue();
+      };
+      live.fitWord = fit;
+      (document.fonts && document.fonts.load ? document.fonts.load("700 200px Bricolage") : Promise.resolve()).then(() => { if (live.pword === $(".pintro-word")) fit(); });
+    }
     if (live.leadArt) {
       paintFrost($(".lead-frost canvas"), S.owner.collage);
       const sizeLens = () => { if (!live.lensImg) return; live.lensImg.style.width = live.lead.clientWidth + "px"; live.lensImg.style.height = live.lead.clientHeight + "px"; live.lensD = live.lens.offsetWidth; };
@@ -304,13 +343,14 @@
     if (introR && big && !reduce) {
       const span = introR.height - vh, tt = span > 0 ? clamp01(-introR.top / span) : 1;
       if (live.pT === undefined) live.pT = tt;
-      live.pT += (tt - live.pT) * 0.16;
+      live.pT += (tt - live.pT) * 0.2;
       if (Math.abs(tt - live.pT) > 0.0005) queue(); else live.pT = tt;
       const t = live.pT, out = (x) => 1 - Math.pow(1 - x, 3), soft = (x) => x * x * (3 - 2 * x);
-      grow = out(clamp01((t - 0.3) / 0.5));
+      grow = out(clamp01((t - 0.2) / 0.55));
       if (introR.bottom > 0 && introR.top < vh) {
-        live.pword.style.transform = `scale(${(1 + 0.12 * (1 - out(clamp01(1 - introR.top / vh)))).toFixed(4)})`;
-        live.pdark.style.transform = `scale(${(0.02 + 1.3 * soft(clamp01((t - 0.18) / 0.5))).toFixed(4)})`;
+        // the word dissolves in, square by square, as the section rises into view
+        if (live.cover) live.drawCover(Math.round(clamp01((1 - introR.top / vh - 0.12) / 0.8) * live.cover.N));
+        live.pdark.style.transform = `scale(${(1.3 * soft(clamp01((t - 0.06) / 0.5))).toFixed(4)})`;
       }
       live.pindex.style.opacity = clamp01((grow - 0.35) / 0.4).toFixed(3);
     }
@@ -772,7 +812,7 @@
     gate.remove(); scrollTo(0, Math.max(0, scrollY - h));
   }
   addEventListener("scroll", () => { if (live.mark) enter(); queue(); }, { passive: true });
-  addEventListener("resize", () => { live.fit && live.fit(); live.geo && live.geo(); live.sizeLens && live.sizeLens(); live.nameOff = null; queue(); });
+  addEventListener("resize", () => { live.fit && live.fit(); live.fitWord && live.fitWord(); live.sizeLens && live.sizeLens(); live.nameOff = null; queue(); });
   addEventListener("mousemove", (e) => {
     mx = e.clientX; my = e.clientY;
     cursor.style.transform = `translate3d(${mx}px, ${my}px, 0)`;
