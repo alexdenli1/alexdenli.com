@@ -56,7 +56,7 @@ window.SITE = {
   projects: [
     {
       slug: "xfly", title: "XFLY", category: "product-design",
-      year: 2026, status: "current", hero: PH(1),
+      year: 2026, status: "current", hero: "images/xfly/hero.jpg",
       summary: "Placeholder: one line on what XFLY is and your part in it.",
       blocks: [
         { type: "statement", text: "Placeholder: the problem XFLY solves, said in one sentence a golfer would nod at." },
@@ -73,7 +73,7 @@ window.SITE = {
     },
     {
       slug: "adverts", title: "Adverts", category: "graphic-design",
-      year: 2026, status: "current", hero: PH(2),
+      year: 2026, status: "current", hero: "images/adverts/hero.jpg",
       summary: "Placeholder: magazine adverts for print and online, about one a month.",
       blocks: [
         { type: "statement", text: "Placeholder: what makes a golf advert work on a crowded magazine page." },
@@ -152,7 +152,7 @@ window.SITE = {
      The first 10 are shown. List them from current and archived work, in the order they should appear.
      "project" is optional: give a project slug and the image links to that project's page. */
   gallery: [
-    { src: PH(1), project: "xfly" }, { src: PH(6), project: "adverts" }, { src: PH(9), project: "signature-logo" },
+    { src: "images/xfly/hero.jpg", project: "xfly" }, { src: "images/adverts/hero.jpg", project: "adverts" }, { src: PH(9), project: "signature-logo" },
     { src: PH(4), project: "ball-cabinet" }, { src: PH(10), project: "rescue" }, { src: PH(13), project: "brand-identity" },
     { src: PH(5), project: "amazon" }, { src: PH(2), project: "adverts" }, { src: PH(3), project: "xfly" },
     { src: PH(14), project: "brand-identity" }
