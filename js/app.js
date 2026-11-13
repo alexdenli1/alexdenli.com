@@ -304,7 +304,7 @@
         live.lead.addEventListener("pointerleave", () => live.lead.classList.remove("lensing"));
       }
     }
-    $$("[data-top]").forEach((a) => a.addEventListener("click", (e) => { e.preventDefault(); scrollTo({ top: live.mark ? innerHeight : 0, behavior: reduce ? "auto" : "smooth" }); }));
+    $$("[data-top]").forEach((a) => a.addEventListener("click", (e) => { e.preventDefault(); toTop(); }));
     $$("[data-peek]").forEach((a) => {
       a.addEventListener("mouseenter", () => { peek.src = a.dataset.peek; peek.classList.add("on"); });
       a.addEventListener("mouseleave", () => peek.classList.remove("on"));
@@ -319,6 +319,20 @@
   }
 
   /* ---------- Scroll and pointer motion ---------- */
+  // Back to top: one eased scroll to the top of the home page. The list/showcase switch and the strip glide
+  // stand down meanwhile, because they change the page height mid-way and used to pull the scroll off course.
+  function toTop() {
+    const target = live.mark ? innerHeight : 0;
+    if (reduce) { scrollTo(0, target); return; }
+    live.toTop = true; live.up = true;
+    const from = scrollY, t0 = performance.now(), dur = Math.min(1800, 500 + Math.abs(from - target) * 0.12);
+    const step = (now) => {
+      const p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+      scrollTo(0, from + (target - from) * e);
+      if (p < 1) requestAnimationFrame(step); else { scrollTo(0, target); live.toTop = false; queue(); }
+    };
+    requestAnimationFrame(step);
+  }
   // a quick eased scroll (used instead of a hard jump)
   function glide(to) {
     live.glide = true;
@@ -389,7 +403,7 @@
       const N = live.pieces.length, wr = live.field.getBoundingClientRect();
       const inWork = wr.top < vh && wr.bottom > 0;
       const pw = Math.min(0.52 * innerWidth, 1.11 * vh), rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16, slideTop = (vh - pw / 1.5 - 10 * rem) / 2 + 0.02 * vh;
-      if (!live.list && up && inWork && introR.top <= 0 && introR.bottom >= vh - 1) {
+      if (!live.toTop && !live.list && up && inWork && introR.top <= 0 && introR.bottom >= vh - 1) {
         const scrolled = -introR.top, sp = Math.max(0, (scrolled - 1.15 * vh) / (0.8 * vh));
         const idx = introR.bottom < vh + 1 ? N - 1 : Math.min(N - 1, Math.max(0, Math.round(sp - 0.1)));
         live.list = true; live.field.classList.add("listmode");
@@ -500,7 +514,7 @@
     }
     if (galTop !== null) {
       // Scrolling up skips straight past the strip; scrolling down plays it through again.
-      if (y < lastY - 1 && galTop < -2 && galTop > -live.run / 3 - 2 && !live.glide) glide(y + galTop);
+      if (y < lastY - 1 && galTop < -2 && galTop > -live.run / 3 - 2 && !live.glide && !live.toTop) glide(y + galTop);
       else if (galTop < vh && galTop > -live.run - vh) {
         const tg = Math.max(0, Math.min(live.run, -galTop * 3)), mid = innerWidth / 2;
         if (live.gT === undefined || up) live.gT = tg;

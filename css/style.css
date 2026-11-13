@@ -366,14 +366,23 @@ main:focus { outline: none; }
 /* ---------- Home flag, curtain, cursor ---------- */
 .flag {
   position: fixed; right: var(--pad); bottom: 1.25rem; z-index: 35; display: flex; align-items: center; gap: .4rem;
-  padding: .45rem .9rem .45rem .5rem; border-radius: 99px; background: var(--fg); color: var(--bg); font-size: .9375rem;
+  padding: .4rem .95rem .4rem .55rem; border-radius: 99px; background: var(--fg); color: var(--bg); font-size: .9375rem;
   transition: transform .4s var(--ease), background .2s;
 }
 .flag.flag-away { transform: translateY(200%); }
-.flag svg { width: 1.6rem; height: 1.9rem; stroke: currentColor; overflow: visible; }
-.flag-cloth { fill: var(--accent); stroke: none; transform-origin: 14px 11px; transition: transform .35s var(--ease); }
+.flag svg { width: 2.1rem; height: 2.1rem; stroke: currentColor; overflow: visible; }
+.hm-roof { transform-box: fill-box; transform-origin: 50% 100%; transition: transform .45s var(--ease); }
+.hm-win { fill: var(--zap); stroke-width: 1.2; }
+.hm-door { fill: var(--accent); transform-box: fill-box; transform-origin: 0 50%; transition: transform .45s var(--ease); }
+.hm-knob { fill: var(--fg); stroke: none; transition: opacity .2s; }
+.hm-puff { fill: none; stroke-width: 1.3; opacity: 0; }
 .flag:hover { background: var(--muted); }
-.flag:hover .flag-cloth { transform: translateY(-3px) skewY(-8deg) scaleX(1.12); }
+.flag:hover .hm-roof { transform: translateY(-2.5px); }
+.flag:hover .hm-door { transform: scaleX(.4) skewY(-6deg); }
+.flag:hover .hm-knob { opacity: 0; }
+.flag:hover .hm-puff { animation: puff 1.2s ease-out infinite; }
+.flag:hover .hm-puff.p2 { animation-delay: .35s; }
+@keyframes puff { 0% { opacity: 0; transform: translate(0, 4px) scale(.6); } 30% { opacity: .9; } 100% { opacity: 0; transform: translate(3px, -6px) scale(1.4); } }
 
 /* Page transitions: every page arrives on the same slanted sweep.
    Going home is instant, with no transition. */
