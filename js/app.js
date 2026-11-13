@@ -235,9 +235,11 @@
     }
     if (live.wheelEl) {
       const geo = () => {
+        // the circle sits on the bottom of the panel, so the gap after it matches the gaps above
         const w = live.wheelEl.clientWidth, h = live.wheelEl.clientHeight;
-        const R = Math.min(w * 0.38, h * 0.4);
-        live.wheelGeo = { cx: w * 0.5 + w * 0.06, cy: h * 0.5, R };
+        const lh = (live.logos[0] ? live.logos[0].offsetHeight : 60) * 0.6 / 2;
+        const R = Math.max(60, Math.min(w * 0.4, h / 2 - lh));
+        live.wheelGeo = { cx: w * 0.53, cy: h - R - lh, R };
         queue();
       };
       live.geo = geo; geo();
@@ -300,10 +302,10 @@
       live.wheel.style.transform = `translateY(${-(li.offsetTop + li.offsetHeight / 2)}px)`;
     }
     if (live.logos && live.logos.length && live.wheelGeo) {
-      const r = live.brandsEl.getBoundingClientRect(), span = r.height - vh;
+      const r = live.brandsEl.getBoundingClientRect(), navH = nav.offsetHeight, span = r.height - (vh - navH);
       if (r.top < vh && r.bottom > 0) {
         const N = live.logos.length, step = (Math.PI * 2) / N;
-        const s = (span > 0 ? Math.max(0, Math.min(1, -r.top / span)) : 0) * (N - 1);
+        const s = (span > 0 ? Math.max(0, Math.min(1, (navH - r.top) / span)) : 0) * (N - 1);
         const { cx, cy, R } = live.wheelGeo;
         let on = -1, top = -1;
         live.logos.forEach((el, k) => {
@@ -681,6 +683,18 @@
     gate.remove(); scrollTo(0, Math.max(0, scrollY - h));
   }
   addEventListener("scroll", () => { if (live.mark) enter(); queue(); }, { passive: true });
+  // Brand wheel: scrolling with the pointer over the text side skips straight past the wheel;
+  // scrolling over the circle turns it.
+  addEventListener("wheel", (e) => {
+    const sec = live.brandsEl;
+    if (!sec || !live.wheelEl || !wide() || e.ctrlKey) return;
+    const vh = innerHeight, navH = nav.offsetHeight, r = sec.getBoundingClientRect();
+    if (r.top > navH + 1 || r.bottom < vh - 1) return;                       // not pinned
+    if (e.clientX >= live.wheelEl.getBoundingClientRect().left) return;     // over the circle
+    const down = e.deltaY > 0;
+    if (down && r.bottom > vh + 2) { e.preventDefault(); scrollTo(0, scrollY + r.bottom - vh); }
+    else if (!down && r.top < navH - 2) { e.preventDefault(); scrollTo(0, scrollY + r.top - navH); }
+  }, { passive: false });
   addEventListener("resize", () => { live.fit && live.fit(); live.geo && live.geo(); queue(); });
   addEventListener("mousemove", (e) => {
     mx = e.clientX; my = e.clientY;

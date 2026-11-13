@@ -9,6 +9,7 @@
   --bg: #000000; --fg: #EEE9E3; --panel: #EEE9E3; --accent: #095838;
   --muted: #C1C1CB; --zap: #B4B4FF; --zap-glow: #6E6EFF; --line: rgba(238, 233, 227, .2);
   --nav-h: 4.25rem;
+  --sy: clamp(3.5rem, 9vh, 6.5rem);
   --pad: clamp(1rem, 3vw, 2.75rem);
   --ease: cubic-bezier(.7, 0, .2, 1);
 }
@@ -106,7 +107,7 @@ main:focus { outline: none; }
 .field {
   position: relative; z-index: 1; background: var(--bg);
   --pw: min(52vw, 111vh); --ph: calc(var(--pw) / 1.5); --gap: 20vh;
-  --first: clamp(4rem, 12vh, 9rem);
+  --first: var(--sy);
   height: calc(var(--first) + var(--n) * var(--ph) + (var(--n) - 1) * var(--gap));
 }
 .field-index {
@@ -155,14 +156,15 @@ main:focus { outline: none; }
 .piece.lost.got .piece-in::before { opacity: 0; }
 
 /* ---------- Home: opening line ---------- */
-.lead { position: relative; z-index: 1; background: var(--bg); min-height: 100vh; min-height: 100svh; display: grid; align-content: center; padding: calc(var(--nav-h) + 4vh) var(--pad) 8vh; }
+.lead { position: relative; z-index: 1; background: var(--bg); padding: calc(var(--nav-h) + var(--sy)) var(--pad) 0; }
 .lead-in { width: fit-content; max-width: 100%; }
 .lead-title { font-size: clamp(3.4rem, 11vw, 13.5rem); font-weight: 800; font-stretch: 75%; line-height: .86; letter-spacing: -.025em; }
 .lead-disc { display: flex; justify-content: space-between; gap: 1rem; margin-top: clamp(1.25rem, 3vh, 2.5rem); font-size: clamp(.9375rem, 1.35vw, 1.25rem); color: var(--muted); }
 
 /* ---------- Home: brand wheel — logos orbit an invisible circle as you scroll ---------- */
 .brands { position: relative; z-index: 1; background: var(--bg); height: calc(100vh + (var(--n) - 1) * 26vh); }
-.brands-pin { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; display: grid; grid-template-columns: 5fr 7fr; align-items: center; gap: 2rem; padding: var(--nav-h) var(--pad) 0; }
+.brands-pin { position: sticky; top: var(--nav-h); height: calc(100vh - var(--nav-h)); height: calc(100svh - var(--nav-h)); overflow: hidden; display: grid; grid-template-columns: 5fr 7fr; align-items: stretch; gap: 2rem; padding: var(--sy) var(--pad) 0; }
+.brands-text { align-self: start; }
 .brands-text h2 { font-size: clamp(2.4rem, 5.4vw, 6rem); font-weight: 700; font-stretch: 75%; line-height: .9; letter-spacing: -.02em; max-width: 7em; margin-bottom: 1.25rem; }
 .brands-text .small { max-width: 24rem; }
 .brands-now { margin-top: 2.5rem; min-height: 1.2em; font-size: clamp(1.25rem, 2.1vw, 2rem); font-weight: 700; font-stretch: 80%; color: var(--fg); }
@@ -352,11 +354,11 @@ main:focus { outline: none; }
   .nav-pages { grid-row: 2; justify-self: center; align-self: start; }
   .nav-pages a { padding: 0 0 .4rem; }
   .gate-mark { width: 62vw; }
-  .field { height: auto; padding: 10vh var(--pad) 0; display: grid; gap: 12vh; }
+  .field { height: auto; padding: var(--sy) var(--pad) 0; display: grid; gap: 12vh; }
   .lead-title { font-size: clamp(3rem, 17vw, 6rem); }
   .lead-disc { gap: .5rem; font-size: .875rem; }
   .brands { height: calc(100svh + (var(--n) - 1) * 22vh); }
-  .brands-pin { grid-template-columns: 1fr; grid-template-rows: auto 1fr; align-items: start; gap: 0; padding-top: calc(var(--nav-h) + 5vh); }
+  .brands-pin { grid-template-columns: 1fr; grid-template-rows: auto 1fr; align-items: start; gap: 0; }
   .brands-text h2 { font-size: clamp(2.2rem, 11vw, 3.4rem); }
   .brands-now { margin-top: 1.25rem; }
   .field-index, .piece-title { display: none; }
