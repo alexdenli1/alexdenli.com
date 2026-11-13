@@ -145,7 +145,7 @@
   function archive() {
     // Archived work as photo cards tossed on the table: each at its own angle, straightening when picked up.
     const ANG = [-6, 4, -3, 7, -8, 2, 5, -4], DY = [0, 7, 2, 9, 4, 0, 6, 3];
-    const list = S.projects.filter((p) => p.status !== "current").sort((a, b) => b.year - a.year);
+    const list = S.projects.filter((p) => p.status !== "current").sort((a, b) => parseInt(b.year, 10) - parseInt(a.year, 10));
     return { title: "Archive", label: "Archive", html: `<div class="page"><header class="page-head"><h1 class="giant">Archive</h1><p class="small">${list.length} finished projects, newest first.</p>${cats()}</header>
       <ol class="cards">${list.map((p, i) => `<li style="--r:${ANG[i % ANG.length]}deg;--dy:${DY[i % DY.length]}vh"><a class="card" href="${link(p)}">
         <img src="${esc(p.hero)}" alt="" loading="lazy"><span><b>${esc(p.title)}</b><small>${esc(cat(p.category).label)}, ${esc(p.year)}</small></span><span class="card-desc">${esc(p.summary)}</span></a></li>`).join("")}</ol>${foot()}</div>` };

@@ -12,7 +12,7 @@
      slug      short-name-with-dashes (used in the web address, must be unique)
      title     shown everywhere
      category  one of the ids in "categories" below
-     year      e.g. 2026, or a range like "2022 – now" (use a single year if the project is archived, so it sorts)
+     year      e.g. 2026, or a range like "2022 – now" (the archive sorts by the first number in it)
      status    "current" (shows on Projects) or "archive" (shows on Archive)
      hidden    true = on the home page visitors have to find it with the cursor
      hero      main image
@@ -102,8 +102,8 @@ window.SITE = {
     },
     {
       slug: "rescue", title: "Rescue", category: "ux-ui",
-      year: 2023, status: "archive", hero: "images/rescue/hero.jpg",
-      summary: "Placeholder: a children's app, designed as a university UX/UI project.",
+      year: "2026 redevelopment", status: "archive", hero: "images/rescue/hero.jpg",
+      summary: "A children's app for learning about energy saving, designed at university and redone in 2026.",
       blocks: [
         { type: "statement", text: "Placeholder: what Rescue is and who it is for." },
         { type: "image", src: PH(10), size: "full" },
