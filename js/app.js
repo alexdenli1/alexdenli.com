@@ -47,7 +47,6 @@
       html: `${seenGate ? "" : `<section class="gate" aria-label="Introduction"><h1 class="gate-mark"><svg class="logo" viewBox="0 0 64.91 16.89" role="img" aria-label="Alex Denli Archive"><use href="#logo"/></svg></h1>
         <canvas class="disco-lights" aria-hidden="true"></canvas>
         <canvas class="gate-fx" aria-hidden="true"></canvas><div class="gate-fall"></div>
-        <div class="zoom" hidden><img alt="" draggable="false"></div><div class="lens" aria-hidden="true"></div>
         <button class="disco-btn" type="button" aria-pressed="false" aria-label="Play the disco catch game" title="Disco mode">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5v3.2"/><circle cx="12" cy="13.2" r="8.3"/><ellipse cx="12" cy="13.2" rx="8.3" ry="3.1"/><ellipse cx="12" cy="13.2" rx="3.4" ry="8.3"/><path d="M4.6 9.4h14.8M4.6 17h14.8M20 2.2v3M18.5 3.7h3"/></svg></button>
         <button class="mute-btn" type="button" hidden aria-pressed="false" aria-label="Mute the music" title="Music">
@@ -500,11 +499,6 @@
     if (!gate || reduce) return null;
     const ctx = cv.getContext("2d"), small = () => innerWidth <= 820;
     let items = [], raf = 0, prev = 0, next = 0, order = [], W = 0, H = 0, dpr = 1, entered = -1e9;
-    // Magnifier: hold the pointer on a falling image for half a second and time slows, the image is
-    // lifted out and enlarged, and a lens follows the pointer across it. After a few seconds (or on
-    // moving off it) it drops back and everything is flung back up to speed.
-    const zoom = $(".zoom"), zimg = zoom.querySelector("img"), lens = $(".lens");
-    let rate = 1, rateTo = 1, applied = 1, clock = 0, kick = 0, hov = null, hovAt = 0, zoomIt = null, zoomAt = 0, zr = null, cool = 0, hasPtr = false, leaving = false;
     // disco mode: a 20-second catch game
     const btn = $(".disco-btn"), hud = $(".disco-hud"), end = $(".disco-end"), scoreEl = $(".disco-score"), timeEl = $(".disco-time");
     const NEON = ["255,43,214", "0,229,255", "255,230,0", "140,140,255", "40,255,140"];
@@ -581,91 +575,22 @@
       const el = pool[i].pop() || make(i), v = H * rnd(0.5, 0.85) * fast, drift = disco ? rnd(-190, 190) : rnd(-18, 18);
       const x = rnd(0.04, 0.96) * (W - w), y = -h * 1.5, T = (H + h * 2.6) / v, s = Math.random() < 0.5 ? 1 : -1;
       el.style.width = w + "px"; el.style.height = h + "px"; el.style.visibility = "visible";
-      const it = { el, i, w, h, x, y, v, drift, T, ph: rnd(0, 6.28), done: false, cx: x, cy: y };
+      const it = { el, i, w, h, x, y, v, drift, T, t0: now, ph: rnd(0, 6.28), done: false };
       it.fall = el.animate([{ transform: `translate3d(${x}px, ${y}px, 0)` }, { transform: `translate3d(${x + drift * T}px, ${y + v * T}px, 0)` }], { duration: T * 1000, easing: "linear", fill: "both" });
       const rx = rnd(9, 17) * s, ry = rnd(13, 24) * s, rz = rnd(2, 6) * s;
       it.spin = el.firstChild.animate(
         [{ transform: tilt(rx, -ry, -rz) }, { transform: tilt(-rx * 0.65, ry, rz) }],
         { duration: T * 1000, easing: "linear", fill: "both" });
-      it.fall.playbackRate = rate; it.spin.playbackRate = rate;     // join in at the current speed
       it.fall.onfinish = () => release(it);
       items.push(it);
     }
-
-    function magnifier(now) {
-      const g = gate.getBoundingClientRect(), cx = mx - g.left, cy = my - g.top;
-      if (zoomIt) {
-        if (leaving) return;
-        const r = zimg.getBoundingClientRect(), inside = hasPtr && mx > r.left && mx < r.right && my > r.top && my < r.bottom;
-        if (inside) {
-          const R = lens.offsetWidth / 2, Z = 2.4;
-          lens.classList.add("on");
-          lens.style.transform = `translate3d(${(cx - R).toFixed(1)}px, ${(cy - R).toFixed(1)}px, 0)`;
-          lens.style.backgroundSize = `${(r.width * Z).toFixed(0)}px ${(r.height * Z).toFixed(0)}px`;
-          lens.style.backgroundPosition = `${(-((mx - r.left) * Z - R)).toFixed(1)}px ${(-((my - r.top) * Z - R)).toFixed(1)}px`;
-        } else lens.classList.remove("on");
-        if (!hasPtr || scrollY > 4 || (!inside && now - zoomAt > 600) || now - zoomAt > 3400) unmagnify(now);
-        return;
-      }
-      if (!hasPtr || now < cool || scrollY > 4) { hov = null; return; }
-      let hit = null;
-      for (let k = items.length - 1; k >= 0; k--) {
-        const it = items[k];
-        if (it.done || it.noZoom) continue;
-        if (cx > it.cx && cx < it.cx + it.w && cy > it.cy && cy < it.cy + it.h) { hit = it; break; }
-      }
-      if (hit !== hov) { hov = hit; hovAt = now; }
-      else if (hov && now - hovAt >= 500) { magnify(hov, now); hov = null; }
-    }
-    function magnify(it, now) {
-      const p = S.projects[it.i], x = it.cx, y = it.cy, w = it.w, h = it.h;
-      const z = Math.min(1.85, (W * 0.84) / w, (H * 0.78) / h);
-      const mx2 = Math.min(Math.max(x + w / 2, (w * z) / 2 + W * 0.05), W - (w * z) / 2 - W * 0.05);
-      const my2 = Math.min(Math.max(y + h / 2, (h * z) / 2 + H * 0.08), H - (h * z) / 2 - H * 0.08);
-      zr = { x, y };
-      zimg.src = p.hero; zoom.dataset.href = link(p);
-      lens.style.backgroundImage = `url("${p.hero}")`;
-      Object.assign(zoom.style, { left: x + "px", top: y + "px", width: w + "px", height: h + "px", transition: "none", transform: "none" });
-      zoom.classList.remove("out"); zoom.hidden = false; void zoom.offsetWidth;
-      zoom.style.transition = "";
-      zoom.style.transform = `translate(${(mx2 - x - w / 2).toFixed(1)}px, ${(my2 - y - h / 2).toFixed(1)}px) scale(${z.toFixed(3)})`;
-      it.el.style.visibility = "hidden";
-      zoomIt = it; zoomAt = now; leaving = false; rateTo = 0.06; kick = 0;
-      gate.classList.add("magnify"); cursor.style.visibility = "hidden";
-    }
-    function unmagnify(now, quick) {
-      const it = zoomIt;
-      if (!it || leaving) return;
-      leaving = true; lens.classList.remove("on"); gate.classList.remove("magnify"); it.noZoom = true;
-      const done = () => {
-        if (!leaving) return;
-        leaving = false; zoomIt = null; zoom.hidden = true; cool = performance.now() + 700;
-        if (!it.done) it.el.style.visibility = "visible";
-        if (!disco) cursor.style.visibility = "";
-        rateTo = 1.9; kick = performance.now() + 340;            // flung back out, then settling to normal speed
-      };
-      if (quick) { zoom.hidden = true; return done(); }
-      // drop the image back to where its falling twin now is, then hand back over
-      const dx = it.done ? 0 : it.cx - zr.x, dy = it.done ? 0 : it.cy - zr.y;
-      zoom.classList.add("out");
-      zoom.style.transform = `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) scale(1)`;
-      zoom.addEventListener("transitionend", done, { once: true });
-      setTimeout(done, 420);
-    }
-    zoom.addEventListener("pointerdown", (e) => { e.preventDefault(); if (zoom.dataset.href) { instant = true; location.hash = zoom.dataset.href; } });
-    gate.addEventListener("pointermove", (e) => { if (e.pointerType === "mouse") hasPtr = true; });
-    gate.addEventListener("pointerleave", () => { hasPtr = false; });
 
     function frame(now) {
       raf = requestAnimationFrame(frame);
       const dt = Math.min(0.05, (now - prev) / 1000 || 0); prev = now;
       if (scrollY > innerHeight * 0.9 || document.hidden) return;
-      if (kick && now > kick) { kick = 0; rateTo = 1; }
-      rate += (rateTo - rate) * Math.min(1, dt * 7);
-      if (Math.abs(rate - applied) > 0.003) { applied = rate; for (const it of items) if (!it.done) { it.fall.playbackRate = rate; it.spin.playbackRate = rate; } }
-      clock += dt * 1000 * rate;
       if (cv.width !== Math.round(gate.clientWidth * dpr) || cv.height !== Math.round(gate.clientHeight * dpr)) size();
-      if (clock > next && items.length < (disco ? 14 : 7)) { spawn(now); next = clock + (disco ? rnd(110, 260) : rnd(330, 620)); }
+      if (now > next && items.length < (disco ? 14 : 7)) { spawn(now); next = now + (disco ? rnd(110, 260) : rnd(330, 620)); }
       if (disco) {
         if ((tick = !tick)) lights(now);
         const left = Math.max(0, Math.ceil((endAt - now) / 1000));
@@ -676,14 +601,13 @@
       if (!GLOW) GLOW = NEON.map(strip);
       // background: fine lines streaming down
       for (const s of streaks) {
-        s.y += (s.v * dt * rate) / H; if (s.y * H - s.len > H) { s.y = -0.05; s.x = Math.random(); }
-        const y = s.y * H, ln = s.len * Math.max(0.15, Math.min(1.6, rate));     // streaks shorten as time slows
-        line(disco ? GLOW[Math.floor(s.len) % 5] : s.g ? GREEN : INK, s.x * W, y - ln, y, 1, Math.min(1, disco ? s.a * 3 : s.g ? s.a * 2.2 : s.a));
+        s.y += (s.v * dt) / H; if (s.y * H - s.len > H) { s.y = -0.05; s.x = Math.random(); }
+        const y = s.y * H;
+        line(disco ? GLOW[Math.floor(s.len) % 5] : s.g ? GREEN : INK, s.x * W, y - s.len, y, 1, Math.min(1, disco ? s.a * 3 : s.g ? s.a * 2.2 : s.a));
       }
       items = items.filter((it) => {
         if (it.done) return false;
-        const t = (it.fall.currentTime || 0) / 1000, x = it.x + it.drift * t, y = it.y + it.v * t;
-        it.cx = x; it.cy = y;
+        const t = (now - it.t0) / 1000, x = it.x + it.drift * t, y = it.y + it.v * t;
         const reach = fine ? 26 : 44;
         if (disco && px > x - reach && px < x + it.w + reach && py > y - reach && py < y + it.h + reach) {
           score++; scoreEl.textContent = score; release(it);
@@ -691,8 +615,7 @@
           return false;
         }
         // speed lines trailing each image
-        if (it === zoomIt) return true;
-        const tail = it.v * 0.42 * Math.max(0.12, Math.min(1.6, rate));
+        const tail = it.v * 0.42;
         for (let k = 0; k < 4; k++) {
           const lx = x + it.w * (0.12 + 0.25 * k), top = y - tail * (0.55 + 0.45 * Math.sin(k * 2.4 + it.ph));
           line(disco ? GLOW[k] : k === 2 ? GREEN : INK, lx, top, y + it.h * 0.3, k === 2 ? 1.6 : 1, disco ? 0.7 : k === 2 ? 0.75 : 0.34);
@@ -700,7 +623,6 @@
         return true;
       });
       ctx.globalAlpha = 1;
-      if (!disco && fine) magnifier(now);
       sparks = sparks.filter((s) => {
         s.life -= dt * 1.9; s.x += s.vx * dt; s.y += s.vy * dt; s.vy += 900 * dt;
         if (s.life <= 0) return false;
@@ -708,7 +630,7 @@
         return true;
       });
     }
-    const clear = () => { if (zoomIt) unmagnify(0, true); rate = rateTo = applied = 1; kick = 0; items.forEach(release); items = []; };
+    const clear = () => { items.forEach(release); items = []; };
     const mode = (on) => {
       disco = on; gate.classList.toggle("disco", on); hud.hidden = !on; btn.setAttribute("aria-pressed", String(on));
       gate.style.cursor = on ? BASKET : ""; cursor.style.visibility = on ? "hidden" : ""; clear();
@@ -743,7 +665,7 @@
     addEventListener("scroll", away, { passive: true });
     // cursor reaching the bottom edge enters the home page
     const edge = (e) => {
-      if (disco || zoomIt || !end.hidden || scrollY > 10 || e.clientY < innerHeight - 26 || e.movementY <= 0 || performance.now() - entered < 1500) return;
+      if (disco || !end.hidden || scrollY > 10 || e.clientY < innerHeight - 26 || e.movementY <= 0 || performance.now() - entered < 1500) return;
       entered = performance.now(); scrollTo({ top: innerHeight, behavior: "smooth" });
     };
     gate.addEventListener("mousemove", edge);
