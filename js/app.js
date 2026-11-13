@@ -157,8 +157,7 @@
       <h2 class="mail">${esc(o.name)}</h2>
       <p class="reach"><a class="ul" href="mailto:${esc(o.email)}">${esc(o.email)}</a><a class="ul" href="tel:${esc(o.phone.replace(/\s/g, ""))}">${esc(o.phone)}</a></p>
       <div class="about"><div class="about-txt"><p>${esc(o.intro)}</p>${o.about.map((t) => `<p class="small" style="font-size:1.0625rem">${esc(t)}</p>`).join("")}</div>
-      <div class="about-side"><img class="about-photo" src="${esc(o.photo)}" alt="${esc(o.name)}" loading="eager">
-      <div class="about-links">${o.links.map((l) => `<a class="ul" href="${esc(l.url)}">${esc(l.label)}</a>`).join("")}<span class="small" style="margin-top:1rem">Based in ${esc(o.location)}</span></div></div></div>${foot()}</div>` };
+      <div class="about-side"><div class="about-links">${o.links.map((l) => `<a class="ul" href="${esc(l.url)}">${esc(l.label)}</a>`).join("")}<span class="small" style="margin-top:1rem">Based in ${esc(o.location)}</span></div></div></div>${foot()}</div>` };
   }
 
   const lost = () => ({ title: "Out of bounds", label: "Out of bounds", bare: true, html: `<div class="lost-page"><h1 class="giant">Out of bounds</h1>
