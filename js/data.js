@@ -90,9 +90,9 @@ window.SITE = {
       ]
     },
     {
-      slug: "signature-logo", title: "Signature Logo", category: "graphic-design",
-      year: 2026, status: "current", hero: "images/signature-logo/hero.jpg",
-      summary: "Placeholder: one line on the Signature Logo collection and the brochure.",
+      slug: "signature-logo", title: "Signature Logo Collection", category: "graphic-design",
+      year: "2025 – now", status: "current", hero: "images/signature-logo/hero.jpg",
+      summary: "A fully custom logo range of promotional products for golf clubs.",
       blocks: [
         { type: "statement", text: "Placeholder: what the collection is and who it is for." },
         { type: "image", src: PH(9), size: "full" },
