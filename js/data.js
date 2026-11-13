@@ -156,16 +156,13 @@ window.SITE = {
   /* Brands and organisations you have worked with or for: the wheel on the home page (first 10 shown).
      Logos look best as transparent PNG or SVG, in colour or white — they sit on black. */
   brands: [
-    { name: "Brand 01", logo: "images/brands/placeholder-01.svg" },
-    { name: "Brand 02", logo: "images/brands/placeholder-02.svg" },
-    { name: "Brand 03", logo: "images/brands/placeholder-03.svg" },
-    { name: "Brand 04", logo: "images/brands/placeholder-04.svg" },
-    { name: "Brand 05", logo: "images/brands/placeholder-05.svg" },
-    { name: "Brand 06", logo: "images/brands/placeholder-06.svg" },
-    { name: "Brand 07", logo: "images/brands/placeholder-07.svg" },
-    { name: "Brand 08", logo: "images/brands/placeholder-08.svg" },
-    { name: "Brand 09", logo: "images/brands/placeholder-09.svg" },
-    { name: "Brand 10", logo: "images/brands/placeholder-10.svg" }
+    { name: "Oakley", logo: "images/brands/oakley.png" },
+    { name: "SuperStroke", logo: "images/brands/superstroke.png" },
+    { name: "Bettinardi", logo: "images/brands/bettinardi.png" },
+    { name: "Clicgear", logo: "images/brands/clicgear.png" },
+    { name: "Longridge", logo: "images/brands/longridge.png" },
+    { name: "BagBoy", logo: "images/brands/bagboy.png" },
+    { name: "EzeGlide", logo: "images/brands/ezeglide-white.png" }   // white version: the colour one vanishes on black (colour file: ezeglide.png)
   ],
 
   gallery: [
