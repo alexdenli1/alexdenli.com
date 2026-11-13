@@ -161,10 +161,11 @@ main:focus { outline: none; }
 .piece img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; transition: opacity .5s, clip-path .9s var(--ease), filter .4s; }
 /* the name, large, below the image, then the category and year, then one line about the project */
 .piece-cap { display: block; padding-top: clamp(.9rem, 1.6vh, 1.4rem); transition: opacity .4s; }
-.piece-name { display: block; font-size: clamp(2.2rem, 3.7vw, 4.4rem); font-weight: 700; font-stretch: 75%; line-height: .95; letter-spacing: -.02em; white-space: nowrap; }
+.piece { --nf: clamp(2.2rem, 3.7vw, 4.4rem); }
+.piece-name { display: block; font-size: var(--nf); font-weight: 700; font-stretch: 75%; line-height: .95; letter-spacing: -.02em; white-space: nowrap; }
 .piece-sub { display: block; }
-.piece-go { position: absolute; right: 0; top: -4.3rem; display: inline-flex; align-items: center; gap: .7rem; padding: .7rem 1.2rem .7rem 1.5rem; border-radius: 999px; background: var(--fg); color: #000; font-size: 1.125rem; font-weight: 700; font-stretch: 80%; letter-spacing: .01em; transition: background .3s, color .3s, transform .4s var(--ease); }
-.piece-go i { font-style: normal; display: inline-block; font-size: 1.4rem; line-height: 1; transition: transform .4s var(--ease); }
+.piece-go { position: absolute; right: 0; top: calc(var(--nf) * -.952); height: calc(var(--nf) * .68); box-sizing: border-box; display: inline-flex; align-items: center; gap: .7rem; padding: 0 1.3rem 0 1.6rem; border-radius: 999px; background: var(--fg); color: #000; font-size: calc(var(--nf) * .3); font-weight: 700; font-stretch: 80%; letter-spacing: .01em; transition: background .3s, color .3s, transform .4s var(--ease); }
+.piece-go i { font-style: normal; display: inline-block; font-size: 1.25em; line-height: 1; transition: transform .4s var(--ease); }
 .piece:hover .piece-go, .piece:focus-visible .piece-go { background: var(--zap); transform: translateX(-.25rem); }
 .piece:hover .piece-go i, .piece:focus-visible .piece-go i { transform: translateX(.4rem); }
 @media (max-width: 820px) { .piece-go { position: static; margin-top: .8rem; } }
