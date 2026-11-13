@@ -133,7 +133,7 @@ main:focus { outline: none; }
 .pintro .piece:first-of-type { visibility: visible; }
 .pintro .piece.act .piece-in { pointer-events: auto; }
 .pintro .piece:first-of-type .piece-in { transform-origin: 50% calc(var(--ph) / 2); }
-.piece-img, .piece-name, .piece-sub { will-change: transform, opacity; }
+.pintro .piece[style*="visibility: visible"] :is(.piece-img, .piece-name, .piece-sub) { will-change: transform, opacity; }
 @media (min-width: 821px) and (prefers-reduced-motion: no-preference) {
   .pintro .piece:first-of-type .piece-in { transform: scale(.001); opacity: 0; }
 }
@@ -216,7 +216,7 @@ main:focus { outline: none; }
 .brands-rule { width: 3.25rem; height: 2px; background: var(--accent); margin: 1.35rem auto 1.1rem; }
 .brands-sub { font-size: clamp(.9375rem, 1.1vw, 1.1875rem); color: var(--muted); }
 .wheel { --lw0: clamp(140px, 17vw, 330px); --gx: clamp(2rem, 4vw, 4.5rem); flex: 1; width: 100%; max-width: calc(4 * var(--lw0) + 3 * var(--gx) + 2px); padding-top: 10.8vh; display: flex; flex-wrap: wrap; justify-content: center; align-content: flex-start; gap: clamp(1.5rem, 4.5vh, 3.75rem) var(--gx); }
-.wheel li { width: calc(var(--lw0) * var(--lw, 1)); aspect-ratio: 16 / 7; opacity: 0; will-change: transform, filter, opacity; }
+.wheel li { width: calc(var(--lw0) * var(--lw, 1)); aspect-ratio: 16 / 7; opacity: 0; will-change: transform, opacity; }
 .wheel img { width: 100%; height: 100%; object-fit: contain; }
 
 /* ---------- Home: gallery strip that slides left as you scroll ---------- */
@@ -226,7 +226,7 @@ main:focus { outline: none; }
 .gallery-head { padding: 0 var(--pad); font-size: clamp(2rem, 5vw, 5rem); font-weight: 700; font-stretch: 75%; line-height: .92; letter-spacing: -.02em; max-width: 14em; }
 .gallery-track { display: flex; align-items: center; gap: clamp(1rem, 2.2vw, 2.25rem); width: max-content; padding: 0 var(--pad); will-change: transform; }
 .gallery-track > * { display: block; flex: none; }
-.gallery-track > * { transform-origin: center; }
+.gallery-track > * { transform-origin: center; will-change: transform, opacity; }
 .gallery-track img { display: block; height: 36vh; width: auto; max-width: none; }
 @media (prefers-reduced-motion: reduce) { .gallery-pin { position: static; height: auto; overflow-x: auto; padding: 12vh 0; } }
 

@@ -210,6 +210,7 @@
       brandsEl: $(".brands"), logos: $$(".wheel li"),
       secs: $$(".pcat"), bgs: $$(".pbg img"), bgOn: -1
     };
+    if (key === "home") $$(".pintro .piece img, .field .piece img").forEach((im) => { im.loading = "eager"; im.decoding = "async"; im.decode && im.decode().catch(() => {}); });
     const spot = (slug, on) => {
       const els = $$(".piece").filter((p) => p.dataset.slug === slug), el = els[0];
       if (!el) return;
@@ -316,6 +317,17 @@
   }
 
   /* ---------- Scroll and pointer motion ---------- */
+  // a quick eased scroll (used instead of a hard jump)
+  function glide(to) {
+    live.glide = true;
+    const from = scrollY, dist = to - from, t0 = performance.now(), dur = Math.min(520, 220 + Math.abs(dist) * 0.12);
+    const step = (now) => {
+      const p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+      scrollTo(0, from + dist * e);
+      if (p < 1) requestAnimationFrame(step); else live.glide = false;
+    };
+    requestAnimationFrame(step);
+  }
   function update() {
     queued = false;
     const y = scrollY, vh = innerHeight, big = wide();
@@ -374,19 +386,22 @@
     if (big && !reduce && live.rows && live.rows.length && introR) {
       const N = live.pieces.length, wr = live.field.getBoundingClientRect();
       const inWork = wr.top < vh && wr.bottom > 0;
-      if (!live.list && up && inWork && introR.top < vh * 0.9) {
+      const pw = Math.min(0.52 * innerWidth, 1.11 * vh), rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16, slideTop = (vh - pw / 1.5 - 10 * rem) / 2 + 0.02 * vh;
+      if (!live.list && up && inWork && introR.top <= 0 && introR.bottom >= vh - 1) {
         const scrolled = -introR.top, sp = Math.max(0, (scrolled - 1.15 * vh) / (0.8 * vh));
         const idx = introR.bottom < vh + 1 ? N - 1 : Math.min(N - 1, Math.max(0, Math.round(sp - 0.1)));
         live.list = true; live.field.classList.add("listmode");
         const r = live.rows[idx].getBoundingClientRect();
-        const to = scrollY + r.top + r.height / 2 - vh / 2;
+        const to = scrollY + r.top - slideTop;
         scrollTo(0, Math.max(0, to)); lastY = scrollY; live.fix = 2; queue(); return;
       }
       if (live.list && !up) {
         const fr = $(".field", live.field).getBoundingClientRect();
         let idx = 0, best = 1e9;
-        live.rows.forEach((el, k) => { const r = el.getBoundingClientRect(), d = Math.abs(r.top + r.height / 2 - vh / 2); if (d < best) { best = d; idx = k; } });
+        live.rows.forEach((el, k) => { const r = el.getBoundingClientRect(), d = Math.abs(r.top - slideTop); if (d < best) { best = d; idx = k; } });
         const aboveList = fr.top > 0;
+        if (!aboveList && best > vh * 0.15) { /* keep scrolling the list until a project reaches the showcase spot */ }
+        else {
         live.list = false; live.field.classList.remove("listmode");
         live.pT = undefined; live.sS = undefined;
         if (!aboveList) {
@@ -394,6 +409,7 @@
           scrollTo(0, Math.max(0, scrollY + pr.top + (1.15 + 0.8 * idx + 0.1) * vh));
         }
         lastY = scrollY; live.fix = 2; queue(); return;
+        }
       }
       if (live.list) {
         // names list follows the row nearest the middle of the screen
@@ -473,19 +489,22 @@
       if (Math.abs(t - live.brandT) > 0.001) queue(); else live.brandT = t;
       const dur = 2.6 / (N + 1.6), gap0 = N > 1 ? (1 - dur) / (N - 1) : 1;
       live.logos.forEach((el, k) => {
-        if (reduce) { el.style.transform = ""; el.style.opacity = "1"; el.style.filter = ""; return; }
+        if (reduce) { el.style.transform = ""; el.style.opacity = "1"; return; }
         const p = up ? 1 : Math.max(0, Math.min(1, (live.brandT - k * gap0) / dur));
         const b = 1 + 2.70158 * Math.pow(p - 1, 3) + 1.70158 * Math.pow(p - 1, 2); // ease-out-back
         el.style.transform = `translate3d(0, ${(36 * (1 - b)).toFixed(1)}px, 0) scale(${(0.3 + 0.7 * b).toFixed(3)})`;
         el.style.opacity = Math.min(1, p * 1.8).toFixed(3);
-        el.style.filter = p < 1 ? `grayscale(${(1 - p).toFixed(3)}) brightness(${(0.4 + 0.6 * p).toFixed(3)})` : "";
       });
     }
     if (galTop !== null) {
       // Scrolling up skips straight past the strip; scrolling down plays it through again.
-      if (y < lastY - 1 && galTop < -2 && galTop > -live.run / 3 - 2) scrollTo(0, y + galTop);
+      if (y < lastY - 1 && galTop < -2 && galTop > -live.run / 3 - 2 && !live.glide) glide(y + galTop);
       else if (galTop < vh && galTop > -live.run - vh) {
-        const t = Math.max(0, Math.min(live.run, -galTop * 3)), mid = innerWidth / 2;
+        const tg = Math.max(0, Math.min(live.run, -galTop * 3)), mid = innerWidth / 2;
+        if (live.gT === undefined || up) live.gT = tg;
+        live.gT += (tg - live.gT) * 0.22;
+        if (Math.abs(tg - live.gT) > 0.5) queue(); else live.gT = tg;
+        const t = live.gT;
         live.track.style.transform = `translate3d(${-t}px, 0, 0)`;
         // the image passing through the middle grows; the rest stay small and a touch faded
         for (const sh of live.shots || []) {
