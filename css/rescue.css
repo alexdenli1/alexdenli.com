@@ -154,7 +154,7 @@
 .rs-steps p, .rs-then li p { color: var(--muted); font-size: 1.1rem; max-width: 24rem; }
 
 /* pulling together */
-.rs-merge { height: 280vh; margin-inline: calc(var(--pad) * -1); }
+.rs-merge { height: 185vh; margin-inline: calc(var(--pad) * -1); }
 .rs-mstage { position: sticky; top: 0; height: 100vh; background: var(--deep); overflow: hidden; color: var(--cream); }
 .rs-mh { position: absolute; left: var(--pad); right: var(--pad); top: 13vh; }
 .rs-mh h2 { position: absolute; max-width: 14em; font-size: clamp(2.5rem, 3.8vw, 4.2rem); color: var(--cream); }

@@ -177,10 +177,10 @@
     const tick = () => {
       raf = 0; if (!document.body.contains(m)) return;
       if (!W) size();
-      const r = m.getBoundingClientRect(), p = cl(-r.top / (r.height - innerHeight)), e = ease(cl((p - 0.12) / 0.6));
+      const r = m.getBoundingClientRect(), p = cl(-r.top / (r.height - innerHeight)), e = ease(cl((p - 0.04) / 0.4));
       chips.forEach((c, i) => {
         const [sx, sy, rot] = START[i], col = i % 4, row = (i / 4) | 0;
-        const ex = (0.14 + col * 0.24) * W, ey = (0.54 + row * 0.115) * H, x = sx / 100 * W * (1 - e) + ex * e, y = sy / 100 * H * (1 - e) + ey * e;
+        const ex = (0.14 + col * 0.24) * W, ey = (0.54 + row * 0.115) * H, x = sx / 100 * W * (1 - e) + ex * e, y = (30 + sy * 0.62) / 100 * H * (1 - e) + ey * e;
         c.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) translate(-50%,-50%) rotate(${(rot * (1 - e)).toFixed(1)}deg)`;
       });
       cols.forEach((c, i) => { c.style.opacity = cl((e - 0.5) * 2.2); c.style.transform = `translate(${(0.14 + i * 0.24) * W}px,${0.4 * H}px) translate(-50%,-50%)`; });
