@@ -117,6 +117,11 @@
     if (i < 0) return null;
     const p = S.projects[i], c = cat(p.category), next = S.projects[(i + 1) % S.projects.length];
     found.add(p.slug);
+    if (p.slug === "rescue" && window.RESCUE) {
+      const tail = `<a class="p-next" href="${link(next)}" ><small>Next project</small><span class="giant">${esc(next.title)}</span><img src="${esc(next.hero)}" alt=""></a>
+      <nav class="p-exits" aria-label="Where next"><a class="ul" href="#/work/${esc(c.id)}">More ${esc(c.label.toLowerCase())}</a><a class="ul" href="#/archive">Archive</a></nav>${foot()}`;
+      return { title: p.title, label: p.title, html: window.RESCUE.render(p, tail), after: () => window.RESCUE.wire() };
+    }
     return { title: p.title, label: p.title, html: `<article class="page"><header class="p-head">
         <p class="p-meta small"><a class="ul" href="#/work/${esc(c.id)}">${esc(c.label)}</a><span>${esc(p.year)}</span><span>${p.status === "current" ? "In progress" : "Completed"}</span></p>
         <h1 class="giant">${esc(p.title)}</h1><p class="p-sum">${esc(p.summary)}</p></header>

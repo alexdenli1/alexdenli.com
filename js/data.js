@@ -108,7 +108,7 @@ window.SITE = {
       year: "2026 redevelopment", status: "archive", hero: "images/rescue/hero.jpg",
       summary: "A children's app for learning about energy saving, designed at university and redone in 2026.",
       blocks: [
-        { type: "statement", text: "Placeholder: what Rescue is and who it is for." },
+        
         { type: "image", src: PH(10), size: "full" },
         { type: "text", heading: "The approach", text: "Placeholder: research, user flows and how the interface was tested." },
         { type: "pair", images: [PH(11), PH(12)] }
