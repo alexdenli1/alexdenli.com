@@ -32,7 +32,7 @@
 .rs .p-head h1 { grid-column: 1 / -1; margin: 0; }
 .rs .p-head .p-sum { grid-column: 1 / span 5; margin: 0; max-width: 34rem; }
 .rs-hero { margin-inline: calc(var(--pad) * -1); background: #082126; }
-.rs-hero img { display: block; width: 100%; height: auto; max-height: calc(100vh - var(--nav-h)); object-fit: cover; object-position: 50% 50%; }
+.rs-hero img { display: block; width: 100%; height: min(56.25vw, calc(100vh - var(--nav-h))); object-fit: cover; object-position: 50% 50%; }
 
 /* gate */
 .rs-gate { position: relative; margin: clamp(6rem, 18vh, 12rem) calc(var(--pad) * -1) 0; padding: 0 var(--pad); min-height: 100vh; background: radial-gradient(120% 90% at 50% 50%, var(--night), var(--deep)); display: grid; grid-template-columns: 1fr auto 1fr; gap: 4vw; align-items: center; overflow: hidden; }
