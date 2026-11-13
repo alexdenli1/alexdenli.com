@@ -12,7 +12,7 @@
      slug      short-name-with-dashes (used in the web address, must be unique)
      title     shown everywhere
      category  one of the ids in "categories" below
-     year      e.g. 2026
+     year      e.g. 2026, or a range like "2022 – now" (use a single year if the project is archived, so it sorts)
      status    "current" (shows on Projects) or "archive" (shows on Archive)
      hidden    true = on the home page visitors have to find it with the cursor
      hero      main image
@@ -79,8 +79,8 @@ window.SITE = {
     },
     {
       slug: "adverts", title: "Adverts", category: "graphic-design",
-      year: 2026, status: "current", hero: "images/adverts/hero.jpg",
-      summary: "Placeholder: magazine adverts for print and online, about one a month.",
+      year: "2022 – now", status: "current", hero: "images/adverts/hero.jpg",
+      summary: "Magazine adverts for print and online, produced monthly.",
       blocks: [
         { type: "statement", text: "Placeholder: what makes a golf advert work on a crowded magazine page." },
         { type: "image", src: PH(6), size: "wide", caption: "Placeholder: advert one, where it ran" },
