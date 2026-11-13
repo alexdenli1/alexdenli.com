@@ -16,6 +16,8 @@
      status    "current" (shows on Projects) or "archive" (shows on Archive)
      hidden    true = on the home page visitors have to find it with the cursor
      hero      main image
+     preview   optional: pictures for the Archive hover slideshow, e.g. preview: ["images/x/1.jpg", "images/x/2.jpg"].
+               If left out, it plays the hero then every image used on the project page.
      summary   one or two short sentences
      scope     optional: replaces the category in the small line under the name on the home page
      line      optional: the single line shown under the name on the home page (falls back to summary)

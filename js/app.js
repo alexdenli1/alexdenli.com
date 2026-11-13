@@ -198,6 +198,7 @@
 
   /* ---------- Per-page wiring ---------- */
   function bind(key) {
+    if (key !== "archive") unwireArchive();
     live.waves && live.waves.stop(); live.ro && live.ro.disconnect();
     live = {
       waves: key === "home" ? intro() : null,
@@ -302,11 +303,79 @@
         live.lead.addEventListener("pointerleave", () => live.lead.classList.remove("lensing"));
       }
     }
+    if (key === "archive") wireArchive();
     $$("[data-top]").forEach((a) => a.addEventListener("click", (e) => { e.preventDefault(); toTop(); }));
     $$("[data-peek]").forEach((a) => {
       a.addEventListener("mouseenter", () => { peek.src = a.dataset.peek; peek.classList.add("on"); });
       a.addEventListener("mouseleave", () => peek.classList.remove("on"));
     });
+  }
+
+  /* Archive: hovering a project lifts it to the middle of the screen over a dimmed page and plays through
+     the project's pictures (the hero, then every image used on its project page; or "preview: [...]" in data.js). */
+  const shotsOf = (p) => {
+    if (p.preview && p.preview.length) return p.preview;
+    const out = [p.hero];
+    (p.blocks || []).forEach((b) => {
+      if (b.type === "image" && b.src) out.push(b.src);
+      if (b.type === "pair") (b.images || []).forEach((s) => out.push(s));
+      if (b.type === "steps") (b.items || []).forEach((it) => it.src && out.push(it.src));
+    });
+    return out.filter((s, i) => s && out.indexOf(s) === i);
+  };
+  let arch = null;
+  function unwireArchive() {
+    if (!arch) return;
+    clearTimeout(arch.t); clearInterval(arch.iv); removeEventListener("scroll", arch.sc); arch.dim.remove(); arch.card.remove(); arch = null;
+  }
+  function wireArchive() {
+    unwireArchive();
+    if (!fine || !wide() || reduce) return;
+    const dim = document.createElement("div"), card = document.createElement("div");
+    dim.className = "show-dim"; card.className = "show";
+    card.innerHTML = '<div class="show-frame"></div><div class="show-cap"><b></b><small></small></div><div class="show-bar"></div>';
+    document.body.append(dim, card);
+    arch = { dim, card, t: 0, iv: 0, tile: null, open: false };
+    const frame = $(".show-frame", card), bar = $(".show-bar", card);
+    const place = (r) => { card.style.left = r.left + "px"; card.style.top = r.top + "px"; card.style.width = r.width + "px"; };
+    const close = () => {
+      if (!arch) return;
+      clearTimeout(arch.t); clearInterval(arch.iv);
+      if (!arch.open) return;
+      arch.open = false; dim.classList.remove("on"); card.classList.remove("on");
+      const t = arch.tile, r = t.querySelector(".tile-img").getBoundingClientRect();
+      place(r); card.classList.add("home");
+      setTimeout(() => { if (!arch.open) { card.style.visibility = "hidden"; t.classList.remove("lifted"); } }, 450);
+    };
+    const open = (tile) => {
+      const p = S.projects.find((x) => link(x) === tile.getAttribute("href"));
+      if (!p) return;
+      const imgs = shotsOf(p), r0 = tile.querySelector(".tile-img").getBoundingClientRect();
+      arch.tile = tile; arch.open = true;
+      frame.innerHTML = imgs.map((s, i) => `<img src="${esc(s)}" alt="" class="${i ? "" : "on"}">`).join("");
+      $("b", card).textContent = p.title; $("small", card).textContent = p.year;
+      bar.innerHTML = imgs.length > 1 ? imgs.map(() => "<i></i>").join("") : "";
+      card.style.visibility = "visible"; card.classList.remove("on", "home"); place(r0);
+      tile.classList.add("lifted"); dim.classList.add("on");
+      const w = Math.min(innerWidth * 0.56, innerHeight * 0.66 * 1.5), h = w / 1.5;
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        if (!arch.open) return;
+        card.classList.add("on");
+        place({ left: (innerWidth - w) / 2, top: (innerHeight - h) / 2 - 36, width: w });
+      }));
+      let i = 0; const els = $$("img", frame), segs = $$("i", bar);
+      const show = (k) => { els.forEach((e, j) => e.classList.toggle("on", j === k)); segs.forEach((s, j) => s.classList.toggle("done", j <= k)); };
+      show(0);
+      if (imgs.length > 1) arch.iv = setInterval(() => { i = (i + 1) % imgs.length; show(i); }, 1500);
+    };
+    $$(".tile").forEach((tile) => {
+      tile.addEventListener("mouseenter", () => { clearTimeout(arch.t); arch.t = setTimeout(() => open(tile), 220); });
+      tile.addEventListener("mouseleave", close);
+      tile.addEventListener("focus", () => open(tile));
+      tile.addEventListener("blur", close);
+      tile.addEventListener("click", () => { clearTimeout(arch.t); clearInterval(arch.iv); arch.open = false; dim.classList.remove("on"); card.style.visibility = "hidden"; });
+    });
+    arch.sc = close; addEventListener("scroll", close, { passive: true });
   }
 
   function reveal(el) {
