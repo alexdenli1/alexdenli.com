@@ -20,6 +20,9 @@
     leaf: '<path d="M5 19c0-9 5-14 15-14 0 10-5 15-14 15"/><path d="M5 19c3-5 6-8 10-10"/>',
     drop: '<path d="M12 3c4 5 6 8 6 11a6 6 0 0 1-12 0c0-3 2-6 6-11z"/>',
     heart: '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',
+    book: '<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5M9 8h6"/>',
+    tap: '<circle cx="12" cy="12" r="9" stroke-dasharray="3.2 3.2"/><circle cx="12" cy="12" r="3.2"/>',
+    starF: '<path d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.3l-5.6 2.9 1.1-6.3L2.9 9.5l6.3-.9z"/>',
     starO: '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>'
   };
   const ico = (k, w = 24, c = "#10282D", sw = 2.2) => `<svg width="${w}" height="${w}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[k]}</svg>`;
@@ -75,21 +78,19 @@
   const START = [[8, 14, -9], [30, 8, 6], [58, 12, -5], [82, 10, 8], [14, 44, 7], [42, 38, -8], [72, 42, 5], [88, 50, -7], [10, 78, -6], [36, 84, 9], [62, 80, -4], [86, 84, 6]];
 
   function render(p, tail) {
-    const principles = [["Big targets", "64pt and up, because small hands miss."], ["Little reading", "Pip reads everything aloud."], ["Safe by default", "Grown-ups are one gate away, never in the way."], ["Always rewarded", "There is no way to lose, only to try again."]];
+    const principles = [["tap", "Big targets", "64pt and up, because small hands miss.", "var(--org)"], ["audio", "Little reading", "Pip reads everything aloud.", "var(--aqua)"], ["shield", "Safe by default", "Grown-ups are one gate away, never in the way.", "var(--leaf)"], ["starF", "Always rewarded", "There is no way to lose, only to try again.", "var(--sun)"]];
     const rules = [["Tabs, not back arrows", "Every tab is one tap away. Nothing is more than two taps deep."], ["No passwords for kids", "An avatar and three secret pictures."], ["Proof from the real world", "A smart meter, an AR scan, or a grown-up's tick."], ["A team, not a leaderboard", "The class works toward one goal."], ["A healthy stopping point", "About ten minutes a day, then Pip sleeps."]];
     return `<article class="page rs locked"><header class="p-head">
       <p class="p-meta small"><a class="ul" href="#/work/ux-ui">UX / UI</a><span>${p.year}</span><span>Completed</span></p>
       <h1 class="giant">Rescue</h1><p class="p-sum">${p.summary}</p></header>
-      <div class="p-hero mask"><img src="${p.hero}" alt="Rescue"></div>
+      <div class="rs-hero"><img src="${p.hero}" alt="Rescue: the app, Pip the red panda and the world to save"></div>
 
       <section class="rs-brief">
         <p class="rs-q-big">How might we make saving energy at home something a seven-year-old chooses to do, every day, without a parent pushing?</p>
-        <div class="rs-persons">
-          <div><b>Josh, 7</b><span>The player. Wants something to do, something to win, and a reason to come back tomorrow.</span></div>
-          <div><b>Josh's parent</b><span>The gatekeeper. Needs to trust what is on the screen and see that it is real.</span></div>
-          <div><b>Ms Clarke, Year 3</b><span>The connector. Turns one child's habit into something the whole class does together.</span></div>
-        </div>
-        <ul class="rs-pr">${principles.map(([t, d]) => `<li><b>${t}</b><span>${d}</span></li>`).join("")}</ul>
+        <div class="rs-blk"><div class="rs-bh"><h3>Who it's for</h3><p>Three people, one habit.</p></div>
+          <div class="rs-ppl">${[["J", "Josh, 7", "The player", "Wants something to do, something to win, and a reason to come back tomorrow.", "var(--org)"], ["me", "Josh's parent", "The gatekeeper", "Needs to trust what is on the screen and see that it is real.", "var(--sun)"], ["book", "Ms Clarke, Year 3", "The connector", "Turns one child's habit into something the whole class does together.", "var(--leaf)"]].map(([k, n, r, d, c]) => `<div class="rs-pc"><span class="rs-pi" style="background:${c}">${k === "J" ? "<b>J</b>" : ico(k, 44, "#10282D", 2)}</span><small>${r}</small><h4>${n}</h4><p>${d}</p></div>`).join("")}</div></div>
+        <div class="rs-blk"><div class="rs-bh"><h3>Four design rules</h3><p>For children aged 6 to 11.</p></div>
+          <div class="rs-rl">${principles.map(([k, t, d, c]) => `<div class="rs-ri"><span class="rs-pi s" style="background:${c}">${ico(k, 34, "#10282D", 2.2)}</span><h4>${t}</h4><p>${d}</p></div>`).join("")}</div></div>
       </section>
 
       <section class="rs-gate" id="rsGate" aria-label="Play Rescue">
@@ -168,6 +169,9 @@
     ph.addEventListener("click", click); ph.addEventListener("keydown", key);
     document.getElementById("rsSkip").addEventListener("click", unlock);
     set("start");
+
+    const strip = root.querySelector(".rs-strip"), sfit = () => { if (!strip.clientWidth) return; const s = Math.max(.4, Math.min(1, ((strip.clientWidth - 3 * 32) / 4 - 24) / 360)); strip.querySelectorAll(".rs-dev").forEach((d) => d.style.setProperty("--s", s.toFixed(3))); };
+    sfit(); addEventListener("resize", sfit); off.push(() => removeEventListener("resize", sfit));
 
     /* pulling it together: chips scatter, then gather into the four tabs as you scroll */
     const m = document.getElementById("rsMerge"), stage = m.querySelector(".rs-mstage"), chips = [...m.querySelectorAll(".rs-mc")], cols = [...m.querySelectorAll(".rs-col")];
