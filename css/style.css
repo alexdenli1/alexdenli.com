@@ -187,8 +187,8 @@ main:focus { outline: none; }
 .brands-head h2 { font-size: clamp(2.2rem, 4.4vw, 5rem); font-weight: 700; font-stretch: 75%; line-height: 1; letter-spacing: -.02em; white-space: nowrap; }
 .brands-rule { width: 3.25rem; height: 2px; background: var(--accent); margin: 1.35rem auto 1.1rem; }
 .brands-sub { font-size: clamp(.9375rem, 1.1vw, 1.1875rem); color: var(--muted); }
-.wheel { flex: 1; width: 100%; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: clamp(1.5rem, 4.5vh, 3.75rem) clamp(2rem, 4vw, 4.5rem); }
-.wheel li { width: calc(clamp(140px, 17vw, 330px) * var(--lw, 1)); aspect-ratio: 16 / 7; opacity: 0; will-change: transform, filter, opacity; }
+.wheel { --lw0: clamp(140px, 17vw, 330px); --gx: clamp(2rem, 4vw, 4.5rem); flex: 1; width: 100%; max-width: calc(4 * var(--lw0) + 3 * var(--gx) + 2px); padding-top: 10.8vh; display: flex; flex-wrap: wrap; justify-content: center; align-content: flex-start; gap: clamp(1.5rem, 4.5vh, 3.75rem) var(--gx); }
+.wheel li { width: calc(var(--lw0) * var(--lw, 1)); aspect-ratio: 16 / 7; opacity: 0; will-change: transform, filter, opacity; }
 .wheel img { width: 100%; height: 100%; object-fit: contain; }
 
 /* ---------- Home: gallery strip that slides left as you scroll ---------- */
