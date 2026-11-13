@@ -64,7 +64,7 @@
         <div class="brands-head"><h2>Brands I’ve worked with</h2>
           <div class="brands-rule" aria-hidden="true"></div>
           <p class="brands-sub">Designing for, and working alongside, some of golf’s most trusted names.</p></div>
-        <ul class="wheel">${S.brands.slice(0, 10).map((b) => `<li><img src="${esc(b.logo)}" alt="${esc(b.name)}" draggable="false"></li>`).join("")}</ul>
+        <ul class="wheel">${S.brands.slice(0, 10).map((b) => `<li${b.size ? ` style="--lw:${b.size}"` : ""}><img src="${esc(b.logo)}" alt="${esc(b.name)}" draggable="false"></li>`).join("")}</ul>
       </div></section>` : ""}
       <section class="field" style="--n:${n}" aria-label="All work">
         <nav class="field-index" aria-label="Projects"><ol>${index}</ol></nav>

@@ -157,7 +157,7 @@ window.SITE = {
   /* Brands and organisations you have worked with or for: the wheel on the home page (first 10 shown).
      Logos look best as transparent PNG or SVG, in colour or white — they sit on black. */
   brands: [
-    { name: "Oakley", logo: "images/brands/oakley.png" },
+    { name: "Oakley", logo: "images/brands/oakley.png", size: 0.88 },
     { name: "SuperStroke", logo: "images/brands/superstroke.png" },
     { name: "Bettinardi", logo: "images/brands/bettinardi.png" },
     { name: "Clicgear", logo: "images/brands/clicgear.png" },

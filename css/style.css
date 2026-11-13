@@ -188,7 +188,7 @@ main:focus { outline: none; }
 .brands-rule { width: 3.25rem; height: 2px; background: var(--accent); margin: 1.35rem auto 1.1rem; }
 .brands-sub { font-size: clamp(.9375rem, 1.1vw, 1.1875rem); color: var(--muted); }
 .wheel { flex: 1; width: 100%; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: clamp(1.5rem, 4.5vh, 3.75rem) clamp(2rem, 4vw, 4.5rem); }
-.wheel li { width: clamp(140px, 17vw, 330px); aspect-ratio: 16 / 7; opacity: 0; will-change: transform, filter, opacity; }
+.wheel li { width: calc(clamp(140px, 17vw, 330px) * var(--lw, 1)); aspect-ratio: 16 / 7; opacity: 0; will-change: transform, filter, opacity; }
 .wheel img { width: 100%; height: 100%; object-fit: contain; }
 
 /* ---------- Home: gallery strip that slides left as you scroll ---------- */
