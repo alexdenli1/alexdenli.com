@@ -62,9 +62,8 @@ window.SITE = {
     {
       slug: "xfly", title: "XFLY", category: "product-design",
       year: 2026, status: "current", hero: "images/xfly/hero.jpg",
-      scope: "Concept to launch: product design, CAD, packaging and marketing",
-      line: "A competitively priced, fully functional golf launch monitor with a Bluetooth app, for amateur to professional golfers, indoors and out.",
-      summary: "A competitively priced, fully functional golf launch monitor with a Bluetooth app, for amateur to professional golfers, indoors and out. I designed it end to end: ideation and concept, CAD, packaging, marketing and the final release.",
+      line: "A golf launch monitor at a competitive price, with a Bluetooth app, for amateur to professional golfers.",
+      summary: "A golf launch monitor at a competitive price, with a Bluetooth app, for amateur to professional golfers.",
       blocks: [
         { type: "statement", text: "Placeholder: the problem XFLY solves, said in one sentence a golfer would nod at." },
         { type: "text", heading: "The brief", text: "Placeholder: what it had to do, and the constraints — price, materials, timing." },
