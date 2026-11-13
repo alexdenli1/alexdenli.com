@@ -259,7 +259,7 @@
         const cap = m.measureText("H"), mt = m.measureText("Hg");
         if (!W0 || !cap.actualBoundingBoxAscent) return;
         const F = k * (1.0 * vw) / W0, s = F / k, capH = cap.actualBoundingBoxAscent * s;
-        const sy = (0.9 * vh) / capH;
+        const sy = (0.6 * vh) / capH;
         const fa = (mt.fontBoundingBoxAscent || k * 0.9) * s, fd = (mt.fontBoundingBoxDescent || k * 0.25) * s;
         const base = (F - (fa + fd)) / 2 + fa, off = base - capH / 2 - F / 2;
         w.style.setProperty("--wf", F.toFixed(1) + "px"); w.style.setProperty("--wsy", sy.toFixed(4));
@@ -346,13 +346,13 @@
       live.pT += (tt - live.pT) * 0.2;
       if (Math.abs(tt - live.pT) > 0.0005) queue(); else live.pT = tt;
       const t = live.pT, out = (x) => 1 - Math.pow(1 - x, 3), soft = (x) => x * x * (3 - 2 * x);
-      grow = out(clamp01((t - 0.2) / 0.55));
+      grow = out(clamp01((t - 0.14) / 0.5));
       if (introR.bottom > 0 && introR.top < vh) {
         // the word dissolves in, square by square, as the section rises into view
-        const dis = clamp01((1 - introR.top / vh) / 0.42);
+        const dis = clamp01((1 - introR.top / vh) / 0.85);
         if (live.cover) live.drawCover(Math.round(dis * live.cover.N));
         live.pword.style.opacity = (0.25 + 0.75 * dis).toFixed(3);
-        live.pdark.style.transform = `scale(${(1.3 * soft(clamp01((t - 0.06) / 0.5))).toFixed(4)})`;
+        live.pdark.style.transform = `scale(${(1.3 * soft(clamp01((t - 0.03) / 0.3))).toFixed(4)})`;
       }
       live.pindex.style.opacity = clamp01((grow - 0.35) / 0.4).toFixed(3);
     }
