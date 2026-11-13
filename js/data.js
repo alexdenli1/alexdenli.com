@@ -19,6 +19,7 @@
      preview   optional: pictures for the Archive hover slideshow, e.g. preview: ["images/x/1.jpg", "images/x/2.jpg"].
                If left out, it plays the hero then every image used on the project page.
      summary   one or two short sentences
+     process   the steps shown when the project is hovered on the Projects page: [{ title, text }, ...] (3 or 4 work best)
      scope     optional: replaces the category in the small line under the name on the home page
      line      optional: the single line shown under the name on the home page (falls back to summary)
      blocks    the project page, top to bottom. Block types:
@@ -66,6 +67,7 @@ window.SITE = {
       slug: "xfly", title: "XFLY", category: "product-design",
       year: 2026, status: "current", hero: "images/xfly/hero.jpg",
       line: "A golf launch monitor at a competitive price, with a Bluetooth app, for amateur to professional golfers.",
+      process: [{ title: "Research", text: "Placeholder: what golfers and competing monitors showed." }, { title: "Design", text: "Placeholder: the directions explored and the one chosen." }, { title: "Prototype", text: "Placeholder: samples, testing and what changed." }, { title: "Final product", text: "Placeholder: what shipped, and the Bluetooth app." }],
       summary: "A golf launch monitor at a competitive price, with a Bluetooth app, for amateur to professional golfers.",
       blocks: [
         { type: "statement", text: "Placeholder: the problem XFLY solves, said in one sentence a golfer would nod at." },
@@ -83,6 +85,7 @@ window.SITE = {
     {
       slug: "adverts", title: "Adverts", category: "graphic-design",
       year: "2025 – now", status: "current", hero: "images/adverts/hero.jpg",
+      process: [{ title: "Brief", text: "Placeholder: the product, the audience and the page it runs on." }, { title: "Concept", text: "Placeholder: the idea that stops a reader on a crowded page." }, { title: "Layout", text: "Placeholder: image, headline and offer, built to the magazine spec." }, { title: "Print-ready", text: "Placeholder: proofs, sign-off and the final files." }],
       summary: "Magazine adverts for print and online, produced monthly.",
       blocks: [
         { type: "statement", text: "Placeholder: what makes a golf advert work on a crowded magazine page." },
@@ -95,6 +98,7 @@ window.SITE = {
     {
       slug: "signature-logo", title: "Signature Logo Collection", category: "graphic-design",
       year: "2025 – now", status: "current", hero: "images/signature-logo/hero.jpg",
+      process: [{ title: "Range", text: "Placeholder: which products carry a club's logo." }, { title: "Artwork", text: "Placeholder: preparing each club's logo for every product." }, { title: "Brochure", text: "Placeholder: laying out the range and price list." }, { title: "Launch", text: "Placeholder: how it reached golf clubs." }],
       summary: "A fully custom logo range of promotional products for golf clubs.",
       blocks: [
         { type: "statement", text: "Placeholder: what the collection is and who it is for." },
@@ -106,6 +110,7 @@ window.SITE = {
     {
       slug: "rescue", title: "Rescue", category: "ux-ui",
       year: "2026 redevelopment", status: "archive", hero: "images/rescue/hero-1920.jpg",
+      process: [{ title: "Storyboard", text: "Josh's day, drawn out to find where energy saving could fit." }, { title: "Bodystorming", text: "Acting the app out with people and props, before any design." }, { title: "Prototype", text: "A clickable Marvel prototype so real people could try the route." }, { title: "Redevelopment", text: "In 2026: Pip the red panda, a core daily loop and a playable gate." }],
       summary: "A children's app for learning about energy saving, designed at university and redone in 2026.",
       blocks: [
         
@@ -117,6 +122,7 @@ window.SITE = {
     {
       slug: "ball-cabinet", title: "Ball Cabinet", category: "product-design",
       year: 2025, status: "archive", hero: PH(4),
+      process: [{ title: "Research", text: "Placeholder: shipping, storage and what the old cabinet cost." }, { title: "Sketches", text: "Placeholder: flat-pack options explored." }, { title: "Final product", text: "Placeholder: the cabinet that ships efficiently." }],
       summary: "Redesigning a flat-pack golf ball cabinet for efficient shipping, logistics and storage, for a top-selling product.",
       blocks: [
         { type: "statement", text: "Placeholder: the problem the cabinet solves." },
@@ -130,6 +136,7 @@ window.SITE = {
     {
       slug: "brand-identity", title: "Brand Identity", category: "graphic-design",
       year: 2025, status: "archive", hero: PH(13),
+      process: [{ title: "Idea", text: "Placeholder: what the identity needed to say." }, { title: "Logo", text: "Placeholder: marks and how they were refined." }, { title: "System", text: "Placeholder: colour, type and where they are used." }],
       summary: "Placeholder: logos, colour and type systems.",
       blocks: [
         { type: "statement", text: "Placeholder: the idea behind the identity." },

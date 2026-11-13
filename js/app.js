@@ -141,21 +141,42 @@
     const TABS = [{ id: "product-design", label: "Product" }, { id: "graphic-design", label: "Graphic" }, { id: "ux-ui", label: "UX/UI" }, { id: "e-commerce", label: "E-commerce" }];
     return { title: "Projects", label: "Projects", after: () => {
       const imgs = $$(".pbg img");
+      $$(".pt").forEach((t) => {
+        const lis = $$(".pt-proc li", t); let k = 0, iv = 0;
+        const set = (n) => { k = n; lis.forEach((l, i) => l.classList.toggle("on", i === k)); };
+        t.addEventListener("mouseenter", () => { set(0); clearInterval(iv); if (lis.length > 1) iv = setInterval(() => set((k + 1) % lis.length), 1600); });
+        t.addEventListener("mouseleave", () => { clearInterval(iv); set(0); });
+        lis.forEach((l, i) => l.addEventListener("mouseenter", () => { clearInterval(iv); set(i); }));
+      });
       $$(".pj-tabs a").forEach((a) => {
         const i = +a.dataset.i;
         a.addEventListener("mouseenter", () => { if (imgs[i]) { imgs[i].classList.add("peek"); $(".pbg").classList.add("hov"); } });
         a.addEventListener("mouseleave", () => { if (imgs[i]) { imgs[i].classList.remove("peek"); $(".pbg").classList.remove("hov"); } });
-        a.addEventListener("click", (e) => { const sec = $("#pc-" + a.dataset.id); if (sec) { e.preventDefault(); sec.scrollIntoView({ behavior: "smooth", block: "start" }); } });
+        a.addEventListener("click", (e) => {
+          e.preventDefault();
+          const on = a.classList.contains("on"), tabs = $$(".pj-tabs a");
+          tabs.forEach((x) => x.classList.remove("on"));
+          if (!on) a.classList.add("on");
+          const id = on ? "" : a.dataset.id; let n = 0;
+          $$(".pj-grid > li").forEach((li) => { const show = !id || li.dataset.cat === id; li.hidden = !show; if (show) n++; });
+          $(".pj-empty").hidden = n > 0;
+          $("#pjGrid").scrollIntoView({ behavior: "smooth", block: "start" });
+        });
       });
     }, html: `<div class="page proj-page">
       <div class="pbg" aria-hidden="true">${secs.map((s) => `<img src="${esc(s.key.hero)}" alt="">`).join("")}</div>
       <header class="pj-hero"><h1 class="giant">Projects</h1>
-        <nav class="pj-tabs" aria-label="Project categories">${TABS.map((t) => { const i = secs.findIndex((s) => s.c.id === t.id); return `<a href="#/work/${esc(t.id)}" data-i="${i}" data-id="${esc(t.id)}">${esc(t.label)}</a>`; }).join("")}</nav>
+        <nav class="pj-tabs" aria-label="Project categories">${TABS.map((t) => { const i = secs.findIndex((x) => x.c.id === t.id); return `<a href="#/work/${esc(t.id)}" data-i="${i}" data-id="${esc(t.id)}">${esc(t.label)}</a>`; }).join("")}</nav>
       </header>
-      ${secs.map((s) => `<section class="pcat" id="pc-${esc(s.c.id)}">
-        <h2><a class="giant" href="#/work/${esc(s.c.id)}">${esc(s.c.label)}</a></h2>
-        <ol>${s.list.map((p) => `<li><a href="${link(p)}"><b>${esc(p.title)}</b><span class="small">${esc(p.year)}${p.status === "current" ? " — in progress" : ""}</span></a></li>`).join("")}</ol>
-      </section>`).join("")}${foot()}</div>` };
+      <section class="pj-grid-wrap" id="pjGrid"><p class="pj-empty" hidden>Nothing here yet. New work will appear in this category soon.</p>
+      <ol class="pj-grid">${S.projects.map((p) => { const c = S.categories.find((x) => x.id === p.category); const steps = p.process || [];
+        return `<li data-cat="${esc(p.category)}"><a class="pt" href="${link(p)}">
+          <span class="pt-img"><img src="${esc(p.hero)}" alt="${esc(p.title)}" loading="lazy">
+            <span class="pt-over"><small>${esc(c ? c.label : "")}</small><span class="pt-sum">${esc(p.summary)}</span>
+              ${steps.length ? `<ol class="pt-proc">${steps.map((st, i) => `<li${i === 0 ? ' class="on"' : ""}><i>${i + 1}</i><span><b>${esc(st.title)}</b><em>${esc(st.text)}</em></span></li>`).join("")}</ol>` : ""}
+              <span class="pt-more">More <i>→</i></span></span></span>
+          <span class="pt-cap"><b>${esc(p.title)}</b><small>${esc(p.year)}</small></span></a></li>`; }).join("")}</ol></section>
+      ${foot()}</div>` };
   }
 
   function archive() {
