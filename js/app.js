@@ -319,6 +319,8 @@
   }
 
   /* ---------- Scroll and pointer motion ---------- */
+  // The home button on the home page scrolls to the top too (the link alone does nothing there).
+  flag.addEventListener("click", (e) => { if (live.home && /^#?\/?$/.test(location.hash)) { e.preventDefault(); toTop(); } });
   // Back to top: one eased scroll to the top of the home page. The list/showcase switch and the strip glide
   // stand down meanwhile, because they change the page height mid-way and used to pull the scroll off course.
   function toTop() {
@@ -346,6 +348,7 @@
   }
   function update() {
     queued = false;
+    if (live.toTop) { lastY = scrollY; return; }
     const y = scrollY, vh = innerHeight, big = wide();
     // Read every position first, then write. Interleaving the two forces the browser to lay the
     // page out again after each write, which is what made moving the mouse on the home page slow.
