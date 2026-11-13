@@ -258,8 +258,8 @@
         const m = document.createElement("canvas").getContext("2d"); m.font = `700 ${k}px Bricolage`;
         const cap = m.measureText("H"), mt = m.measureText("Hg");
         if (!W0 || !cap.actualBoundingBoxAscent) return;
-        const F = k * (0.985 * vw) / W0, s = F / k, capH = cap.actualBoundingBoxAscent * s;
-        const sy = (0.84 * vh) / capH;
+        const F = k * (1.0 * vw) / W0, s = F / k, capH = cap.actualBoundingBoxAscent * s;
+        const sy = (0.9 * vh) / capH;
         const fa = (mt.fontBoundingBoxAscent || k * 0.9) * s, fd = (mt.fontBoundingBoxDescent || k * 0.25) * s;
         const base = (F - (fa + fd)) / 2 + fa, off = base - capH / 2 - F / 2;
         w.style.setProperty("--wf", F.toFixed(1) + "px"); w.style.setProperty("--wsy", sy.toFixed(4));
@@ -349,7 +349,9 @@
       grow = out(clamp01((t - 0.2) / 0.55));
       if (introR.bottom > 0 && introR.top < vh) {
         // the word dissolves in, square by square, as the section rises into view
-        if (live.cover) live.drawCover(Math.round(clamp01((1 - introR.top / vh - 0.12) / 0.8) * live.cover.N));
+        const dis = clamp01((1 - introR.top / vh) / 0.42);
+        if (live.cover) live.drawCover(Math.round(dis * live.cover.N));
+        live.pword.style.opacity = (0.25 + 0.75 * dis).toFixed(3);
         live.pdark.style.transform = `scale(${(1.3 * soft(clamp01((t - 0.06) / 0.5))).toFixed(4)})`;
       }
       live.pindex.style.opacity = clamp01((grow - 0.35) / 0.4).toFixed(3);
@@ -408,7 +410,7 @@
       // Each logo zooms in from small, overshoots a touch, and settles into its slot.
       // The scroll input is damped so a fast flick still plays the sequence smoothly.
       const span = brandsR.height - (vh - navH), N = live.logos.length;
-      const t = span > 0 ? Math.max(0, Math.min(1, (navH - brandsR.top) / span)) : 1;
+      const t = span > 0 ? Math.max(0, Math.min(1, (navH - brandsR.top) / span / 0.74)) : 1;
       if (live.brandT === undefined) live.brandT = t;
       live.brandT += (t - live.brandT) * 0.14;
       if (Math.abs(t - live.brandT) > 0.001) queue(); else live.brandT = t;
