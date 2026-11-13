@@ -336,6 +336,9 @@
       if (!reduce) live.mark.style.transform = `scale(${1 + p * 0.9})`;
       live.mark.style.opacity = String(1 - p * 1.15);
     }
+    // Animations play going down only. Scrolling up shows everything settled, with no reverse motion.
+    if (y < lastY - 1) live.up = true; else if (y > lastY + 1) live.up = false;
+    const up = !!live.up;
     nav.classList.toggle("nav-away", !!live.mark && y < vh * 0.85);
     flag.classList.toggle("flag-away", live.home && y < vh * (live.mark ? 1.5 : 0.5));
     // "Projects" intro: the word sits big on screen, a dark disc grows from its middle and swallows it,
@@ -345,19 +348,23 @@
     let grow = 1;
     if (introR && big && !reduce) {
       const tt = clamp01(-introR.top / (1.15 * vh));
-      if (live.pT === undefined) live.pT = tt;
+      if (live.pT === undefined || up) live.pT = tt;
       live.pT += (tt - live.pT) * 0.2;
       if (Math.abs(tt - live.pT) > 0.0005) queue(); else live.pT = tt;
       const t = live.pT, out = (x) => 1 - Math.pow(1 - x, 3), soft = (x) => x * x * (3 - 2 * x);
-      grow = out(clamp01((t - 0.14) / 0.5));
+      grow = up ? 1 : out(clamp01((t - 0.14) / 0.5));
       if (introR.bottom > 0 && introR.top < vh) {
         // the word dissolves in, square by square, as the section rises into view
         const dis = clamp01((1 - introR.top / vh) / 0.85);
-        if (live.cover) live.drawCover(dis);
-        live.pword.style.opacity = (0.25 + 0.75 * dis).toFixed(3);
-        live.pdark.style.transform = `scale(${(1.3 * soft(clamp01((t - 0.03) / 0.3))).toFixed(4)})`;
+        live.pcover.style.visibility = up ? "hidden" : "";
+        if (up) { live.pword.style.opacity = "0"; live.pdark.style.transform = "scale(0)"; }
+        else {
+          if (live.cover) live.drawCover(dis);
+          live.pword.style.opacity = (0.25 + 0.75 * dis).toFixed(3);
+          live.pdark.style.transform = `scale(${(1.3 * soft(clamp01((t - 0.03) / 0.3))).toFixed(4)})`;
+        }
       }
-      live.pindex.style.opacity = clamp01((grow - 0.35) / 0.4).toFixed(3);
+      live.pindex.style.opacity = up ? "1" : clamp01((grow - 0.35) / 0.4).toFixed(3);
     }
     // Slides: every project sits in the same spot on the pinned stage. Scrolling hands over from one to the next:
     // the picture, the name and the line each fly off in their own direction while the next project's parts
@@ -365,12 +372,12 @@
     if (big && live.pieces && live.pieces.length && introR) {
       const N = live.pieces.length, scrolled = Math.max(0, -introR.top);
       if (live.sS === undefined) live.sS = scrolled;
-      live.sS = reduce ? scrolled : live.sS + (scrolled - live.sS) * 0.18;
+      live.sS = (reduce || up) ? scrolled : live.sS + (scrolled - live.sS) * 0.18;
       if (Math.abs(scrolled - live.sS) > 0.5) queue(); else live.sS = scrolled;
       const sp = Math.max(0, (live.sS - 1.15 * vh) / (0.8 * vh));
       const idx = Math.min(N - 1, Math.floor(sp)), u = idx >= N - 1 ? 0 : sp - idx;
       let v = clamp01((u - 0.25) / 0.75);
-      if (reduce) v = v > 0.5 ? 1 : 0;
+      if (up) v = 0; else if (reduce) v = v > 0.5 ? 1 : 0;
       const ease = (x) => x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
       if (!live.fly) {
         const D = [[-1, 0], [1, 0], [0, -1], [0, 1]], pick = () => D.slice().sort(() => Math.random() - 0.5).slice(0, 3);
@@ -379,7 +386,7 @@
       }
       const DL = [0, 0.07, 0.14], put = (k, dirs, f0, delay) => live.parts[k].forEach((part, i) => {
         if (!part) return;
-        const f = reduce ? 0 : delay(f0, i);
+        const f = (reduce || up) ? 0 : delay(f0, i);
         const d = dirs[i], x = d[0] * 0.95 * innerWidth * f, yy = d[1] * 1.1 * vh * f;
         part.style.transform = f > 0.001 ? `translate3d(${x.toFixed(1)}px, ${yy.toFixed(1)}px, 0)` : "";
         part.style.opacity = f > 0.9 ? (1 - (f - 0.9) * 10).toFixed(2) : "";
@@ -420,13 +427,13 @@
       // The scroll input is damped so a fast flick still plays the sequence smoothly.
       const span = brandsR.height - (vh - navH), N = live.logos.length;
       const t = span > 0 ? Math.max(0, Math.min(1, (navH - brandsR.top) / span / 0.74)) : 1;
-      if (live.brandT === undefined) live.brandT = t;
+      if (live.brandT === undefined || up) live.brandT = t;
       live.brandT += (t - live.brandT) * 0.14;
       if (Math.abs(t - live.brandT) > 0.001) queue(); else live.brandT = t;
       const dur = 2.6 / (N + 1.6), gap0 = N > 1 ? (1 - dur) / (N - 1) : 1;
       live.logos.forEach((el, k) => {
         if (reduce) { el.style.transform = ""; el.style.opacity = "1"; el.style.filter = ""; return; }
-        const p = Math.max(0, Math.min(1, (live.brandT - k * gap0) / dur));
+        const p = up ? 1 : Math.max(0, Math.min(1, (live.brandT - k * gap0) / dur));
         const b = 1 + 2.70158 * Math.pow(p - 1, 3) + 1.70158 * Math.pow(p - 1, 2); // ease-out-back
         el.style.transform = `translate3d(0, ${(36 * (1 - b)).toFixed(1)}px, 0) scale(${(0.3 + 0.7 * b).toFixed(3)})`;
         el.style.opacity = Math.min(1, p * 1.8).toFixed(3);
