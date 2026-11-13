@@ -331,28 +331,31 @@
   function wireArchive() {
     unwireArchive();
     if (!fine || !wide() || reduce) return;
-    const dim = document.createElement("div"), card = document.createElement("div");
+    const dim = document.createElement("div"), card = document.createElement("a");
     dim.className = "show-dim"; card.className = "show";
-    card.innerHTML = '<div class="show-frame"></div><div class="show-cap"><b></b><small></small></div><div class="show-bar"></div>';
+    card.innerHTML = '<div class="show-frame"><div class="show-track"></div></div><div class="show-cap"><b></b><small></small><span class="show-go">Let\'s go <i aria-hidden="true">&rarr;</i></span></div><div class="show-bar"></div>';
     document.body.append(dim, card);
-    arch = { dim, card, t: 0, iv: 0, tile: null, open: false };
-    const frame = $(".show-frame", card), bar = $(".show-bar", card);
+    arch = { dim, card, t: 0, iv: 0, ct: 0, tile: null, open: false };
+    const track = $(".show-track", card), bar = $(".show-bar", card);
     const place = (r) => { card.style.left = r.left + "px"; card.style.top = r.top + "px"; card.style.width = r.width + "px"; };
     const close = () => {
       if (!arch) return;
-      clearTimeout(arch.t); clearInterval(arch.iv);
+      clearTimeout(arch.t); clearTimeout(arch.ct); clearInterval(arch.iv);
       if (!arch.open) return;
       arch.open = false; dim.classList.remove("on"); card.classList.remove("on");
       const t = arch.tile, r = t.querySelector(".tile-img").getBoundingClientRect();
       place(r); card.classList.add("home");
       setTimeout(() => { if (!arch.open) { card.style.visibility = "hidden"; t.classList.remove("lifted"); } }, 450);
     };
+    const later = () => { clearTimeout(arch.ct); arch.ct = setTimeout(close, 220); };
     const open = (tile) => {
       const p = S.projects.find((x) => link(x) === tile.getAttribute("href"));
       if (!p) return;
       const imgs = shotsOf(p), r0 = tile.querySelector(".tile-img").getBoundingClientRect();
-      arch.tile = tile; arch.open = true;
-      frame.innerHTML = imgs.map((s, i) => `<img src="${esc(s)}" alt="" class="${i ? "" : "on"}">`).join("");
+      arch.tile = tile; arch.open = true; card.setAttribute("href", tile.getAttribute("href"));
+      const list = imgs.length > 1 ? imgs.concat(imgs[0]) : imgs;
+      track.style.transition = "none"; track.style.transform = "translateX(0)";
+      track.innerHTML = list.map((s) => `<img src="${esc(s)}" alt="">`).join("");
       $("b", card).textContent = p.title; $("small", card).textContent = p.year;
       bar.innerHTML = imgs.length > 1 ? imgs.map(() => "<i></i>").join("") : "";
       card.style.visibility = "visible"; card.classList.remove("on", "home"); place(r0);
@@ -363,18 +366,25 @@
         card.classList.add("on");
         place({ left: (innerWidth - w) / 2, top: (innerHeight - h) / 2 - 36, width: w });
       }));
-      let i = 0; const els = $$("img", frame), segs = $$("i", bar);
-      const show = (k) => { els.forEach((e, j) => e.classList.toggle("on", j === k)); segs.forEach((s, j) => s.classList.toggle("done", j <= k)); };
-      show(0);
-      if (imgs.length > 1) arch.iv = setInterval(() => { i = (i + 1) % imgs.length; show(i); }, 1500);
+      // the pictures drift from right to left, one after another, and loop round
+      const segs = $$("i", bar), n = imgs.length; let k = 0;
+      const mark = (j) => segs.forEach((s, m) => s.classList.toggle("done", m <= j % n));
+      mark(0);
+      if (n > 1) arch.iv = setInterval(() => {
+        k++; track.style.transition = "transform 1s cubic-bezier(.65, 0, .25, 1)"; track.style.transform = `translateX(${-k * 100}%)`; mark(k);
+        if (k === n) setTimeout(() => { if (arch && arch.open) { track.style.transition = "none"; track.style.transform = "translateX(0)"; k = 0; } }, 1050);
+      }, 1700);
     };
     $$(".tile").forEach((tile) => {
-      tile.addEventListener("mouseenter", () => { clearTimeout(arch.t); arch.t = setTimeout(() => open(tile), 220); });
-      tile.addEventListener("mouseleave", close);
+      tile.addEventListener("mouseenter", () => { clearTimeout(arch.ct); clearTimeout(arch.t); arch.t = setTimeout(() => open(tile), 220); });
+      tile.addEventListener("mouseleave", () => { clearTimeout(arch.t); later(); });
       tile.addEventListener("focus", () => open(tile));
-      tile.addEventListener("blur", close);
+      tile.addEventListener("blur", later);
       tile.addEventListener("click", () => { clearTimeout(arch.t); clearInterval(arch.iv); arch.open = false; dim.classList.remove("on"); card.style.visibility = "hidden"; });
     });
+    card.addEventListener("mouseenter", () => clearTimeout(arch.ct));
+    card.addEventListener("mouseleave", later);
+    card.addEventListener("click", () => { clearInterval(arch.iv); arch.open = false; dim.classList.remove("on"); card.style.visibility = "hidden"; arch.tile && arch.tile.classList.remove("lifted"); });
     arch.sc = close; addEventListener("scroll", close, { passive: true });
   }
 
