@@ -108,7 +108,7 @@ main:focus { outline: none; }
 
 /* ---------- Home: the work — "Projects" intro, then the field of scattered work ---------- */
 /* every home image: same size, landscape 3:2, evenly spaced; the name, category and one line sit below it */
-.work { position: relative; z-index: 2; margin-top: -30vh; background: var(--bg); --pw: min(52vw, 111vh); --ph: calc(var(--pw) / 1.5); --gap: 28vh; --cap: 9rem; }
+.work { position: relative; z-index: 2; margin-top: -30vh; background: var(--bg); --pw: min(52vw, 111vh); --ph: calc(var(--pw) / 1.5); --gap: 28vh; --cap: 10rem; }
 .pintro { position: relative; height: 215vh; }
 .pintro-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: var(--bg); }
 .pintro-word {
@@ -163,7 +163,7 @@ main:focus { outline: none; }
 .piece-cap { display: block; padding-top: clamp(.9rem, 1.6vh, 1.4rem); transition: opacity .4s; }
 .piece-name { display: block; font-size: clamp(2.2rem, 3.7vw, 4.4rem); font-weight: 700; font-stretch: 75%; line-height: .95; letter-spacing: -.02em; white-space: nowrap; }
 .piece-meta { display: block; margin-top: .6rem; font-size: clamp(.875rem, .95vw, 1.0625rem); color: var(--muted); }
-.piece-line { display: block; margin-top: .3rem; max-width: 100%; font-size: clamp(.9375rem, 1.05vw, 1.1875rem); line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.piece-line { display: block; margin-top: .3rem; max-width: 100%; font-size: clamp(.9375rem, 1.05vw, 1.1875rem); line-height: 1.35; }
 .work.dim .piece:not(.on) .piece-cap { opacity: .2; }
 .work.dim .piece:not(.on) img { opacity: .2; }
 .piece.lost:not(.got) .piece-cap { visibility: hidden; }
@@ -404,7 +404,6 @@ main:focus { outline: none; }
   .piece { position: static; width: 90%; }
   .piece:nth-of-type(even) { justify-self: end; }
   .piece-name { font-size: clamp(1.8rem, 9vw, 2.6rem); }
-  .piece-line { white-space: normal; }
   .row, .p-head, .b-steps li, .about { grid-template-columns: 1fr; }
   .row > *, .p-head > *, .b-steps li > *, .about > * { grid-column: 1 / -1 !important; order: 0 !important; }
   .b-steps .step-txt { position: static; }

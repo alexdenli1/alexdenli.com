@@ -17,6 +17,7 @@
      hidden    true = on the home page visitors have to find it with the cursor
      hero      main image
      summary   one or two short sentences
+     scope     optional: replaces the category in the small line under the name on the home page
      line      optional: the single line shown under the name on the home page (falls back to summary)
      blocks    the project page, top to bottom. Block types:
        { type: "statement", text }                 big text for the key point
@@ -61,7 +62,9 @@ window.SITE = {
     {
       slug: "xfly", title: "XFLY", category: "product-design",
       year: 2026, status: "current", hero: "images/xfly/hero.jpg",
-      summary: "Placeholder: one line on what XFLY is and your part in it.",
+      scope: "Concept to launch: product design, CAD, packaging and marketing",
+      line: "A competitively priced, fully functional golf launch monitor with a Bluetooth app, for amateur to professional golfers, indoors and out.",
+      summary: "A competitively priced, fully functional golf launch monitor with a Bluetooth app, for amateur to professional golfers, indoors and out. I designed it end to end: ideation and concept, CAD, packaging, marketing and the final release.",
       blocks: [
         { type: "statement", text: "Placeholder: the problem XFLY solves, said in one sentence a golfer would nod at." },
         { type: "text", heading: "The brief", text: "Placeholder: what it had to do, and the constraints — price, materials, timing." },

@@ -37,7 +37,7 @@
       return `<a class="piece${i === 0 ? " first" : ""}${p.hidden ? " lost" : ""}${found.has(p.slug) ? " got" : ""}" href="${link(p)}" data-slug="${esc(p.slug)}"
         data-title="${esc(p.title)}" data-speed="${t.s}" style="left:${t.x}%;--i:${Math.max(0, i - 1)}">
         <span class="piece-in"><span class="piece-img"><img src="${esc(p.hero)}" alt="${esc(p.title)}" loading="${i < 2 ? "eager" : "lazy"}">${ZAP}</span>
-          <span class="piece-cap"><span class="piece-name">${esc(p.title)}</span><span class="piece-meta">${esc(cat(p.category).label)}, ${esc(p.year)}</span>
+          <span class="piece-cap"><span class="piece-name">${esc(p.title)}</span><span class="piece-meta">${esc(p.scope || cat(p.category).label)}, ${esc(p.year)}</span>
           <span class="piece-line">${esc(p.line || p.summary || "")}</span></span></span></a>`;
     };
     const first = n ? piece(S.projects[0], 0) : "";
