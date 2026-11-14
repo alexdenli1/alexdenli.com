@@ -86,14 +86,6 @@
         ${gap.map((g) => `<g class="gd"><circle cx="${g[1]}" cy="${g[2]}" r="6.5" fill="#142826"/><text x="${g[1] + 14}" y="${g[2] + 5}" font-size="14" font-weight="500" fill="#142826">${g[0]}</text></g>`).join("")}
         <g class="me"><circle cx="520" cy="130" r="11" fill="#2F7F86"/><text x="538" y="136" font-size="18" font-weight="700" fill="#2F7F86">Relinquit</text></g></svg><p><b>The gap:</b> a physical product that enforces gently <i>and</i> ends in a quit date.</p></div></section>
 
-    <section data-sec="The insight" class="rq-pin rq-day" data-pin="day"><div class="rq-stage"><div class="rq-in">
-      <header class="rq-sh"><small>The insight</small><h2>Cravings hit at stress and routine, so help is needed between cigarettes.</h2></header>
-      <svg class="rq-dsv" viewBox="0 0 800 470" role="img" aria-label="A day of cravings: calm at coffee and lunch, lowest at a stressful call and the commute"><rect width="800" height="470" rx="24" fill="#fff"/><line x1="40" y1="235" x2="760" y2="235" stroke="#DEDAD1" stroke-dasharray="5 7"/><text x="40" y="44" font-size="14" fill="#4F5D5A">calm</text><text x="40" y="395" font-size="14" fill="#4F5D5A">craving</text>
-        <g class="rest"><rect x="410" y="300" width="112" height="70" rx="14" fill="#FBEBDA"/><text x="466" y="330" text-anchor="middle" font-size="14" font-weight="700" fill="#A65412">Case rests</text><text x="466" y="352" text-anchor="middle" font-size="13" fill="#A65412">2-min reset</text></g>
-        <path class="dl" d="${dayPath}" pathLength="1" fill="none" stroke="#142826" stroke-width="3" stroke-linejoin="round"/>
-        ${day.map((d) => `<g class="dp" data-f="${(d[0] - 70) / 660}"><circle cx="${d[0]}" cy="${d[1]}" r="11" fill="${d[4] ? "#F2A04B" : "#2F7F86"}" stroke="#fff" stroke-width="3"/><text x="${d[0]}" y="430" text-anchor="middle" font-size="16" font-weight="700" fill="#142826">${d[2]}</text><text x="${d[0]}" y="452" text-anchor="middle" font-size="14" fill="#4F5D5A">${d[3]}</text></g>`).join("")}</svg>
-    </div></div></section>
-
     <section data-sec="Ideation" class="rq-pin rq-ideas" data-pin="ideas"><div class="rq-stage"><div class="rq-in">
       <header class="rq-sh"><small>03 · Ideation & development</small><h2>Eight ideas → one thumb, one cigarette</h2></header>
       <div class="rq-sks">${SKN.map(sketch).join("")}</div>
@@ -104,7 +96,7 @@
 
     <section data-sec="How it works" class="rq-pin rq-works" data-pin="works"><div class="rq-stage"><div class="rq-in">
       <header class="rq-sh"><small>How it works</small><h2>Glance. Slide. Take one. Rest.</h2></header>
-      <div class="rq-wgrid"><div class="rq-wc"><div class="stp" data-s="0"><div class="rq-prod"><img class="a" src="images/relinquit/rest.webp" alt="The case closed, showing the countdown to the next cigarette"><img class="b" src="images/relinquit/open.webp" alt="The same case with the slider moved and one cigarette ready"><i class="ring"></i></div></div></div>
+      <div class="rq-wgrid"><div class="rq-wc"><div class="stp">${[1, 2, 3, 4].map((n) => `<img src="images/relinquit/step-${n}.webp" alt="Step ${n}">`).join("")}</div></div>
         <ol class="rq-wl">${[["Glance", "The always-on screen shows what is left today."], ["Slide", "One thumb moves the gate; either hand works."], ["Take one", "A single cigarette rises and is counted."], ["Rest", "The gate holds shut until the next slot, with a countdown."]].map((r, i) => `<li data-i="${i}"><b>${i + 1}</b><div><h3>${r[0]}</h3><p>${r[1]}</p></div></li>`).join("")}</ol></div>
       <p class="rq-mech">Spring magazine pushes the stack up · IR beam counts each cigarette · micro-latch holds the slider until the next slot.</p>
     </div></div></section>
@@ -207,7 +199,7 @@
         const i = Math.min(3, Math.floor(p * 3.999));
         if (el._k === i) return; el._k = i;
         $$(".rq-wl li", el).forEach((li, k) => li.classList.toggle("on", k === i));
-        $(".stp", el).dataset.s = i;
+        $$(".stp img", el).forEach((im, k) => im.classList.toggle("on", k === i));
       }
     };
     // app screens: click to choose; "Walk me through it" plays them by itself, then moves on to the next section

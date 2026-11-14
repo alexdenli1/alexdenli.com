@@ -403,3 +403,33 @@
 .rq-ms img { -webkit-mask-image: linear-gradient(to right, transparent, #000 9%, #000 86%, transparent); mask-image: linear-gradient(to right, transparent, #000 9%, #000 86%, transparent); }
 .rq-prob .rq-pgrid { padding-left: var(--pad); }
 .stp[data-s="0"] .ring, .stp[data-s="3"] .ring { left: 17%; top: 49%; width: 66%; height: 31%; }
+
+/* ---- back to four step renders ---- */
+.stp { position: absolute; inset: 0; display: block; padding: 0; }
+.stp img { position: absolute; left: 50%; bottom: 4%; height: auto; width: auto; max-height: 92%; max-width: 86%; opacity: 0; transform: translate(-50%, 14px); transition: opacity .45s, transform .5s; }
+.stp img.on { opacity: 1; transform: translate(-50%, 0); }
+.rq-ms p { justify-content: space-around; text-align: center; }
+.rq-ms p span { flex: 1; text-align: center; }
+.rq-me { overflow: hidden; }
+.rq-me .es > div { overflow: hidden; min-height: 0; }
+.rq-me .rq-es { min-height: 0; overflow: hidden; }
+.rq-me .rq-es b { font-size: clamp(1rem, 8.5cqw, 1.9rem); } .rq-me .rq-es b.sm { font-size: clamp(.9rem, 6.2cqw, 1.4rem); }
+.rq-me .rq-es span { font-size: clamp(.5rem, 2.9cqw, .72rem); } .rq-me .rq-es small { font-size: clamp(.55rem, 3.1cqw, .72rem); }
+.rq-me .es > div > span { font-size: clamp(.7rem, 3.6cqw, .95rem); }
+.rq-me > p { font-size: clamp(.7rem, 3.4cqw, .9rem); }
+/* e-ink card sizes itself to its tiles; the section grows if it must */
+.rq-model { height: auto; min-height: 120vh; overflow: visible; padding-bottom: 3rem; }
+.rq-mg { height: auto; min-height: calc(120vh - var(--nav-h) - 13.5rem); }
+.rq-mb { flex: 1.2 1 auto; }
+.rq-me { overflow: visible; }
+.rq-me .es { flex: none; grid-auto-rows: auto; }
+.rq-me .es > div { overflow: visible; }
+.rq-me .rq-es { flex: none; overflow: visible; padding: .9rem .4rem; }
+.rq-me .rq-es b { font-size: clamp(1.3rem, 8.5cqw, 1.9rem); } .rq-me .rq-es b.sm { font-size: clamp(1.1rem, 6.2cqw, 1.4rem); }
+.rq-ms p span { flex: 1; text-align: center; }
+.rq-mc { flex: 1.1 1 0; min-height: 46vh; }
+.rq-mb { flex: 1 1 0; min-height: 44vh; }
+.rq-me { justify-content: center; }
+.rq-ms { justify-content: center; }
+.rq-mb { min-height: max(44vh, 25rem); }
+.rq-me, .rq-ms { min-height: 0; }
