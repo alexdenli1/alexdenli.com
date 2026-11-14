@@ -128,7 +128,7 @@
       return { title: p.title, label: p.title, html: window.RESCUE.render(p, tail), after: () => window.RESCUE.wire() };
     }
     return { title: p.title, label: p.title, html: `<article class="page"><header class="p-head">
-        <p class="p-meta small"><a class="ul" href="#/work/${esc(c.id)}">${esc(c.label)}</a><span>${esc(p.year)}</span><span>${p.status === "current" ? "In progress" : "Completed"}</span></p>
+        <p class="p-meta"><b>${esc(p.title)}</b><span>${esc(p.year)}</span><a class="ul" href="#/work/${esc(c.id)}">${esc(c.label)}</a></p>
         <h1 class="giant">${esc(p.title)}</h1><p class="p-sum">${esc(p.summary)}</p></header>
       <div class="p-hero mask"><img src="${esc(p.hero)}" alt="${esc(p.title)}"></div>
       <div class="blocks">${(p.blocks || []).map((b) => (BLOCK[b.type] ? BLOCK[b.type](b) : "")).join("")}</div>

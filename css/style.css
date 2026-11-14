@@ -262,7 +262,9 @@ main:focus { outline: none; }
 
 /* ---------- Project page ---------- */
 .p-head { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2rem 1.5rem; margin-bottom: 10vh; }
-.p-head .p-meta { grid-column: 1 / -1; display: flex; gap: 1.5rem; }
+.p-head .p-meta, .p-meta { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 0; font-size: 1.125rem; letter-spacing: .01em; margin: 0 0 1.25rem; }
+.p-meta > * + *::before { content: "\00b7"; display: inline-block; margin: 0 1.6rem; opacity: .55; text-decoration: none; }
+.p-meta b { font-weight: 600; }
 .p-head h1 { grid-column: 1 / -1; }
 .p-head .p-sum { grid-column: 7 / span 5; font-size: 1.25rem; }
 .mask { overflow: hidden; }
@@ -510,3 +512,6 @@ main:focus { outline: none; }
 /* a wider picture (16:9) shows in full inside the 3:2 slide frame, sitting on the caption, instead of being cropped */
 .piece-img.wide { display: flex; align-items: flex-end; aspect-ratio: 3 / 2; }
 .piece-img.wide img { aspect-ratio: auto; height: auto; }
+
+.p-meta a.ul { background: none; }
+.p-meta a.ul:hover { text-decoration: underline; text-underline-offset: 4px; }

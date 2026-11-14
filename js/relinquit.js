@@ -128,12 +128,13 @@
     const gap = [["Reduction apps", 160, 120], ["NHS Quit Smoking app", 230, 190], ["NicoTrax case", 140, 360], ["Lowiee case", 270, 300], ["Quitbit lighter", 560, 330]];
     return `<article class="page rq"><svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="rqRough"><feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="3.5"/></filter></svg>
 
-    <section class="rq-hero"><div class="rq-hl"><p class="rq-tag">${mark("#142826", 22)}<span>${esc(p.year)} · Product design</span></p>
+    <div class="rq-fix" aria-hidden="true"><b>Relinquit</b><span></span></div>
+    <section class="rq-hero" data-sec="Overview"><div class="rq-hl"><p class="p-meta rq-meta"><b>Relinquit</b><span>${esc(p.year)}</span><a href="#/work/product-design">Product design</a></p>
         <h1><span>One at a time.</span><span class="t">Then none.</span></h1>
         <p class="rq-lead">${esc(p.summary)}</p><p class="rq-sc">Scroll for the story</p></div>
       <div class="rq-hr"><i class="rq-disc"></i><div class="rq-pair b">${caseSvg({ body: "#2A2C2F", cap: "#44484B", edge: "#17181A", ring: "#5FE0D6", eink: ["", "", ""] })}</div><div class="rq-pair a">${caseSvg({ body: "#E9E6DF", cap: "#2F7F86", ring: "#2F7F86", slide: .5, rise: .5 })}</div></div></section>
 
-    <section class="rq-pin rq-prob" data-pin="prob"><div class="rq-stage"><div class="rq-in">
+    <section data-sec="Research" class="rq-pin rq-prob" data-pin="prob"><div class="rq-stage"><div class="rq-in">
       <header class="rq-sh"><small>01 · Research</small><h2>Fewer people smoke. The ones left find it hardest to stop.</h2></header>
       <div class="rq-pgrid"><div class="rq-chart"><small class="rq-k">UK adults who smoke</small>
         <svg viewBox="0 0 880 430" role="img" aria-label="UK adult smoking prevalence: 20.2% in 2011 falling to 9.8% in 2025"><path class="ar" d="${line} L830,380 L30,380 Z" fill="#DCEDEE"/><path class="ln" d="${line}" pathLength="1" fill="none" stroke="#2F7F86" stroke-width="4" stroke-linejoin="round"/>
@@ -149,7 +150,7 @@
       <p class="rq-src">Sources: ONS Adult smoking habits in the UK 2025 (2023 point: ONS 2023 bulletin); WHO tobacco fact sheet 2025; ONS average pack price Jan 2025; Lindson-Hawley et al., Annals of Internal Medicine 2016; NHS Better Health.</p>
     </div></div></section>
 
-    <section class="rq-people"><header class="rq-sh"><small>02 · Research</small><h2>Who it’s for, and the gap it fills</h2></header>
+    <section data-sec="Who it’s for" class="rq-people"><header class="rq-sh"><small>02 · Research</small><h2>Who it’s for, and the gap it fills</h2></header>
       <div class="rq-pers">${[["Ray, 74", "#1F5F65", "“I’ll try, but I’m not fiddling with an app.”", "Big readable screen · works without a phone"], ["Dee, 58", "#A65412", "“Help me smoke less without feeling judged.”", "Her own plan · a soft lock, never shame"], ["Jade, 29", "#4C5E47", "“Only with friends… and coffee… and bad days.”", "Shows triggers · looks like a good object"]].map((r, i) => `<div class="rq-pc rv" style="--i:${i}"><div class="who"><i style="background:${r[1]}">${ico("person", 28, "#fff")}</i><b>${r[0]}</b></div><p>${r[2]}</p><span class="need">${r[3]}</span></div>`).join("")}</div>
       <p class="rq-note">Personas: Ray and Dee are loosely inspired by family members; Jade is fictional. Market positions are my judgement from public product descriptions.</p>
       <div class="rq-map rv"><svg viewBox="0 0 760 420" role="img" aria-label="Positioning map: Relinquit alone in the quadrant that enforces limits and ends in a quit date"><rect width="760" height="420" rx="24" fill="#fff"/><path d="M40 210h680M380 40v340" stroke="#DEDAD1"/><rect x="410" y="62" width="300" height="150" rx="20" fill="#DCEDEE"/>
@@ -157,7 +158,7 @@
         ${gap.map((g) => `<g class="gd"><circle cx="${g[1]}" cy="${g[2]}" r="6.5" fill="#142826"/><text x="${g[1] + 14}" y="${g[2] + 5}" font-size="14" font-weight="500" fill="#142826">${g[0]}</text></g>`).join("")}
         <g class="me"><circle cx="520" cy="130" r="11" fill="#2F7F86"/><text x="538" y="136" font-size="18" font-weight="700" fill="#2F7F86">Relinquit</text></g></svg><p><b>The gap:</b> a physical product that enforces gently <i>and</i> ends in a quit date.</p></div></section>
 
-    <section class="rq-pin rq-day" data-pin="day"><div class="rq-stage"><div class="rq-in">
+    <section data-sec="The insight" class="rq-pin rq-day" data-pin="day"><div class="rq-stage"><div class="rq-in">
       <header class="rq-sh"><small>The insight</small><h2>Cravings hit at stress and routine, so help is needed between cigarettes.</h2></header>
       <svg class="rq-dsv" viewBox="0 0 800 470" role="img" aria-label="A day of cravings: calm at coffee and lunch, lowest at a stressful call and the commute"><rect width="800" height="470" rx="24" fill="#fff"/><line x1="40" y1="235" x2="760" y2="235" stroke="#DEDAD1" stroke-dasharray="5 7"/><text x="40" y="44" font-size="14" fill="#4F5D5A">calm</text><text x="40" y="395" font-size="14" fill="#4F5D5A">craving</text>
         <g class="rest"><rect x="410" y="300" width="112" height="70" rx="14" fill="#FBEBDA"/><text x="466" y="330" text-anchor="middle" font-size="14" font-weight="700" fill="#A65412">Case rests</text><text x="466" y="352" text-anchor="middle" font-size="13" fill="#A65412">2-min reset</text></g>
@@ -165,7 +166,7 @@
         ${day.map((d) => `<g class="dp" data-f="${(d[0] - 70) / 660}"><circle cx="${d[0]}" cy="${d[1]}" r="11" fill="${d[4] ? "#F2A04B" : "#2F7F86"}" stroke="#fff" stroke-width="3"/><text x="${d[0]}" y="430" text-anchor="middle" font-size="16" font-weight="700" fill="#142826">${d[2]}</text><text x="${d[0]}" y="452" text-anchor="middle" font-size="14" fill="#4F5D5A">${d[3]}</text></g>`).join("")}</svg>
     </div></div></section>
 
-    <section class="rq-pin rq-ideas" data-pin="ideas"><div class="rq-stage"><div class="rq-in">
+    <section data-sec="Ideation" class="rq-pin rq-ideas" data-pin="ideas"><div class="rq-stage"><div class="rq-in">
       <header class="rq-sh"><small>03 · Ideation & development</small><h2>Eight ideas → one thumb, one cigarette</h2></header>
       <div class="rq-sks">${SK.map(sketch).join("")}</div>
       <div class="rq-dev2"><div class="rq-score"><h3>Concept scoring</h3>${[["A Flip-top", 20, 0], ["B Top gate", 36, 1], ["C Carousel", 24, 0]].map((r) => `<div class="sr${r[2] ? " w" : ""}"><span>${r[0]}</span><i data-v="${r[1]}"></i><b>${r[1]}</b></div>`).join("")}<p>Weighted against one-handed use, pocket size, reliability, cost and looks. B is the only one that works with either thumb.</p></div>
@@ -176,27 +177,27 @@
           <p>Narrower than a pack (56 mm), sized for a 5th-percentile female hand.</p></div></div>
     </div></div></section>
 
-    <section class="rq-pin rq-works" data-pin="works"><div class="rq-stage"><div class="rq-in">
+    <section data-sec="How it works" class="rq-pin rq-works" data-pin="works"><div class="rq-stage"><div class="rq-in">
       <header class="rq-sh"><small>How it works</small><h2>Glance. Slide. Take one. Rest.</h2></header>
       <div class="rq-wgrid"><div class="rq-wc"><i class="rq-glow"></i><div class="wcase">${caseSvg({})}</div></div>
         <ol class="rq-wl">${[["Glance", "The always-on screen shows what is left today."], ["Slide", "One thumb moves the gate; either hand works."], ["Take one", "A single cigarette rises and is counted."], ["Rest", "The gate holds shut until the next slot, with a countdown."]].map((r, i) => `<li data-i="${i}"><b>${i + 1}</b><div><h3>${r[0]}</h3><p>${r[1]}</p></div></li>`).join("")}</ol></div>
       <p class="rq-mech">Spring magazine pushes the stack up · IR beam counts each cigarette · micro-latch holds the slider until the next slot.</p>
     </div></div></section>
 
-    <section class="rq-model"><header class="rq-sh"><small>04 · Initial model</small><h2>Inside, outside, and the slider that moves</h2></header>
+    <section data-sec="Initial model" class="rq-model"><header class="rq-sh"><small>04 · Initial model</small><h2>Inside, outside, and the slider that moves</h2></header>
       <div class="rq-mg"><div class="rq-mx rv" id="rqExp"><h3>Inside</h3><div class="ex">${exploded()}<ol class="lg">${PARTS.map((r, i) => `<li data-i="${i}" style="--d:${i * 70}ms"><b>${i + 1}</b>${r[0]}</li>`).join("")}</ol></div></div>
         <div class="rq-mc rv"><h3>Outside</h3><div class="cs" id="rqCol"><div class="cv">${caseSvg({ body: COLOURS[1][1], cap: COLOURS[1][2], edge: COLOURS[1][4], ring: COLOURS[1][3] })}</div>
           <div class="ch" role="group" aria-label="Colourways">${COLOURS.map((c, i) => `<button type="button" class="${i === 1 ? "on" : ""}" data-i="${i}"><i style="background:${c[1]};border-color:${c[2]}"></i>${c[0]}</button>`).join("")}</div></div></div>
         <div class="rq-me rv"><h3>Always-on e-ink</h3><div class="es">${EINK.map((e, i) => `<div class="${i === 0 ? "on" : ""}" data-i="${i}">${eink(e)}<span>${e[0]}</span></div>`).join("")}</div><p>Shows today’s count even with a flat phone. The ring: teal = ready, amber = resting.</p></div></div></section>
 
-    <section class="rq-pin rq-app" data-pin="app"><div class="rq-stage"><div class="rq-in">
+    <section data-sec="The app" class="rq-pin rq-app" data-pin="app"><div class="rq-stage"><div class="rq-in">
       <header class="rq-sh"><small>05 · App</small><h2>Nine screens, one calm companion</h2></header>
       <div class="rq-ag"><ol class="rq-al">${GROUPS.map((g, gi) => `<li class="g"><small>${g}</small><ul>${SCREENS.map((s, k) => s[3] === gi ? `<li data-k="${k}"><b>${esc(s[1])}</b></li>` : "").join("")}</ul></li>`).join("")}</ol>
         <div class="rq-ap">${SCREENS.map((s, k) => `<div class="ps" data-k="${k}">${phone(k, 0.9)}</div>`).join("")}</div>
-        <div class="rq-ac"><small class="ag">Set up</small><h3 class="at">Welcome</h3><p class="ad">Step down or quit now</p><div class="dots">${SCREENS.map((s, k) => `<i data-k="${k}"></i>`).join("")}</div></div></div>
+        <div class="rq-ac"><small class="ag">Set up</small><h3 class="at">Welcome</h3><p class="ad">Step down or quit now</p><button type="button" class="rq-walk">Walk me through it</button><div class="dots">${SCREENS.map((s, k) => `<i data-k="${k}"></i>`).join("")}</div></div></div>
     </div></div></section>
 
-    <section class="rq-end"><div class="ei"><p class="rq-tag w">${mark("#fff", 30)}<span>relinquit</span></p>
+    <section data-sec="" class="rq-end"><div class="ei"><p class="rq-tag w">${mark("#fff", 30)}<span>relinquit</span></p>
       <h2>Cut down with a plan. <span>Quit for good.</span></h2>
       <ol>${["One thumb slides the gate — a single cigarette rises and is counted.", "Every plan steps down to a quit date you choose.", "When the case rests, the app helps you ride out the craving."].map((t, i) => `<li><b>0${i + 1}</b><span>${t}</span></li>`).join("")}</ol>
       <p class="rq-by">Product, app and identity · Alex Denli</p></div>
@@ -268,15 +269,14 @@
       },
       ideas(el, p) {
         // cut the sketches one by one (every one except B), then bring in the scoring and the dimensions
-        const order = [0, 2, 3, 4, 5, 6, 7];
         $$(".rq-sk", el).forEach((s) => {
-          const k = +s.dataset.k, n = order.indexOf(k), t = n < 0 ? 0 : seg(p, 0.05 + n * 0.07, 0.11 + n * 0.07);
+          const k = +s.dataset.k, n = k === 1 ? -1 : 0, t = n < 0 ? 0 : ease(seg(p, 0.08, 0.3));
           s.style.setProperty("--cut", t.toFixed(3));
           s.style.opacity = n < 0 ? 1 : (1 - 0.72 * t).toFixed(3);
         });
-        const d = seg(p, 0.6, 0.85), dv = $(".rq-dev2", el);
+        const d = seg(p, 0.38, 0.62), dv = $(".rq-dev2", el);
         dv.style.opacity = d; dv.style.transform = `translateY(${((1 - d) * 36).toFixed(1)}px)`;
-        $$(".rq-score i", el).forEach((i) => { i.style.width = `${(+i.dataset.v * 8 * seg(p, 0.7, 0.92)).toFixed(0)}px`; });
+        $$(".rq-score i", el).forEach((i) => { i.style.width = `${(+i.dataset.v * 8 * seg(p, 0.5, 0.8)).toFixed(0)}px`; });
       },
       works(el, p) {
         const s = p * 3.999, i = Math.min(3, Math.floor(s)), f = s - i;
@@ -298,15 +298,42 @@
         $(".ag", el).textContent = GROUPS[SCREENS[k][3]]; $(".at", el).textContent = SCREENS[k][1]; $(".ad", el).textContent = SCREENS[k][2];
       }
     };
+    // "Walk me through it": scroll the pinned app scene by itself, one screen at a time
+    const walk = $(".rq-walk"), appEl = $(".rq-app");
+    let walking = 0;
+    const stopWalk = () => { if (walking) { cancelAnimationFrame(walking); walking = 0; walk.classList.remove("go"); walk.textContent = "Walk me through it"; } };
+    if (walk) {
+      walk.addEventListener("click", () => {
+        if (walking) return stopWalk();
+        const top = appEl.getBoundingClientRect().top + scrollY, span = appEl.offsetHeight - vh();
+        let from = scrollY; if (from > top + span - 4 || from < top - vh()) from = top;
+        const t0 = performance.now(), dur = SCREENS.length * 2300 * (1 - (from - top) / span);
+        walk.classList.add("go"); walk.textContent = "Pause";
+        const step = (now) => { const f = cl((now - t0) / dur); window.scrollTo(0, lerp(from, top + span, f)); if (f < 1) walking = requestAnimationFrame(step); else stopWalk(); };
+        walking = requestAnimationFrame(step);
+      });
+      ["wheel", "touchstart", "keydown"].forEach((ev) => { addEventListener(ev, stopWalk, { passive: true }); off.push(() => removeEventListener(ev, stopWalk)); });
+      off.push(stopWalk);
+    }
+    // floating project title + current section
+    const fix = $(".rq-fix"), secs = $$("section[data-sec]");
+    const label = () => {
+      const h = vh(); let cur = null;
+      secs.forEach((s) => { const r = s.getBoundingClientRect(); if (r.top < h * 0.45 && r.bottom > h * 0.45) cur = s; });
+      const show = cur && cur.dataset.sec !== "" && cur.dataset.sec !== "Overview";
+      fix.classList.toggle("on", !!show); if (show) fix.lastElementChild.textContent = cur.dataset.sec;
+    };
     let raf = 0;
     const tick = () => {
       raf = 0;
       if (!root.isConnected) { off.forEach((f) => f()); off = []; return; }
       const h = vh();
+      label();
       pins.forEach((el) => {
         const r = el.getBoundingClientRect();
         if (r.bottom < -h || r.top > h * 2) return;
-        P[el.dataset.pin](el, reduce ? 1 : cl(-r.top / Math.max(1, r.height - h)));
+        const sp = el.dataset.pin === "app" ? 1 : 1.2;
+        P[el.dataset.pin](el, reduce ? 1 : cl(sp * -r.top / Math.max(1, r.height - h)));
       });
     };
     const q = () => { if (!raf) raf = requestAnimationFrame(tick); };

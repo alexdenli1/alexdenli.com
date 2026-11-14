@@ -81,7 +81,7 @@
     const principles = [["tap", "Big targets", "64pt and up, because small hands miss.", "var(--org)"], ["audio", "Little reading", "Pip reads everything aloud.", "var(--aqua)"], ["shield", "Safe by default", "Grown-ups are one gate away, never in the way.", "var(--leaf)"], ["starF", "Always rewarded", "There is no way to lose, only to try again.", "var(--sun)"]];
     const rules = [["Tabs, not back arrows", "Every tab is one tap away. Nothing is more than two taps deep."], ["No passwords for kids", "An avatar and three secret pictures."], ["Proof from the real world", "A smart meter, an AR scan, or a grown-up's tick."], ["A team, not a leaderboard", "The class works toward one goal."], ["A healthy stopping point", "About ten minutes a day, then Pip sleeps."]];
     return `<article class="page rs locked"><header class="p-head">
-      <p class="p-meta small"><a class="ul" href="#/work/ux-ui">UX / UI</a><span>${p.year}</span><span>Completed</span></p>
+      <p class="p-meta"><b>Rescue</b><span>${p.year}</span><a class="ul" href="#/work/ux-ui">UX / UI</a></p>
       <h1 class="giant">Rescue</h1><p class="p-sum">${p.summary}</p></header>
       <div class="rs-hero"><img src="images/rescue/hero-1920.jpg" alt="Rescue: the app, Pip the red panda and the world to save"></div>
 
