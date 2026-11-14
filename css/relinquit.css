@@ -326,3 +326,80 @@
 .rq-mx .ex { flex-direction: row; align-items: stretch; gap: 1rem; }
 .rq-exw { align-self: stretch; flex: 0 1 auto; height: 100%; width: auto; }
 .rq-mx .lg { grid-template-columns: 1fr !important; align-content: center; gap: 1rem !important; font-size: .95rem !important; flex: 1; justify-content: start; }
+
+/* ---- how it works: one real case, the slider moves ---- */
+.stp { position: absolute; inset: 0; display: grid; place-items: end center; padding-bottom: 4%; }
+.rq-prod { position: relative; height: 90%; aspect-ratio: 384 / 646; transition: transform .8s cubic-bezier(.3,.7,.2,1); }
+.stp .rq-prod img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none; left: 0; bottom: auto; transform: none; object-fit: contain; transition: opacity .7s; }
+.stp .rq-prod img.b { opacity: 0; }
+.stp[data-s="1"] .rq-prod img.b, .stp[data-s="2"] .rq-prod img.b { opacity: 1; }
+.stp[data-s="1"] .rq-prod img.a, .stp[data-s="2"] .rq-prod img.a { opacity: 0; }
+.stp[data-s="2"] .rq-prod { transform: translateY(2%) scale(1.04); }
+.rq-prod .ring { position: absolute; border: 3px solid var(--teal); border-radius: 22px; box-shadow: 0 0 0 .55rem rgba(47,127,134,.14); pointer-events: none; transition: left .7s cubic-bezier(.3,.7,.2,1), top .7s cubic-bezier(.3,.7,.2,1), width .7s cubic-bezier(.3,.7,.2,1), height .7s cubic-bezier(.3,.7,.2,1), border-radius .7s; }
+.stp[data-s="0"] .ring, .stp[data-s="3"] .ring { left: 14%; top: 45%; width: 72%; height: 28%; }
+.stp[data-s="1"] .ring { left: 14%; top: 5.5%; width: 72%; height: 12%; border-radius: 99px; }
+.stp[data-s="2"] .ring { left: 58%; top: 0; width: 26%; height: 19%; border-radius: 99px; }
+
+/* ---- fill the screen: research + ideation ---- */
+.rq-prob .rq-in { justify-content: flex-start; }
+.rq-prob .rq-chart svg { max-height: 47vh; }
+.rq-prob .rq-stats b { font-size: clamp(2.2rem, 3.2vw, 3.4rem); }
+.rq-prob .rq-stats { margin-top: 1.6rem; }
+.rq-prob .rq-don svg { width: min(15vw, 14rem); }
+.rq-prob .rq-pr { gap: 2.4rem; }
+.rq-prob .rq-cut { padding: 2.1rem 2.4rem; }
+.rq-prob .rq-cut h3 { font-size: 1.7rem; }
+.rq-prob .br { margin-bottom: 1.3rem; }
+.rq-prob .br b { font-size: 1.7rem; }
+.rq-ideas .rq-sks { flex: 0 0 auto; }
+.rq-ideas .rq-dev2 { flex: 1 1 0; min-height: 0; align-items: stretch; margin-bottom: 1vh; }
+.rq-ideas .rq-score, .rq-ideas .rq-dim { display: flex; flex-direction: column; padding: 2.2rem 2.6rem; }
+.rq-ideas .rq-score h3, .rq-ideas .rq-dim h3 { font-size: 1.75rem; margin-bottom: 1.8rem; }
+.rq-ideas .rq-score .sr { grid-template-columns: 9.5rem 1fr 3rem; font-size: 1.15rem; margin-bottom: 1.5rem; }
+.rq-ideas .rq-score .sr i { height: 1.5rem; }
+.rq-ideas .rq-score p, .rq-ideas .rq-dim p { font-size: 1.05rem; margin-top: auto; }
+.rq-ideas .rq-dim img { flex: 1; min-height: 0; max-height: none; width: 100%; object-fit: contain; }
+
+/* ---- initial model: a little taller, bigger exploded view, tidy e-ink ---- */
+.rq-model { height: 120vh; }
+.rq-mg { height: calc(120vh - var(--nav-h) - 13.5rem); grid-template-columns: 1fr 1.2fr; }
+.rq-mx .ex { flex-direction: column; align-items: center; gap: 1.2rem; }
+.rq-exw { flex: 1 1 0; height: auto; min-height: 0; align-self: center; width: auto; aspect-ratio: 687 / 1089; }
+.rq-mx .lg { flex: 0 0 auto; width: 100%; display: grid; grid-template-columns: repeat(4, 1fr) !important; gap: .9rem 1rem !important; font-size: 1rem !important; align-content: start; }
+.rq-mx .lg li { display: flex; align-items: center; gap: .55rem; font-size: 1rem; line-height: 1.2; }
+.rq-exw .pt, .rq-mx .lg li b { width: 1.7rem; height: 1.7rem; aspect-ratio: 1; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--ink); color: #fff; font-size: .85rem; font-weight: 700; line-height: 1; }
+.rq-exw .pt { position: absolute; }
+.rq-mr { gap: 1.2rem; }
+.rq-mc { flex: 1.1 1 0; }
+.rq-mb { flex: 1.2 1 0; grid-template-columns: 1fr 1fr; align-items: stretch; }
+.rq-ms { padding: 1rem !important; }
+.rq-ms img { object-fit: contain; object-position: 50% 50%; border-radius: 0; }
+.rq-ms p { display: flex; justify-content: space-between; font-size: .95rem; margin-top: .6rem; }
+.rq-me { container-type: inline-size; padding: 1.6rem !important; }
+.rq-me .es { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; flex: 1; min-height: 0; grid-auto-rows: 1fr; }
+.rq-me .es > div { padding: .8rem; display: flex; flex-direction: column; gap: .5rem; min-width: 0; justify-content: space-between; font-size: .95rem; }
+.rq-me .rq-es { padding: 1rem .5rem; margin: 0; display: grid; place-items: center; text-align: center; flex: 1; }
+.rq-me .rq-es > div { display: grid; gap: .1rem; justify-items: center; }
+.rq-me .rq-es span { font-size: .72rem; letter-spacing: .06em; }
+.rq-me .rq-es b { font-size: 2.3rem; } .rq-me .rq-es b.sm { font-size: 1.6rem; }
+.rq-me .rq-es small { font-size: .78rem; }
+.rq-me .es > div > span { text-align: center; font-size: .95rem; font-weight: 600; }
+.rq-me > p { font-size: .95rem; margin-top: 1rem; }
+
+/* ---- polish ---- */
+.rq-chart svg { overflow: visible; }
+.rq-prob .rq-pgrid { padding-left: calc(var(--pad) + 1.2rem); }
+.rq-ideas .rq-dev2 { grid-template-rows: minmax(0, 1fr); }
+.rq-ideas .rq-dim img { flex: 1 1 0; height: 0; min-height: 0; }
+.rq-ideas .rq-score .sr { margin-bottom: 2.2rem; }
+.rq-ms img { -webkit-mask-image: radial-gradient(ellipse 72% 72% at 50% 50%, #000 55%, transparent 100%); mask-image: radial-gradient(ellipse 72% 72% at 50% 50%, #000 55%, transparent 100%); }
+.rq-me .es { gap: .7rem; }
+.rq-me .es > div { padding: .6rem; gap: .3rem; }
+.rq-me .rq-es { padding: .6rem .4rem; }
+.rq-me .rq-es b { font-size: 1.9rem; } .rq-me .rq-es b.sm { font-size: 1.4rem; }
+.rq-me .rq-es small { font-size: .72rem; }
+.rq-me > p { font-size: .9rem; margin-top: .8rem; line-height: 1.45; }
+.stp .rq-prod img.a { opacity: 1; }
+.rq-ms img { -webkit-mask-image: linear-gradient(to right, transparent, #000 9%, #000 86%, transparent); mask-image: linear-gradient(to right, transparent, #000 9%, #000 86%, transparent); }
+.rq-prob .rq-pgrid { padding-left: var(--pad); }
+.stp[data-s="0"] .ring, .stp[data-s="3"] .ring { left: 17%; top: 49%; width: 66%; height: 31%; }

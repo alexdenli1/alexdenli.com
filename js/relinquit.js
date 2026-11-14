@@ -104,7 +104,7 @@
 
     <section data-sec="How it works" class="rq-pin rq-works" data-pin="works"><div class="rq-stage"><div class="rq-in">
       <header class="rq-sh"><small>How it works</small><h2>Glance. Slide. Take one. Rest.</h2></header>
-      <div class="rq-wgrid"><div class="rq-wc"><div class="stp">${[1, 2, 3, 4].map((n) => `<img src="images/relinquit/step-${n}.webp" alt="Step ${n}">`).join("")}</div></div>
+      <div class="rq-wgrid"><div class="rq-wc"><div class="stp" data-s="0"><div class="rq-prod"><img class="a" src="images/relinquit/rest.webp" alt="The case closed, showing the countdown to the next cigarette"><img class="b" src="images/relinquit/open.webp" alt="The same case with the slider moved and one cigarette ready"><i class="ring"></i></div></div></div>
         <ol class="rq-wl">${[["Glance", "The always-on screen shows what is left today."], ["Slide", "One thumb moves the gate; either hand works."], ["Take one", "A single cigarette rises and is counted."], ["Rest", "The gate holds shut until the next slot, with a countdown."]].map((r, i) => `<li data-i="${i}"><b>${i + 1}</b><div><h3>${r[0]}</h3><p>${r[1]}</p></div></li>`).join("")}</ol></div>
       <p class="rq-mech">Spring magazine pushes the stack up · IR beam counts each cigarette · micro-latch holds the slider until the next slot.</p>
     </div></div></section>
@@ -207,7 +207,7 @@
         const i = Math.min(3, Math.floor(p * 3.999));
         if (el._k === i) return; el._k = i;
         $$(".rq-wl li", el).forEach((li, k) => li.classList.toggle("on", k === i));
-        $$(".stp img", el).forEach((im, k) => im.classList.toggle("on", k === i));
+        $(".stp", el).dataset.s = i;
       }
     };
     // app screens: click to choose; "Walk me through it" plays them by itself, then moves on to the next section
