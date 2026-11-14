@@ -506,3 +506,7 @@ main:focus { outline: none; }
 .pt-cap small { font-size: .9375rem; color: var(--muted); white-space: nowrap; }
 @media (max-width: 1100px) { .pj-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .pj-grid { grid-template-columns: 1fr; } }
+
+/* a wider picture (16:9) shows in full inside the 3:2 slide frame, sitting on the caption, instead of being cropped */
+.piece-img.wide { display: flex; align-items: flex-end; aspect-ratio: 3 / 2; }
+.piece-img.wide img { aspect-ratio: auto; height: auto; }

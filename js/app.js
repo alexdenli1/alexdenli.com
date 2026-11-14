@@ -36,7 +36,7 @@
       const t = SLOTS[i % SLOTS.length];
       return `<a class="piece${p.hidden ? " lost" : ""}${found.has(p.slug) ? " got" : ""}" href="${link(p)}" data-slug="${esc(p.slug)}"
         data-title="${esc(p.title)}" style="left:${t.x}%">
-        <span class="piece-in"><span class="piece-img"><img src="${esc(p.hero)}" alt="${esc(p.title)}" loading="${i < 2 ? "eager" : "lazy"}">${ZAP}</span>
+        <span class="piece-in"><span class="piece-img"><img src="${esc(p.hero)}" alt="${esc(p.title)}" loading="${i < 2 ? "eager" : "lazy"}" onload="this.parentNode.classList.toggle('wide', this.naturalWidth / this.naturalHeight > 1.6)">${ZAP}</span>
           <span class="piece-cap"><span class="piece-name">${esc(p.title)}</span><span class="piece-sub"><span class="piece-go">Let's go <i aria-hidden="true">&rarr;</i></span><span class="piece-meta">${esc(p.scope || cat(p.category).label)}, ${esc(p.year)}</span>
           <span class="piece-line">${esc(p.line || p.summary || "")}</span></span></span></span></a>`;
     };
