@@ -562,8 +562,7 @@
       }
     }
     // Slides: every project sits in the same spot on the pinned stage. Scrolling hands over from one to the next:
-    // the picture, the name and the line each fly off in their own direction while the next project's parts
-    // fly in from the edges. Directions are drawn at random per page load.
+    // the picture, the name and the button leave together in one direction while the next project arrives together.
     if (big && !live.list && live.pieces && live.pieces.length && introR) {
       const N = live.pieces.length, scrolled = Math.max(0, -introR.top);
       if (live.sS === undefined) live.sS = scrolled;
@@ -575,11 +574,12 @@
       if (up) v = 0; else if (reduce) v = v > 0.5 ? 1 : 0;
       const ease = (x) => x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
       if (!live.fly) {
-        const D = [[-1, 0], [1, 0], [0, -1], [0, 1]], pick = () => D.slice().sort(() => Math.random() - 0.5).slice(0, 3);
-        live.fly = Array.from({ length: N }, () => ({ out: pick(), in: pick() }));
+        // the picture, name and button all travel together: one direction out, the next project arrives from the opposite side
+        const D = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+        live.fly = Array.from({ length: N }, () => { const d = D[Math.floor(Math.random() * 4)], o = [-d[0], -d[1]]; return { out: [d, d, d], in: [o, o, o] }; });
         live.parts = live.pieces.map((el) => [$(".piece-img", el), $(".piece-name", el), $(".piece-sub", el)]);
       }
-      const DL = [0, 0.07, 0.14], put = (k, dirs, f0, delay) => live.parts[k].forEach((part, i) => {
+      const DL = [0, 0, 0], put = (k, dirs, f0, delay) => live.parts[k].forEach((part, i) => {
         if (!part) return;
         const f = (reduce || up) ? 0 : delay(f0, i);
         const d = dirs[i], x = d[0] * 0.95 * innerWidth * f, yy = d[1] * 1.1 * vh * f;

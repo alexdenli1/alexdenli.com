@@ -153,15 +153,11 @@ main:focus { outline: none; }
 .piece { position: absolute; display: block; width: var(--pw); }
 .piece-in { display: block; position: relative; }
 .piece-img { display: block; position: relative; }
-/* Hover: a quick electric outline drawn round the image */
+/* Hover: a still outline round the image (same colour and weight as before, nothing animated, so it costs nothing) */
 .zap { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; fill: none; visibility: hidden; }
-/* the electric filter is only switched on while a project is hovered: it is costly to leave running */
-.piece:hover .zap, .piece:focus-visible .zap, .piece.on .zap { visibility: visible; filter: url(#zap) drop-shadow(0 0 4px var(--zap-glow)) drop-shadow(0 0 14px var(--zap-glow)); }
-.zap rect { stroke: var(--zap); stroke-width: 2.5; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.piece:hover .zap, .piece:focus-visible .zap, .piece.on .zap { visibility: visible; }
+.zap rect { stroke: var(--zap); stroke-width: 2.5; stroke-dasharray: none; stroke-dashoffset: 0; }
 .zap rect + rect { stroke: #fff; stroke-width: 1; }
-.piece:hover .zap rect, .piece:focus-visible .zap rect, .piece.on .zap rect { stroke-dashoffset: 0; transition: stroke-dashoffset .38s cubic-bezier(.3, 0, .1, 1); }
-.piece:hover .zap, .piece.on .zap { animation: flicker .9s steps(1) infinite; }
-@keyframes flicker { 0%, 100% { opacity: 1; } 8% { opacity: .35; } 12% { opacity: 1; } 55% { opacity: .7; } 60% { opacity: 1; } }
 .piece img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; transition: opacity .5s, clip-path .9s var(--ease), filter .4s; }
 /* the name, large, below the image, then the category and year, then one line about the project */
 .piece-cap { display: block; padding-top: clamp(.9rem, 1.6vh, 1.4rem); transition: opacity .4s; }
