@@ -74,8 +74,7 @@
           <div><b class="tl">51.7%</b><span>say they want to quit</span><b class="am">19.9%</b><span>plan to try in the next 3 months</span></div></div>
         <div class="rq-cut"><h3>Does cutting down work?</h3><small>Not smoking 6 months later — 697 smokers, randomised</small>
           <div class="br"><i class="b1"></i><b>22.0%</b><span>stopped outright</span></div><div class="br"><i class="b2"></i><b>15.5%</b><span>cut down first</span></div>
-          <p class="so">${ico("arrow", 22, "#2F7F86")}So every plan ends on a quit date.</p></div>
-        <p class="rq-cr"><i>${ico("clock", 26, "#5FE0D6")}</i><span><b>Cravings last a few minutes.</b>Design for the minutes in between.</span></p></div></div>
+          <p class="so">${ico("arrow", 22, "#2F7F86")}So every plan ends on a quit date.</p></div></div></div>
       <p class="rq-src">Sources: ONS Adult smoking habits in the UK 2025 (2023 point: ONS 2023 bulletin); WHO tobacco fact sheet 2025; ONS average pack price Jan 2025; Lindson-Hawley et al., Annals of Internal Medicine 2016; NHS Better Health.</p>
     </div></div></section>
 
@@ -117,12 +116,12 @@
           <div class="rq-mb"><div class="rq-ms rv"><img src="images/relinquit/states.webp" alt="Left: closed and resting. Right: slid back with one cigarette ready"><p><span>Closed · resting</span><span>Slid back · one ready</span></p></div>
             <div class="rq-me rv"><h3>Always-on e-ink</h3><div class="es">${EINK.map((e, i) => `<div class="${i === 0 ? "on" : ""}" data-i="${i}">${eink(e)}<span>${e[0]}</span></div>`).join("")}</div><p>Shows today’s count even with a flat phone. The ring: teal = ready, amber = resting.</p></div></div></div></div></section>
 
-    <section data-sec="The app" class="rq-pin rq-app" data-pin="app"><div class="rq-stage"><div class="rq-in">
+    <section data-sec="The app" class="rq-app"><div class="rq-in">
       <header class="rq-sh"><small>05 · App</small><h2>Nine screens, one calm companion</h2></header>
-      <div class="rq-ag"><ol class="rq-al">${GROUPS.map((g, gi) => `<li class="g"><small>${g}</small><ul>${SCREENS.map((s, k) => s[3] === gi ? `<li data-k="${k}"><b>${esc(s[1])}</b></li>` : "").join("")}</ul></li>`).join("")}</ol>
+      <div class="rq-ag"><nav class="rq-al" aria-label="App screens">${GROUPS.map((g, gi) => `<div class="g"><small>${g}</small>${SCREENS.map((s, k) => s[3] === gi ? `<button type="button" data-k="${k}">${esc(s[1])}</button>` : "").join("")}</div>`).join("")}</nav>
         <div class="rq-ap">${SCREENS.map((s, k) => `<div class="ps" data-k="${k}">${phone(k, 0.9)}</div>`).join("")}</div>
-        <div class="rq-ac"><small class="ag">Set up</small><h3 class="at">Welcome</h3><p class="ad">Step down or quit now</p><button type="button" class="rq-walk">Walk me through it</button><div class="dots">${SCREENS.map((s, k) => `<i data-k="${k}"></i>`).join("")}</div></div></div>
-    </div></div></section>
+        <div class="rq-ac"><small class="ag">Set up</small><h3 class="at">Welcome</h3><p class="ad">Step down or quit now</p><div class="dots">${SCREENS.map((s, k) => `<button type="button" data-k="${k}" aria-label="${esc(s[1])}"></button>`).join("")}</div><button type="button" class="rq-walk">Walk me through it</button></div></div>
+    </div></section>
 
     <section data-sec="" class="rq-end"><div class="ei"><p class="rq-tag w">${mark("#fff", 30)}<span>relinquit</span></p>
       <h2>Cut down with a plan. <span>Quit for good.</span></h2>
@@ -145,7 +144,7 @@
     // scale the big phone to the stage
     const fitPhones = () => {
       const h = vh();
-      const big = Math.max(0.45, Math.min(1.1, (h - 170 - 170) / 868));
+      const big = Math.max(0.42, Math.min(1.1, (h - 400) / 868));
       $$(".rq-ap .rq-dev").forEach((d) => d.style.setProperty("--s", big.toFixed(3)));
       const e = $(".ph2"); if (e) e.style.setProperty("--s", Math.max(0.4, Math.min(0.7, (h * 0.62) / 868)).toFixed(3));
     };
@@ -186,7 +185,6 @@
         $(".b1", el).style.width = `${(22 * 11 * b).toFixed(1)}px`; $(".b2", el).style.width = `${(15.5 * 11 * b).toFixed(1)}px`;
         $(".rq-cut", el).style.opacity = seg(p, 0.66, 0.76);
         $(".so", el).style.opacity = seg(p, 0.88, 0.95);
-        $(".rq-cr", el).style.opacity = seg(p, 0.92, 1);
       },
       day(el, p) {
         const a = seg(p, 0.05, 0.9), l = $(".dl", el);
@@ -210,33 +208,32 @@
         if (el._k === i) return; el._k = i;
         $$(".rq-wl li", el).forEach((li, k) => li.classList.toggle("on", k === i));
         $$(".stp img", el).forEach((im, k) => im.classList.toggle("on", k === i));
-      },
-      app(el, p) {
-        const n = SCREENS.length, k = Math.min(n - 1, Math.floor(p * n * 0.999));
-        if (el._k === k) return; el._k = k;
-        $$(".ps", el).forEach((s, i) => { s.classList.toggle("on", i === k); s.classList.toggle("past", i < k); });
-        $$(".rq-al li[data-k]", el).forEach((l) => l.classList.toggle("on", +l.dataset.k === k));
-        $$(".dots i", el).forEach((d) => d.classList.toggle("on", +d.dataset.k === k));
-        $(".ag", el).textContent = GROUPS[SCREENS[k][3]]; $(".at", el).textContent = SCREENS[k][1]; $(".ad", el).textContent = SCREENS[k][2];
       }
     };
-    // "Walk me through it": scroll the pinned app scene by itself, one screen at a time
-    const walk = $(".rq-walk"), appEl = $(".rq-app");
-    let walking = 0;
-    const stopWalk = () => { if (walking) { cancelAnimationFrame(walking); walking = 0; walk.classList.remove("go"); walk.textContent = "Walk me through it"; } };
-    if (walk) {
-      walk.addEventListener("click", () => {
-        if (walking) return stopWalk();
-        const top = appEl.getBoundingClientRect().top + scrollY, span = appEl.offsetHeight - vh();
-        let from = scrollY; if (from > top + span - 4 || from < top - vh()) from = top;
-        const t0 = performance.now(), dur = SCREENS.length * 2300 * (1 - (from - top) / span);
-        walk.classList.add("go"); walk.textContent = "Pause";
-        const step = (now) => { const f = cl((now - t0) / dur); window.scrollTo(0, lerp(from, top + span, f)); if (f < 1) walking = requestAnimationFrame(step); else stopWalk(); };
-        walking = requestAnimationFrame(step);
-      });
-      ["wheel", "touchstart", "keydown"].forEach((ev) => { addEventListener(ev, stopWalk, { passive: true }); off.push(() => removeEventListener(ev, stopWalk)); });
-      off.push(stopWalk);
-    }
+    // app screens: click to choose; "Walk me through it" plays them by itself, then moves on to the next section
+    const appEl = $(".rq-app"), walk = $(".rq-walk");
+    let cur = -1, timer = 0;
+    const show = (k) => {
+      if (k === cur) return; cur = k;
+      $$(".ps", appEl).forEach((s, i) => { s.classList.toggle("on", i === k); s.classList.toggle("past", i < k); });
+      $$(".rq-al button", appEl).forEach((b) => b.classList.toggle("on", +b.dataset.k === k));
+      $$(".dots button", appEl).forEach((d) => d.classList.toggle("on", +d.dataset.k === k));
+      $(".ag", appEl).textContent = GROUPS[SCREENS[k][3]]; $(".at", appEl).textContent = SCREENS[k][1]; $(".ad", appEl).textContent = SCREENS[k][2];
+    };
+    const stopWalk = () => { if (timer) { clearInterval(timer); timer = 0; } walk.classList.remove("go"); walk.textContent = "Walk me through it"; };
+    $$(".rq-al button, .dots button", appEl).forEach((b) => b.addEventListener("click", () => { stopWalk(); show(+b.dataset.k); }));
+    walk.addEventListener("click", () => {
+      if (timer) return stopWalk();
+      walk.classList.add("go"); walk.textContent = "Pause";
+      let k = cur >= SCREENS.length - 1 ? 0 : cur + (cur < 0 ? 1 : 0); show(Math.max(0, k));
+      timer = setInterval(() => {
+        if (cur >= SCREENS.length - 1) { stopWalk(); const nx = $(".rq-end"); if (nx) nx.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+        show(cur + 1);
+      }, 2400);
+    });
+    ["wheel", "touchstart", "keydown"].forEach((ev) => { addEventListener(ev, stopWalk, { passive: true }); off.push(() => removeEventListener(ev, stopWalk)); });
+    off.push(stopWalk);
+    show(0);
     // floating project title + current section
     const fix = $(".rq-fix"), secs = $$("section[data-sec]");
     const label = () => {

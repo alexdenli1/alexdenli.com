@@ -237,3 +237,92 @@
 .ch button { white-space: nowrap; }
 .rq-ms { display: flex; flex-direction: column; justify-content: center; }
 .rq-exw { width: min(100%, 20rem); }
+
+/* ---------- every section fits one 1920x1080 screen ---------- */
+.rq-stage { align-items: flex-start; }
+.rq-in { height: 100%; box-sizing: border-box; padding-top: calc(var(--nav-h) + 1.6rem); padding-bottom: 2vh; gap: 2.4vh; justify-content: flex-start; }
+.rq-sh small { margin-bottom: .6rem; }
+.rq-sh h2 { font-size: clamp(1.8rem, 2.9vw, 3.1rem); line-height: 1.12; }
+.rq-people, .rq-model { height: 100vh; min-height: 0; box-sizing: border-box; padding: calc(var(--nav-h) + 1.6rem) 0 2.4vh; gap: 2.4vh; justify-content: flex-start; overflow: hidden; }
+.rq-app { height: 100vh; box-sizing: border-box; overflow: hidden; }
+.rq-app .rq-in { height: 100%; }
+/* research */
+.rq-chart svg { max-height: 34vh; }
+.rq-stats { margin-top: .8rem; gap: 2rem; }
+.rq-stats b, .rq-don b { font-size: clamp(1.8rem, 2.6vw, 2.8rem); }
+.rq-pgrid { gap: 2.5rem; }
+.rq-pr { gap: 1.6rem; }
+.rq-don svg { width: min(13vw, 12rem); }
+.rq-cut { padding: 1.4rem 1.8rem; }
+.br { margin-bottom: .8rem; }
+.rq-src { margin-top: auto; }
+/* people */
+.rq-pers { gap: 1.2rem; }
+.rq-pc { min-height: 0; padding: 1.5rem 1.8rem; gap: 1rem; border-radius: 20px; }
+.rq-pc p { font-size: 1.7rem; line-height: 1.2; }
+.rq-pc .who i { width: 2.8rem; }
+.rq-map { grid-template-columns: auto 1fr; gap: 2.5rem; align-items: center; }
+.rq-map svg { max-height: 41vh; width: auto; max-width: 100%; }
+/* how it works */
+.rq-wgrid { gap: 3rem; align-items: stretch; }
+.rq-wc { height: 62vh; }
+.stp img { height: 92%; max-width: 92%; }
+.rq-wl { justify-content: center; }
+.rq-mech { margin-top: auto; }
+/* model */
+.rq-mg { height: calc(100vh - var(--nav-h) - 13.5rem); min-height: 0; align-items: stretch; gap: 1.2rem; }
+.rq-mg > div, .rq-mr > div, .rq-mb > div { padding: 1.3rem 1.5rem; border-radius: 22px; box-sizing: border-box; }
+.rq-mx { display: flex; flex-direction: column; min-height: 0; height: 100%; }
+.rq-mx h3 { margin-bottom: .6rem; }
+.rq-mx .ex { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: .9rem; }
+.rq-exw { flex: 1 1 0; min-height: 0; width: auto; aspect-ratio: 687 / 1089; align-self: center; margin: 0; }
+.rq-exw > img { width: 100%; height: 100%; object-fit: contain; }
+.rq-exw .pt { width: 1.5rem; font-size: .72rem; }
+.lg { grid-template-columns: repeat(4, auto) !important; gap: .4rem 1.2rem !important; font-size: .85rem !important; justify-content: space-between; }
+.lg li b { width: 1.3rem; font-size: .7rem; }
+.rq-mr { display: flex; flex-direction: column; gap: 1.2rem; min-height: 0; height: 100%; }
+.rq-mc { flex: 1.15 1 0; min-height: 0; display: flex; }
+.cs { height: 100%; min-height: 0; gap: .8rem; }
+.cv { flex: 1; min-height: 0; padding-top: 0; align-items: flex-end; width: 100%; gap: 1.6rem; }
+.cv img { height: 100%; width: auto; max-width: 23%; min-width: 0; object-fit: contain; object-position: bottom; transform: scale(.9); transform-origin: bottom center; }
+.cv img.on { transform: scale(1); }
+.rq-mb { flex: 1 1 0; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+.rq-ms { padding: .6rem !important; display: flex; flex-direction: column; min-height: 0; }
+.rq-ms img { flex: 1; min-height: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%; border-radius: 16px; }
+.rq-ms p { margin-top: .5rem; padding: 0 .6rem .2rem; font-size: .88rem; }
+.rq-me { display: flex; flex-direction: column; min-height: 0; }
+.rq-me h3 { margin-bottom: .7rem; }
+.es { grid-template-columns: repeat(4, 1fr); gap: .5rem; }
+.es > div { padding: .45rem; font-size: .75rem; border-radius: 12px; }
+.rq-es { padding: .5rem .3rem; margin-bottom: .35rem; border-radius: 8px; }
+.rq-es b { font-size: 1.55rem; } .rq-es b.sm { font-size: 1.05rem; line-height: 1.6; }
+.rq-es span { font-size: .5rem; } .rq-es small { font-size: .55rem; }
+.rq-me p { margin-top: .8rem; font-size: .85rem; line-height: 1.5; }
+/* app */
+.rq-ag { grid-template-columns: 1fr 24rem 1fr; gap: 1rem; align-items: center; flex: 1; height: auto; min-height: 0; padding: 0 var(--pad); }
+.rq-al { display: flex; flex-direction: column; gap: 1.6rem; }
+.rq-al .g { display: flex; flex-direction: column; align-items: flex-start; gap: .15rem; }
+.rq-al .g > small { font-size: .9rem; color: var(--soft); font-weight: 600; margin-bottom: .35rem; }
+.rq-al button { all: unset; cursor: pointer; font-family: "Space Grotesk", sans-serif; font-size: 1.45rem; font-weight: 600; line-height: 1.5; color: #AEACA4; padding-left: 1.3rem; position: relative; transition: color .25s; }
+.rq-al button::before { content: ""; position: absolute; left: 0; top: 50%; width: .5rem; aspect-ratio: 1; margin-top: -.25rem; border-radius: 50%; background: var(--teal); transform: scale(0); transition: transform .25s; }
+.rq-al button:hover { color: var(--soft); }
+.rq-al button.on { color: var(--ink); } .rq-al button.on::before { transform: scale(1); }
+.rq-al button:focus-visible, .dots button:focus-visible { outline: 3px solid var(--aqua); outline-offset: 3px; border-radius: 6px; }
+.rq-ap { height: 100%; width: 100%; }
+.rq-ac { display: flex; flex-direction: column; align-items: flex-start; }
+.rq-ac small { font-size: .9rem; }
+.rq-ac h3 { font-size: 2.6rem; margin: .5rem 0 .6rem; }
+.rq-ac p { min-height: 3.2em; }
+.dots { display: flex; gap: .55rem; margin-top: 1.2rem; }
+.dots i { display: none; }
+.dots button { all: unset; cursor: pointer; width: .6rem; height: .6rem; border-radius: 99px; background: #CFCBC0; transition: width .3s, background .3s; box-shadow: 0 0 0 .35rem transparent; }
+.dots button.on { background: var(--teal); width: 1.6rem; }
+.rq-walk { margin-top: 2rem; }
+/* fixes: walkthrough image stays inside its card; Inside card uses its full height */
+.rq-wc { overflow: hidden; display: block; }
+.stp { position: absolute; inset: 0; display: block; width: auto; height: auto; }
+.stp img { position: absolute; left: 50%; bottom: 4%; height: auto; width: auto; max-height: 92%; max-width: 86%; transform: translate(-50%, 14px); }
+.stp img.on { transform: translate(-50%, 0); }
+.rq-mx .ex { flex-direction: row; align-items: stretch; gap: 1rem; }
+.rq-exw { align-self: stretch; flex: 0 1 auto; height: 100%; width: auto; }
+.rq-mx .lg { grid-template-columns: 1fr !important; align-content: center; gap: 1rem !important; font-size: .95rem !important; flex: 1; justify-content: start; }
