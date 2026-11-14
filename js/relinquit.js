@@ -27,93 +27,22 @@
   const ico = (n, w = 22, c = "currentColor", sw = 1.8) => `<svg width="${w}" height="${w}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${IC[n]}"/></svg>`;
   const mark = (c = "currentColor", w = 26) => `<svg width="${w}" height="${w}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5.5" y="2.5" width="13" height="19" rx="3.5"/><path d="M5.5 8.5 12 11l6.5-2.5"/></svg>`;
 
-  /* ---- the case, drawn once and driven by numbers ----
-     o.slide 0..1 (gate travel), o.rise 0..1 (cigarette lifted), o.ring colour, o.eink [kicker, big, small], o.body, o.cap, o.edge */
-  function caseSvg(o = {}) {
-    const body = o.body || "#FFFFFF", cap = o.cap || "#2F7F86", edge = o.edge || "#142826", slide = o.slide || 0, rise = o.rise || 0, ring = o.ring || "#2F7F86";
-    const e = o.eink || ["TODAY", "3", "of 7 left"];
-    const gx = lerp(104, 56, slide);
-    const screen = e[1] === "" ? "" : `<rect x="66" y="160" width="68" height="68" rx="10" fill="#142826"/><rect x="71" y="165" width="58" height="58" rx="6" fill="#E4E3DD"/>
-      <text x="100" y="181" text-anchor="middle" font-size="7" font-weight="700" letter-spacing=".9" fill="#1b1c1d" font-family="Inter,sans-serif">${esc(e[0])}</text>
-      <text x="100" y="208" text-anchor="middle" font-size="${e[1].length > 2 ? 21 : 32}" font-weight="700" fill="#1b1c1d" font-family="Space Grotesk,sans-serif">${esc(e[1])}</text>
-      <text x="100" y="219" text-anchor="middle" font-size="6.5" fill="#1b1c1d" font-family="Inter,sans-serif">${esc(e[2])}</text>`;
-    return `<svg class="rq-case" viewBox="0 0 200 340" role="img" aria-label="The Relinquit case: a pebble-shaped body with a sliding gate on top and a small e-ink screen">
-      <g style="transform:translateY(${(-56 * rise).toFixed(1)}px)"><rect x="89" y="62" width="14" height="64" rx="2" fill="#E9B07A" stroke="${edge}" stroke-width="2"/><rect x="89" y="62" width="14" height="14" rx="2" fill="#F4E4CF" stroke="${edge}" stroke-width="2"/></g>
-      <rect x="40" y="86" width="120" height="236" rx="42" fill="${body}" stroke="${edge}" stroke-width="3"/>
-      <path d="M40 128 100 142 160 128V128A42 42 0 0 0 118 86H82a42 42 0 0 0-42 42z" fill="${cap}" stroke="${edge}" stroke-width="3" stroke-linejoin="round"/>
-      <rect x="64" y="76" width="72" height="10" rx="5" fill="${cap}" stroke="${edge}" stroke-width="3"/>
-      <rect x="${gx.toFixed(1)}" y="72" width="40" height="14" rx="7" fill="#142826"/>
-      ${screen}
-      <circle cx="100" cy="270" r="14" fill="none" stroke="${ring}" stroke-width="4"/><circle cx="100" cy="270" r="6" fill="${ring}"/></svg>`;
-  }
+  /* ---- ideation sketches (A..H), the original drawings ---- */
+  const SKN = ["Flip-top", "Top gate", "Carousel", "Drawer", "Pebble", "Case + lighter", "Home dock", "Clip-on tag"];
+  const sketch = (n, k) => `<figure class="rq-sk${k === 1 ? " pick" : ""}" data-k="${k}"><img src="images/relinquit/sk-${"abcdefgh"[k]}.webp" alt="Sketch ${"ABCDEFGH"[k]}: ${n}"><figcaption>${"ABCDEFGH"[k]} · ${n}</figcaption><i class="x" aria-hidden="true"></i></figure>`;
 
-  /* ---- ideation sketches (A..H) ---- */
-  const SK = [
-    ["A", "Flip-top", '<path d="M60 70h70v110h-70zM60 70l18-13.5h70L130 70M130 70l18-13.5v110L130 180"/><path d="M60 70q-24-50 30-66" stroke="#999"/>'],
-    ["B", "Top gate", '<path d="M60 70h64v120h-64zM60 70l16.8-12.6h64L124 70M124 70l16.8-12.6v120L124 190"/><path d="M60 98l32 8 32-8"/><rect x="80" y="120" width="24" height="26" rx="3"/><circle cx="92" cy="166" r="5"/><path d="M76 54h30" stroke="#2F7F86" stroke-width="5"/><path d="M96 54v-30h8v30"/>'],
-    ["C", "Carousel", '<circle cx="100" cy="120" r="64"/><circle cx="100" cy="120" r="22"/>' + [[144, 120], [136, 146], [114, 162], [86, 162], [64, 146], [56, 120], [64, 94], [86, 78], [114, 78], [136, 94]].map((p) => `<circle cx="${p[0]}" cy="${p[1]}" r="7"/>`).join("")],
-    ["D", "Drawer", '<path d="M40 100h120v56H40zM40 100l24-18h120l-24 18M160 100l24-18v56l-24 18"/><path d="M160 128h36" stroke-dasharray="6 5"/>'],
-    ["E", "Pebble", '<path d="M50 180q-8-100 50-110 58 10 50 110-50 26-100 0z"/><path d="M146 110l22-8"/>'],
-    ["F", "Case + lighter", '<path d="M50 70h56v110H50zM50 70l14.4-10.8h56L106 70M106 70l14.4-10.8v110L106 180"/><path d="M124 110h32v70h-32zM124 110l12-9h32l-12 9M156 110l12-9v70l-12 9"/>'],
-    ["G", "Home dock", '<path d="M30 190h160l-24-24H54z"/><path d="M70 70h64v90H70zM70 70l14.4-10.8h64L134 70M134 70l14.4-10.8v90L134 160"/>'],
-    ["H", "Clip-on tag", '<rect x="72" y="70" width="56" height="96" rx="28"/><circle cx="100" cy="100" r="12"/><path d="M100 70v-26a9 9 0 0 1 18 0"/>']
-  ];
-  const sketch = (s, k) => `<figure class="rq-sk${k === 1 ? " pick" : ""}" data-k="${k}"><svg viewBox="0 0 200 210" aria-hidden="true"><g filter="url(#rqRough)" stroke="#2a2a2a" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round">${s[2]}</g></svg><figcaption>${s[0]} · ${s[1]}</figcaption><i class="x" aria-hidden="true"></i></figure>`;
-
-  /* ---- the nine app screens: 390 x 844, built as small HTML ---- */
-  const NAV = (on) => `<nav class="sn">${[["home", "Today"], ["chart", "Insights"], ["leaf", "Progress"], ["cse", "Case"]].map((n, i) => `<span class="${i === on ? "on" : ""}">${ico(n[0])}<em>${n[1]}</em></span>`).join("")}</nav>`;
-  const SCR = {
-    welcome: () => `<div class="sx" style="padding:92px 28px 0"><div class="sbrand"><b>${mark("#fff", 20)}</b><span>relinquit</span></div><h3 class="sbig">Cut down with a plan.<br>Quit for good.</h3><p class="sp">Relinquit spaces out your cigarettes and steps you down to a quit date you choose — with support for the moments in between.</p></div>
-      <div class="sbot" style="bottom:150px"><div class="sopt on"><i>${ico("chart", 22, "#1F5F65")}</i><div><b>Step down to a quit date</b><small>2–8 weeks, fewer each week</small></div>${ico("check", 22, "#2F7F86", 2.4)}</div>
-      <div class="sopt"><i class="g">${ico("leaf", 22, "#4C5E47")}</i><div><b>Quit now</b><small>Case stays locked, support stays on</small></div></div></div><div class="sbot"><button class="sbtn">${ico("arrow", 20, "#fff")}Continue</button></div>`,
-    pair: () => `<header class="sh"><span class="sback">${ico("back")}</span><h3>Pair your case</h3></header><div class="sx" style="padding:20px 24px;align-items:center;text-align:center;gap:20px"><div class="spair">${caseSvg({ ring: "#5FE0D6", eink: ["", "", ""] })}</div><h4>Hold the dot for 3 seconds</h4><p class="sp" style="max-width:300px;margin:0">The light on top will pulse teal. Keep your phone close.</p><div class="sfound">${ico("bt", 22, "#1F5F65")}<div><b>Relinquit · 4F2A</b><small>Found nearby</small></div><u>Connect</u></div></div>`,
-    plan: () => { const v = [12, 10, 8, 6, 4, 2, 0], l = ["Now", "W1", "W2", "W3", "W4", "W5", "W6"]; return `<header class="sh"><h3>Your plan</h3><p>Built from a week of tracking with your case</p></header><div class="sx" style="padding:8px 24px;gap:14px"><div class="scard"><div class="srow"><small class="k">Cigarettes a day</small><small style="color:#1F5F65;font-weight:600">−2 each week</small></div><div class="sbars">${v.map((n, i) => `<div><b>${n}</b><i style="height:${Math.max(2, n * 8.7)}px;${i ? "" : "background:#B9C9C8"}"></i><em>${l[i]}</em></div>`).join("")}</div></div>
-      <div class="slist">${[["Quit date", "Sun 3 Jan", 1], ["Minimum gap between", "90 min"], ["Case locked overnight", "23:00 – 07:00"], ["Pack price", "£16.60"]].map((r) => `<div><span>${r[0]}</span><b${r[2] ? ' style="color:#1F5F65"' : ""}>${r[1]}</b></div>`).join("")}</div>
-      <p class="sp small">Cutting down works best with a fixed quit date and support. We'll suggest your local NHS Stop Smoking Service too.</p></div><div class="sbot" style="bottom:48px"><button class="sbtn">Start plan</button></div>`; },
-    today: () => { const R = 102, C = 2 * Math.PI * R, sg = (C - 7 * 6) / 7; return `<header class="sh row"><div><p>Saturday · Week 3 of 6</p><h3>Today</h3></div><span class="spill"><s></s>Case · 82%</span></header>
-      <div class="sring"><svg width="220" height="220" viewBox="0 0 220 220" aria-hidden="true">${Array.from({ length: 7 }, (_, i) => `<circle cx="110" cy="110" r="${R}" fill="none" stroke="${i < 4 ? "#DCEDEE" : "#2F7F86"}" stroke-width="16" stroke-dasharray="${sg.toFixed(1)} ${C.toFixed(1)}" stroke-dashoffset="${(-i * (sg + 6)).toFixed(1)}" transform="rotate(-90 110 110)"/>`).join("")}</svg><div><b>3</b><span>of 7 left today</span></div></div>
-      <div class="scard" style="margin:18px 24px 0"><div class="srow" style="justify-content:flex-start;gap:10px">${ico("clock", 20, "#1F5F65")}<span>Next one from <b>14:20</b></span><small style="margin-left:auto">in 18 min</small></div><div class="sdots">${["07:40", "10:15", "12:30", "13:05", "14:20", "&nbsp;", "&nbsp;"].map((t, i) => `<div><i class="${i < 4 ? "f" : "o"}"></i><em ${i >= 4 ? 'style="color:#1F5F65;font-weight:600"' : ""}>${t}</em></div>`).join("")}</div></div>
-      <div class="sgrid"><span class="dk">${ico("wave", 20, "#fff")}<b>Craving SOS</b></span><span class="lt">${ico("coin", 20, "#4C5E47")}<b>£29.90 <small>saved this week</small></b></span></div><p class="sadd">${ico("plus", 18, "#55625F")}Log one smoked without the case</p>${NAV(0)}`; },
-    resting: () => `<div class="sx warm"><header class="sh"><p style="color:#A65412;font-weight:600">Case resting</p><h3>Next one from 14:20</h3></header>
-      <div class="sring w"><svg width="230" height="230" viewBox="0 0 230 230" aria-hidden="true"><circle cx="115" cy="115" r="104" fill="none" stroke="#F1DCC6" stroke-width="14"/><circle cx="115" cy="115" r="104" fill="none" stroke="#F2A04B" stroke-width="14" stroke-linecap="round" stroke-dasharray="520 654" transform="rotate(-90 115 115)"/></svg><div><b style="font-size:58px">18:42</b><span>minutes to wait</span></div></div>
-      <div class="swarm"><p><b>This feeling peaks, then fades.</b></p><p>Most cravings pass within a few minutes. You've ridden out 11 this week.</p></div>
-      <div class="sstack"><button class="sbtn dk">${ico("wave", 20, "#fff")}Craving SOS — 2 min reset</button><button class="sbtn lt">${ico("call", 20, "#1F5F65")}Text my quit buddy</button></div><p class="slink">Unlock early (takes 60 s, gets logged)</p></div>${NAV(0)}`,
-    sos: () => `<div class="sx dark"><div class="srow" style="padding:54px 24px 0"><small style="color:#B9D9D7;font-weight:600;font-size:14px">Craving SOS</small>${ico("close", 22, "#fff")}</div>
-      <div class="sbreath"><div><div><b>Breathe in</b></div></div><p class="t">1:24</p><p class="m">In for 4 · hold for 4 · out for 6</p></div>
-      <div class="sbot" style="bottom:52px"><p style="color:#fff;font-size:14px;font-weight:600;margin:0 0 6px">Or try one of these</p><div class="s3">${[["mug", "Glass of water"], ["sun", "Walk 5 min"], ["call", "Call Sam"]].map((r) => `<span>${ico(r[0], 22, "#5FE0D6")}${r[1]}</span>`).join("")}</div></div></div>`,
-    insights: () => { const d = [84, 96, 72, 84, 108, 84, 48], L = "MTWTFSS"; const heat = [.35, .95, .35, .08, .6, .35, .08, .6, .95, .6, .35, .08, .08, .35, .6, .95, .95, .6]; return `<header class="sh"><h3>Insights</h3><p>This week · 48 smoked · plan 56</p></header><div class="sx" style="padding:4px 24px;gap:12px"><div class="scard" style="padding:16px 16px 10px"><svg width="330" height="160" viewBox="0 0 330 160" aria-hidden="true">${d.map((h, i) => `<rect x="${10 + i * 46}" y="${136 - h}" width="30" height="${h}" rx="6" fill="${i === 4 ? "#F2A04B" : i === 6 ? "#9DC4C6" : "#2F7F86"}"/><text x="${25 + i * 46}" y="154" text-anchor="middle" font-size="11" fill="#55625F">${L[i]}</text>`).join("")}<line x1="0" y1="40" x2="330" y2="40" stroke="#142826" stroke-width="1.5" stroke-dasharray="4 4"/><text x="330" y="34" text-anchor="end" font-size="11" font-weight="600" fill="#142826">Plan 8</text></svg></div>
-      <div class="scard"><small class="k">When you reach for one</small><div class="sheat">${heat.map((h) => `<i style="background:rgba(47,127,134,${h})"></i>`).join("")}</div><div class="srow" style="font-size:11px;color:#55625F;margin-top:6px"><span>06:00</span><span>12:00</span><span>18:00</span><span>23:00</span></div></div>
-      <div class="scard" style="padding:12px 16px 4px"><small class="k" style="display:block;padding-bottom:8px">Your top triggers</small>${[["mug", "After coffee", "31%"], ["car", "Commute", "22%"], ["friends", "With friends", "18%"], ["face", "Stressful call", "12%"]].map((r) => `<div class="strig">${ico(r[0], 20, "#1F5F65")}<span>${r[1]}</span><b>${r[2]}</b></div>`).join("")}</div></div>${NAV(1)}`; },
-    progress: () => `<header class="sh"><h3>Progress</h3><p>Since you started · 19 days</p></header><div class="sx" style="padding:4px 24px;gap:12px"><div class="sgrid" style="margin:0"><div class="sk teal"><small>Money kept</small><b>£71</b><em>at 83p a cigarette</em></div><div class="sk"><small>Not smoked</small><b>86</b><em>vs your old 12 a day</em></div></div>
-      <div class="scard" style="padding:14px 18px"><small class="k">After your quit date</small><p class="sp small" style="margin:6px 0 4px">Practice run: your longest gap so far is 9 h 40 m</p>${[["20 min", "Pulse rate returning to normal", 1], ["8 hours", "Oxygen levels recovering", 1], ["48 hours", "Taste and smell improving", 0], ["72 hours", "Breathing easier, more energy", 0]].map((r) => `<div class="smile"><i class="${r[2] ? "d" : ""}">${r[2] ? ico("check", 14, "#fff", 2.6) : ""}</i><div><b>${r[0]}</b><small>${r[1]}</small></div></div>`).join("")}</div>
-      <div class="snhs">${ico("heart", 22, "#4C5E47")}<span>Free NHS Stop Smoking support near you</span>${ico("arrow", 20, "#4C5E47")}</div></div>${NAV(2)}`,
-    case: () => `<header class="sh"><h3>Your case</h3><p>Relinquit · 4F2A · Chalk / Lagoon</p></header><div class="sx" style="padding:4px 24px;gap:12px"><div class="scard" style="display:flex;gap:18px;align-items:center;padding:18px"><div class="smini">${caseSvg({ ring: "#2F7F86", eink: ["", "", ""] })}</div><div class="scas"><div>${ico("batt", 20, "#1F5F65")}<b>82%</b><span>· about 3 weeks</span></div><div>${ico("bt", 20, "#1F5F65")}Connected</div><small>6 of 10 loaded</small><div class="sld">${Array.from({ length: 10 }, (_, i) => `<i class="${i < 6 ? "f" : ""}"></i>`).join("")}</div></div></div>
-      <div class="slist ic">${[["lock", "Overnight lock", "23:00 – 07:00"], ["clock", "Minimum gap", "90 min"], ["pin", "Where I smoke (on this phone only)", "Off"], ["bell", "Nudge when a slot opens", "On"]].map((r) => `<div>${ico(r[0], 20, "#1F5F65")}<span>${r[1]}</span><b>${r[2]}</b></div>`).join("")}</div>
-      <button class="sbtn ghost">${ico("pin", 20, "#1F5F65")}Find my case</button></div>${NAV(3)}`
-  };
   const SCREENS = [
     ["welcome", "Welcome", "Step down or quit now", 0, "paper"], ["pair", "Pair", "Hold the dot for 3 seconds", 0, "paper"], ["plan", "Plan", "Every plan ends on a quit date", 0, "paper"],
     ["today", "Today", "What is left today, and the next slot", 1, "paper"], ["resting", "Resting", "A countdown, not a “locked” message", 1, "warm"], ["sos", "Craving SOS", "A two-minute reset for the moments in between", 1, "dark"],
     ["insights", "Insights", "Patterns and triggers, week by week", 2, "paper"], ["progress", "Progress", "Money kept and milestones after the quit date", 2, "paper"], ["case", "Case", "Battery, lock and privacy", 2, "paper"]
   ];
   const GROUPS = ["Set up", "Every day", "Over time"];
-  const phone = (k, s, cls = "") => `<div class="rq-dev ${cls}" style="--s:${s}"><div class="rq-sw"><div class="rq-body"><div class="rq-scr ${SCREENS[k][4]}">${SCR[SCREENS[k][0]]()}<i class="rq-notch"></i></div></div></div></div>`;
+  const phone = (k, s, cls = "") => `<div class="rq-dev ${cls}" style="--s:${s}"><div class="rq-sw"><div class="rq-body"><div class="rq-scr"><img src="images/relinquit/s${k + 1}.webp" alt="${SCREENS[k][1]} screen" loading="lazy"><i class="rq-notch"></i></div></div></div></div>`;
 
-  /* ---- exploded view (drawn) ---- */
+  /* ---- exploded view: the render, with numbered badges ---- */
   const PARTS = [["Cap + slider"], ["Body shell"], ["PCB"], ["Battery"], ["E-ink"], ["Lens + dot"], ["Cassette ×10"], ["Spring"]];
-  const exploded = () => {
-    const shapes = [
-      (y) => `<path d="M30 ${y + 30}q0-30 34-30h72q34 0 34 30v10H30z" fill="#2F7F86" stroke="#142826" stroke-width="2.5"/><rect x="92" y="${y + 6}" width="48" height="12" rx="6" fill="#142826"/>`,
-      (y) => `<rect x="30" y="${y}" width="170" height="52" rx="22" fill="#fff" stroke="#142826" stroke-width="2.5"/><path d="M52 ${y + 14}h126" stroke="#142826" stroke-width="1.5" opacity=".4"/>`,
-      (y) => `<rect x="52" y="${y + 6}" width="126" height="34" rx="6" fill="#4C5E47" stroke="#142826" stroke-width="2"/>${[0, 1, 2, 3, 4].map((i) => `<rect x="${64 + i * 22}" y="${y + 14}" width="14" height="14" rx="2" fill="#A8B5A0"/>`).join("")}`,
-      (y) => `<rect x="62" y="${y + 6}" width="106" height="32" rx="8" fill="#C98443" stroke="#142826" stroke-width="2"/><rect x="168" y="${y + 16}" width="8" height="12" rx="2" fill="#142826"/>`,
-      (y) => `<rect x="76" y="${y + 2}" width="78" height="40" rx="5" fill="#142826"/><rect x="81" y="${y + 7}" width="68" height="30" rx="3" fill="#E4E3DD"/>`,
-      (y) => `<ellipse cx="115" cy="${y + 22}" rx="44" ry="14" fill="none" stroke="#142826" stroke-width="2.5"/><circle cx="115" cy="${y + 22}" r="6" fill="#5FE0D6" stroke="#142826" stroke-width="2"/>`,
-      (y) => `<rect x="44" y="${y}" width="142" height="48" rx="12" fill="#F4E4CF" stroke="#142826" stroke-width="2.5"/>${Array.from({ length: 10 }, (_, i) => `<circle cx="${60 + i * 12.4}" cy="${y + 24}" r="4.4" fill="#E9B07A" stroke="#142826" stroke-width="1.4"/>`).join("")}`,
-      (y) => `<path d="M80 ${y + 4}h70l-70 14h70l-70 14h70" fill="none" stroke="#142826" stroke-width="3" stroke-linejoin="round"/>`
-    ];
-    return `<svg class="rq-exp" viewBox="0 0 230 760" role="img" aria-label="Exploded view of the case: cap and slider, body shell, circuit board, battery, e-ink screen, lens, cassette of ten cigarettes and spring">${shapes.map((f, i) => `<g class="pt" data-i="${i}" style="--d:${i * 70}ms;--y:${i * 92}px"><g>${f(10)}</g><g transform="translate(14 34)"><circle r="13" fill="#142826"/><text y="4.5" text-anchor="middle" font-size="13" font-weight="700" fill="#fff" font-family="Inter,sans-serif">${i + 1}</text></g></g>`).join("")}</svg>`;
-  };
+  const BAD = [[8.4, 6.5], [9.0, 40.7], [33.5, 41.6], [49.9, 45.1], [71.7, 45.0], [89.6, 46.8], [10.8, 75.0], [10.8, 95.8]];
+  const exploded = () => `<div class="rq-exw"><img src="images/relinquit/exploded.webp" alt="Exploded view of the case: cap and slider, body shell, circuit board, battery, e-ink screen, lens, cassette of ten cigarettes and spring">${BAD.map((b, i) => `<span class="pt" data-i="${i}" style="left:${b[0]}%;top:${b[1]}%;--d:${i * 90}ms">${i + 1}</span>`).join("")}</div>`;
 
   const COLOURS = [["Graphite", "#2A2C2F", "#44484B", "#5FE0D6", "#0b0c0d"], ["Chalk / Lagoon", "#E9E6DF", "#2F7F86", "#2F7F86", "#142826"], ["Sage", "#A8B5A0", "#E7E4DC", "#7E8C77", "#142826"], ["Clay", "#D7A086", "#F1E8DC", "#B97B5C", "#142826"]];
   const EINK = [["Available", "#5FE0D6", ["TODAY", "3", "of 7 left"]], ["Resting", "#F2A04B", ["RESTING", "18:42", "until next"]], ["Quit mode", "#BFC7C6", ["QUIT MODE", "6", "smoke-free days"]], ["Overnight", "#BFC7C6", ["GOOD NIGHT", "07:00", "case opens"]]];
@@ -126,13 +55,13 @@
     const day = [[70, 111, "07:30", "Coffee", 0], [202, 173, "10:15", "Break", 0], [334, 111, "12:30", "Lunch", 0], [466, 359, "13:05", "Stressful call", 1], [598, 297, "17:30", "Commute", 1], [730, 173, "21:00", "TV", 0]];
     const dayPath = day.map((d, i) => `${i ? "L" : "M"}${d[0]},${d[1]}`).join(" ");
     const gap = [["Reduction apps", 160, 120], ["NHS Quit Smoking app", 230, 190], ["NicoTrax case", 140, 360], ["Lowiee case", 270, 300], ["Quitbit lighter", 560, 330]];
-    return `<article class="page rq"><svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="rqRough"><feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="4"/><feDisplacementMap in="SourceGraphic" scale="3.5"/></filter></svg>
+    return `<article class="page rq">
 
     <div class="rq-fix" aria-hidden="true"><b>Relinquit</b><span></span></div>
     <section class="rq-hero" data-sec="Overview"><div class="rq-hl"><p class="p-meta rq-meta"><b>Relinquit</b><span>${esc(p.year)}</span><a href="#/work/product-design">Product design</a></p>
         <h1><span>One at a time.</span><span class="t">Then none.</span></h1>
         <p class="rq-lead">${esc(p.summary)}</p><p class="rq-sc">Scroll for the story</p></div>
-      <div class="rq-hr"><i class="rq-disc"></i><div class="rq-pair b">${caseSvg({ body: "#2A2C2F", cap: "#44484B", edge: "#17181A", ring: "#5FE0D6", eink: ["", "", ""] })}</div><div class="rq-pair a">${caseSvg({ body: "#E9E6DF", cap: "#2F7F86", ring: "#2F7F86", slide: .5, rise: .5 })}</div></div></section>
+      <div class="rq-hr"><i class="rq-disc"></i><img class="rq-hc" src="images/relinquit/hero-case.webp" alt="Two Relinquit cases, graphite and chalk with a lagoon cap, showing the daily count on the e-ink screen"></div></section>
 
     <section data-sec="Research" class="rq-pin rq-prob" data-pin="prob"><div class="rq-stage"><div class="rq-in">
       <header class="rq-sh"><small>01 · Research</small><h2>Fewer people smoke. The ones left find it hardest to stop.</h2></header>
@@ -168,27 +97,25 @@
 
     <section data-sec="Ideation" class="rq-pin rq-ideas" data-pin="ideas"><div class="rq-stage"><div class="rq-in">
       <header class="rq-sh"><small>03 · Ideation & development</small><h2>Eight ideas → one thumb, one cigarette</h2></header>
-      <div class="rq-sks">${SK.map(sketch).join("")}</div>
+      <div class="rq-sks">${SKN.map(sketch).join("")}</div>
       <div class="rq-dev2"><div class="rq-score"><h3>Concept scoring</h3>${[["A Flip-top", 20, 0], ["B Top gate", 36, 1], ["C Carousel", 24, 0]].map((r) => `<div class="sr${r[2] ? " w" : ""}"><span>${r[0]}</span><i data-v="${r[1]}"></i><b>${r[1]}</b></div>`).join("")}<p>Weighted against one-handed use, pocket size, reliability, cost and looks. B is the only one that works with either thumb.</p></div>
-        <div class="rq-dim"><h3>46 × 94 × 20 mm</h3><svg viewBox="0 0 430 300" role="img" aria-label="Front 46 by 94 mm, side 20 mm, top view showing the slider track"><rect x="60" y="20" width="115" height="235" rx="17.5" fill="#fff" stroke="#142826" stroke-width="2"/><path d="M60 62.5 117.5 77.5 175 62.5" fill="none" stroke="#142826" stroke-width="1.5"/><rect x="78.75" y="96.25" width="77.5" height="87.5" rx="11.25" fill="none" stroke="#142826" stroke-width="1.5"/><circle cx="117.5" cy="208.75" r="11.5" fill="none" stroke="#142826" stroke-width="1.5"/>
-          <g stroke="#A65412"><path d="M60 277h115M60 272v10M175 272v10M44 20v235M39 20h10M39 255h10"/></g><g font-size="14" font-weight="700" fill="#A65412"><text x="117.5" y="296" text-anchor="middle">46</text><text x="35" y="142" text-anchor="end">94</text></g>
-          <rect x="225" y="20" width="50" height="235" rx="6" fill="#fff" stroke="#142826" stroke-width="2"/><path d="M225 277h50M225 272v10M275 272v10" stroke="#A65412"/><text x="250" y="296" text-anchor="middle" font-size="14" font-weight="700" fill="#A65412">20</text>
-          <rect x="315" y="20" width="115" height="50" rx="6" fill="#fff" stroke="#142826" stroke-width="2"/><rect x="331" y="28" width="82" height="34" rx="17" fill="#3a3c3e" stroke="#2F7F86" stroke-width="2.5"/><rect x="370" y="31" width="42" height="27" rx="13.5" fill="#4d7276"/><path d="M362 88h-25M343 82l-6 6 6 6" stroke="#2F7F86" stroke-width="2.5" fill="none"/><text x="315" y="120" font-size="13" fill="#4F5D5A">top: slider travels 13 mm</text></svg>
+        <div class="rq-dim"><h3>46 × 94 × 20 mm</h3><img src="images/relinquit/dims.webp" alt="Front 46 by 94 mm, side 20 mm, top view showing 13 mm slider travel">
           <p>Narrower than a pack (56 mm), sized for a 5th-percentile female hand.</p></div></div>
     </div></div></section>
 
     <section data-sec="How it works" class="rq-pin rq-works" data-pin="works"><div class="rq-stage"><div class="rq-in">
       <header class="rq-sh"><small>How it works</small><h2>Glance. Slide. Take one. Rest.</h2></header>
-      <div class="rq-wgrid"><div class="rq-wc"><i class="rq-glow"></i><div class="wcase">${caseSvg({})}</div></div>
+      <div class="rq-wgrid"><div class="rq-wc"><div class="stp">${[1, 2, 3, 4].map((n) => `<img src="images/relinquit/step-${n}.webp" alt="Step ${n}">`).join("")}</div></div>
         <ol class="rq-wl">${[["Glance", "The always-on screen shows what is left today."], ["Slide", "One thumb moves the gate; either hand works."], ["Take one", "A single cigarette rises and is counted."], ["Rest", "The gate holds shut until the next slot, with a countdown."]].map((r, i) => `<li data-i="${i}"><b>${i + 1}</b><div><h3>${r[0]}</h3><p>${r[1]}</p></div></li>`).join("")}</ol></div>
       <p class="rq-mech">Spring magazine pushes the stack up · IR beam counts each cigarette · micro-latch holds the slider until the next slot.</p>
     </div></div></section>
 
     <section data-sec="Initial model" class="rq-model"><header class="rq-sh"><small>04 · Initial model</small><h2>Inside, outside, and the slider that moves</h2></header>
-      <div class="rq-mg"><div class="rq-mx rv" id="rqExp"><h3>Inside</h3><div class="ex">${exploded()}<ol class="lg">${PARTS.map((r, i) => `<li data-i="${i}" style="--d:${i * 70}ms"><b>${i + 1}</b>${r[0]}</li>`).join("")}</ol></div></div>
-        <div class="rq-mc rv"><h3>Outside</h3><div class="cs" id="rqCol"><div class="cv">${caseSvg({ body: COLOURS[1][1], cap: COLOURS[1][2], edge: COLOURS[1][4], ring: COLOURS[1][3] })}</div>
+      <div class="rq-mg"><div class="rq-mx rv" id="rqExp"><h3>Inside</h3><div class="ex">${exploded()}<ol class="lg">${PARTS.map((r, i) => `<li data-i="${i}"><b>${i + 1}</b>${r[0]}</li>`).join("")}</ol></div></div>
+        <div class="rq-mr"><div class="rq-mc rv"><div class="cs" id="rqCol"><div class="cv">${COLOURS.map((c, i) => `<img class="${i === 1 ? "on" : ""}" data-i="${i}" src="images/relinquit/col-${i}.webp" alt="${c[0]} case">`).join("")}</div>
           <div class="ch" role="group" aria-label="Colourways">${COLOURS.map((c, i) => `<button type="button" class="${i === 1 ? "on" : ""}" data-i="${i}"><i style="background:${c[1]};border-color:${c[2]}"></i>${c[0]}</button>`).join("")}</div></div></div>
-        <div class="rq-me rv"><h3>Always-on e-ink</h3><div class="es">${EINK.map((e, i) => `<div class="${i === 0 ? "on" : ""}" data-i="${i}">${eink(e)}<span>${e[0]}</span></div>`).join("")}</div><p>Shows today’s count even with a flat phone. The ring: teal = ready, amber = resting.</p></div></div></section>
+          <div class="rq-mb"><div class="rq-ms rv"><img src="images/relinquit/states.webp" alt="Left: closed and resting. Right: slid back with one cigarette ready"><p><span>Closed · resting</span><span>Slid back · one ready</span></p></div>
+            <div class="rq-me rv"><h3>Always-on e-ink</h3><div class="es">${EINK.map((e, i) => `<div class="${i === 0 ? "on" : ""}" data-i="${i}">${eink(e)}<span>${e[0]}</span></div>`).join("")}</div><p>Shows today’s count even with a flat phone. The ring: teal = ready, amber = resting.</p></div></div></div></div></section>
 
     <section data-sec="The app" class="rq-pin rq-app" data-pin="app"><div class="rq-stage"><div class="rq-in">
       <header class="rq-sh"><small>05 · App</small><h2>Nine screens, one calm companion</h2></header>
@@ -201,7 +128,7 @@
       <h2>Cut down with a plan. <span>Quit for good.</span></h2>
       <ol>${["One thumb slides the gate — a single cigarette rises and is counted.", "Every plan steps down to a quit date you choose.", "When the case rests, the app helps you ride out the craving."].map((t, i) => `<li><b>0${i + 1}</b><span>${t}</span></li>`).join("")}</ol>
       <p class="rq-by">Product, app and identity · Alex Denli</p></div>
-      <div class="er"><div class="rq-pair a2">${caseSvg({ body: "#E9E6DF", cap: "#2F7F86", ring: "#2F7F86" })}</div>${phone(3, 0.62, "ph2")}</div></section>
+      <div class="er"><img class="rq-endimg" src="images/relinquit/end.webp" alt="The Relinquit app on a phone beside the case" loading="lazy"></div></section>
     ${tail}</article>`;
   }
 
@@ -231,14 +158,14 @@
 
     // colour switcher, e-ink states, exploded view labels
     $$("#rqCol .ch button").forEach((b) => b.addEventListener("click", () => {
-      const c = COLOURS[+b.dataset.i];
       $$("#rqCol .ch button").forEach((x) => x.classList.toggle("on", x === b));
-      $("#rqCol .cv").innerHTML = caseSvg({ body: c[1], cap: c[2], edge: c[4], ring: c[3] });
+      $$("#rqCol .cv img").forEach((x) => x.classList.toggle("on", x.dataset.i === b.dataset.i));
     }));
+    $$("#rqCol .cv img").forEach((im) => im.addEventListener("click", () => $(`#rqCol .ch button[data-i="${im.dataset.i}"]`).click()));
     $$(".rq-me .es > div").forEach((d) => d.addEventListener("mouseenter", () => $$(".rq-me .es > div").forEach((x) => x.classList.toggle("on", x === d))));
     $$(".rq-mx .lg li").forEach((li) => {
-      li.addEventListener("mouseenter", () => { $("#rqExp").classList.add("hl"); $(`.rq-exp .pt[data-i="${li.dataset.i}"]`).classList.add("hi"); });
-      li.addEventListener("mouseleave", () => { $("#rqExp").classList.remove("hl"); $$(".rq-exp .pt.hi").forEach((n) => n.classList.remove("hi")); });
+      li.addEventListener("mouseenter", () => { $("#rqExp").classList.add("hl"); $(`.rq-exw .pt[data-i="${li.dataset.i}"]`).classList.add("hi"); });
+      li.addEventListener("mouseleave", () => { $("#rqExp").classList.remove("hl"); $$(".rq-exw .pt.hi").forEach((n) => n.classList.remove("hi")); });
     });
 
     // ---- pinned scenes, driven by scroll ----
@@ -279,15 +206,10 @@
         $$(".rq-score i", el).forEach((i) => { i.style.width = `${(+i.dataset.v * 8 * seg(p, 0.5, 0.8)).toFixed(0)}px`; });
       },
       works(el, p) {
-        const s = p * 3.999, i = Math.min(3, Math.floor(s)), f = s - i;
+        const i = Math.min(3, Math.floor(p * 3.999));
+        if (el._k === i) return; el._k = i;
         $$(".rq-wl li", el).forEach((li, k) => li.classList.toggle("on", k === i));
-        let slide = 0, rise = 0, ring = "#2F7F86", e = ["TODAY", "3", "of 7 left"];
-        if (i === 1) slide = ease(seg(f, 0, 0.7));
-        if (i === 2) { slide = 1; rise = ease(seg(f, 0.1, 0.7)); e = ["TODAY", f < 0.4 ? "3" : "2", "of 7 left"]; }
-        if (i === 3) { slide = 1 - ease(seg(f, 0, 0.35)); rise = 1 - ease(seg(f, 0, 0.35)); ring = "#F2A04B"; e = ["RESTING", "18:42", "until next"]; }
-        const key = [slide.toFixed(2), rise.toFixed(2), ring, e.join()].join("|");
-        if (el._k !== key) { el._k = key; $(".wcase", el).innerHTML = caseSvg({ slide, rise, ring, eink: e }); }
-        $(".rq-glow", el).style.background = ring === "#F2A04B" ? "#FBEBDA" : "#DCEDEE";
+        $$(".stp img", el).forEach((im, k) => im.classList.toggle("on", k === i));
       },
       app(el, p) {
         const n = SCREENS.length, k = Math.min(n - 1, Math.floor(p * n * 0.999));
@@ -342,5 +264,5 @@
     fitPhones(); tick(); setTimeout(tick, 150);
   }
 
-  window.RELINQUIT = { render, wire, caseSvg };
+  window.RELINQUIT = { render, wire };
 })();
