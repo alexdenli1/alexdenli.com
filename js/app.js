@@ -117,6 +117,11 @@
     if (i < 0) return null;
     const p = S.projects[i], c = cat(p.category), next = S.projects[(i + 1) % S.projects.length];
     found.add(p.slug);
+    if (p.slug === "relinquit" && window.RELINQUIT) {
+      const tail = `<a class="p-next" href="${link(next)}" ><small>Next project</small><span class="giant">${esc(next.title)}</span><img src="${esc(next.hero)}" alt=""></a>
+      <nav class="p-exits" aria-label="Where next"><a class="ul" href="#/work/${esc(c.id)}">More ${esc(c.label.toLowerCase())}</a><a class="ul" href="#/archive">Archive</a></nav>${foot()}`;
+      return { title: p.title, label: p.title, html: window.RELINQUIT.render(p, tail), after: () => window.RELINQUIT.wire() };
+    }
     if (p.slug === "rescue" && window.RESCUE) {
       const tail = `<a class="p-next" href="${link(next)}" ><small>Next project</small><span class="giant">${esc(next.title)}</span><img src="${esc(next.hero)}" alt=""></a>
       <nav class="p-exits" aria-label="Where next"><a class="ul" href="#/work/${esc(c.id)}">More ${esc(c.label.toLowerCase())}</a><a class="ul" href="#/archive">Archive</a></nav>${foot()}`;
@@ -134,7 +139,7 @@
   function now() {
     // Projects: key-project images fade in and out behind the page as you scroll into each category.
     const secs = S.categories.map((c) => {
-      const list = S.projects.filter((p) => p.category === c.id);
+      const list = S.projects.filter((p) => p.category === c.id && (p.status === "current" || p.featured));
       const key = list.find((p) => p.status === "current") || list[0];
       return list.length ? { c, list, key } : null;
     }).filter(Boolean);
@@ -169,7 +174,7 @@
         <nav class="pj-tabs" aria-label="Project categories">${TABS.map((t) => { const i = secs.findIndex((x) => x.c.id === t.id); return `<a href="#/work/${esc(t.id)}" data-i="${i}" data-id="${esc(t.id)}">${esc(t.label)}</a>`; }).join("")}</nav>
       </header>
       <section class="pj-grid-wrap" id="pjGrid"><p class="pj-empty" hidden>Nothing here yet. New work will appear in this category soon.</p>
-      <ol class="pj-grid">${S.projects.map((p) => { const c = S.categories.find((x) => x.id === p.category); const steps = p.process || [];
+      <ol class="pj-grid">${S.projects.filter((p) => p.status === "current" || p.featured).map((p) => { const c = S.categories.find((x) => x.id === p.category); const steps = p.process || [];
         return `<li data-cat="${esc(p.category)}"><a class="pt" href="${link(p)}">
           <span class="pt-img"><img src="${esc(p.hero)}" alt="${esc(p.title)}" loading="lazy">
             <span class="pt-over"><small>${esc(c ? c.label : "")}</small><span class="pt-sum">${esc(p.summary)}</span>
@@ -180,7 +185,7 @@
   }
 
   function archive() {
-    const list = S.projects.filter((p) => p.status !== "current").sort((a, b) => parseInt(b.year, 10) - parseInt(a.year, 10));
+    const list = S.projects.filter((p) => p.status !== "current" && !p.featured).sort((a, b) => parseInt(b.year, 10) - parseInt(a.year, 10));
     return { title: "Archive", label: "Archive", html: `<div class="page"><header class="page-head arch-head"><h1 class="giant">Archive</h1><p>Previous projects that didn't make the cut, but are still worth a look.</p></header>
       <ol class="grid">${list.map((p) => `<li><a class="tile" href="${link(p)}">
         <span class="tile-img"><img src="${esc(p.hero)}" alt="${esc(p.title)}" loading="lazy"></span><span class="tile-cap"><b>${esc(p.title)}</b><small>${esc(p.year)}</small></span></a></li>`).join("")}</ol>${foot()}</div>` };
