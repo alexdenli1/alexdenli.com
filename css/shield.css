@@ -185,15 +185,15 @@
 .sh-why > div { background: #fff; border-radius: 20px; padding: 2rem 2.3rem; } .sh-why h3 { font-size: 2.1rem; margin-bottom: .8rem; } .sh-why p { font-size: 1.4rem; line-height: 1.5; color: #2B3E49; }
 
 /* ---------- forms ---------- */
-.sh-fg { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 3rem; align-items: center; margin-top: 1vh; }
-.sh-fl { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.5rem; }
+.sh-fg { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 3rem; align-items: center; margin-top: 7vh; }
+.sh-fl { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.1rem; }
 .sh-fl li { display: flex; gap: 1.2rem; opacity: .32; transition: opacity .5s, transform .5s; padding-left: 1.2rem; border-left: 3px solid transparent; }
 .sh-fl li.on { opacity: 1; border-left-color: var(--tl); transform: translateX(8px); }
 .sh-fl i { font-style: normal; font-weight: 600; color: var(--teal); font-size: 1.1rem; padding-top: .45rem; } .sh-fl b { display: block; font-size: 2.3rem; letter-spacing: -.03em; } .sh-fl span { display: block; font-size: 1.2rem; color: var(--soft); margin-top: .2rem; max-width: 22em; }
 .sh-fv { position: relative; height: 100%; min-height: 0; }
-.sh-drop { position: absolute; inset: 0; margin: auto; width: 62vh; height: 62vh; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #FFFFFF, #E1F0F0 62%, #D4E8E8); transition: box-shadow .6s; }
+.sh-drop { position: absolute; inset: 0; margin: auto; width: 70vh; height: 70vh; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #FFFFFF, #E1F0F0 62%, #D4E8E8); transition: box-shadow .6s; }
 .sh-fv.fin .sh-drop { box-shadow: 0 0 0 3px var(--tl); }
-.sh-fv .ff { position: absolute; inset: 0; margin: auto; height: 54vh; width: auto; max-width: 100%; opacity: 0; will-change: transform, opacity; }
+.sh-fv .ff { position: absolute; inset: 0; margin: auto; height: 60vh; width: auto; max-width: 100%; opacity: 0; will-change: transform, opacity; }
 
 /* ---------- testing ---------- */
 .sh-te { background: linear-gradient(180deg, #0B1B2B, #0E2438); }

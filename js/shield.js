@@ -35,11 +35,11 @@
   ];
 
   const FORMS = [
-    ["Single tank", "One tank split in two; exposed valves and pump."],
-    ["Twin cells", "A float and valve per cell; full-length base and collection chamber."],
-    ["Enclosed", "Tubing and electronics hidden in side posts; status lights at the front."],
-    ["Turned to the side", "Moved beside the machine so the user never pulls it out."],
-    ["Final form", "Slim tower, hopper cells, front drawer, lift-out electrodes."]
+    ["Single tank", "One tank split in two, valves exposed."],
+    ["Twin cells", "A float and valve for each cell."],
+    ["Enclosed", "Tubing and electronics in the side posts."],
+    ["Turned to the side", "Moved beside the machine, never pulled out."],
+    ["Final form", "Slim tower, drawer, lift-out electrodes."]
   ];
 
   const PARTS = ["Top cap", "Light bar", "Electrode cassettes", "Twin EC cells", "Divider", "Electronics bay", "Manifold + overflow", "Hopper base", "Ø19 mm ports", "Pump + sludge valves", "Mesh basket", "Drawer"];
