@@ -267,10 +267,10 @@
               <ul class="out">${[["Solenoid valves ×6", "inlet · decant · sludge"], ["Drain pump", "12 V, lifts to standpipe"], ["Electrode driver", "constant current, reversing"], ["Light bar + lock", "5 LEDs · drawer solenoid"]].map((x) => `<li><b>${x[0]}</b><span>${x[1]}</span></li>`).join("")}</ul></div></div>
           <div class="sh-two"><div class="rv"><h3>Fail-safe</h3><p>A second float drains a cell if a valve sticks; a passive overflow means the machine pump is never blocked.</p></div><div class="rv"><h3>Child-safe</h3><p>Drain-now button under a slide cover; the drawer locks while sludge is released.</p></div></div></div></div></div></section>
 
-    <section class="sh-pin sh-pap sh-ex " data-pin="parts" data-sec="Design" style="height:420vh"><div class="sh-stage">
-      <header class="sh-h sm"><small>Design</small><h2>Details</h2><p>850 × 600 × 150 mm. Everything the user touches is on the front or top; the hoses connect once at the back.</p></header>
-      <div class="sh-eg"><div class="sh-ev2"><div class="sh-exw">${IMG("exploded.webp", "Exploded view of Shield: top cap, light bar, electrode cassettes, twin cells, divider, electronics bay, manifold, hopper base, ports, pump and valves, mesh basket and drawer", "", false)}${PP.map((q, i) => `<span class="spt" data-i="${i}" style="left:${q[0]}%;top:${q[1]}%">${i + 1}</span>`).join("")}</div></div>
-        <div class="sh-pr"><p class="sh-now"><i>01</i><b>${PARTS[0]}</b></p><ol class="sh-pl">${PARTS.map((n, i) => `<li><i>${i + 1}</i>${n}</li>`).join("")}</ol></div></div>
+    <section class="sh-pap sh-ex" data-sec="Design"><div class="sh-wrap">
+      <div class="sh-eg"><div class="sh-ev2"><div class="sh-exw rv">${IMG("exploded.webp", "Exploded view of Shield: top cap, light bar, electrode cassettes, twin cells, divider, electronics bay, manifold, hopper base, ports, pump and valves, mesh basket and drawer", "", false)}${PP.map((q, i) => `<span class="spt" data-i="${i}" style="left:${q[0]}%;top:${q[1]}%">${i + 1}</span>`).join("")}</div></div>
+        <div class="sh-pr"><header class="sh-h sm"><small>Design</small><h2>Details</h2><p>850 × 600 × 150 mm. Everything the user touches is on the front or top; the hoses connect once at the back.</p></header>
+          <ol class="sh-pl">${PARTS.map((n, i) => `<li class="rv" style="--i:${i}"><i>${i + 1}</i>${n}</li>`).join("")}</ol></div></div>
     </div></section>
 
     <section class="sh-pin sh-mist sh-tw " data-pin="steps" data-sec="Design" style="height:440vh"><div class="sh-stage"><div class="sh-twg" data-s="0">
@@ -352,7 +352,6 @@
       }
     };
     const pins = $$("[data-pin]");
-    $$(".sh-pl li", root).forEach((li, i) => li.addEventListener("click", () => { const el = li.closest("[data-pin]"), r = el.getBoundingClientRect(); window.scrollTo({ top: scrollY + r.top + (i / 12 + .02 + .04) / 1.12 * (r.height - vh()), behavior: "smooth" }); }));
 
     const fix = $(".sh-fix"), secs = $$("section[data-sec]");
     const label = () => {

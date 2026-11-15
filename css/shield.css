@@ -326,3 +326,12 @@
 .sh-te .mcu { padding: 1rem .5rem; } .sh-te .mcu em { font-size: .8rem; line-height: 1.3; overflow-wrap: anywhere; } .sh-te .mcu em small { font-size: .7rem; }
 .sh-te .sh-two > div { display: flex; flex-direction: column; justify-content: center; }
 .sh-te .sh-ctl .sh-k { font-size: 1.15rem; margin-bottom: 1.2rem; }
+
+/* details: static exploded view */
+.sh-ex .sh-wrap { min-height: 100vh; display: flex; align-items: center; padding-top: calc(var(--nav-h) + 3vh); padding-bottom: 4vh; }
+.sh-ex .sh-eg { width: 100%; margin: 0; gap: 5rem; grid-template-columns: auto minmax(0, 1fr); align-items: center; }
+.sh-ex .sh-exw { height: 72vh; }
+.sh-ex .sh-exw .spt { opacity: 1; transform: none; background: var(--ink); }
+.sh-ex .sh-pl { grid-template-columns: 1fr 1fr; gap: 0 2.4rem; margin-top: 3vh; }
+.sh-ex .sh-pl li { color: var(--ink); font-size: 1.3rem; padding: .85rem 0; cursor: default; }
+.sh-ex .sh-pl i { width: 2rem; height: 2rem; border-radius: 50%; background: var(--ink); color: #fff; display: grid; place-items: center; font-size: .9rem; flex: none; }
