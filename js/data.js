@@ -110,7 +110,7 @@ window.SITE = {
     },
     {
       slug: "rescue", title: "Rescue", category: "ux-ui",
-      year: "2026 redevelopment", status: "archive", featured: true, hero: "images/rescue/hero-1920.jpg",
+      year: "2026 redevelopment", status: "archive", featured: true, hero: "images/rescue/hero.jpg",
       process: [{ title: "Storyboard", text: "Josh's day, drawn out to find where energy saving could fit." }, { title: "Bodystorming", text: "Acting the app out with people and props, before any design." }, { title: "Prototype", text: "A clickable Marvel prototype so real people could try the route." }, { title: "Redevelopment", text: "In 2026: Pip the red panda, a core daily loop and a playable gate." }],
       summary: "A children's app for learning about energy saving, designed at university and redone in 2026.",
       blocks: [
