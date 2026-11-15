@@ -257,11 +257,11 @@
 @keyframes shBub { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-170px); opacity: 0; } }
 .sh-twg[data-s="0"] .w1 { transform: scaleY(.62); } .sh-twg[data-s="0"] .w2 { transform: scaleY(0); }
 .sh-twg[data-s="1"] .w1, .sh-twg[data-s="2"] .w1 { transform: scaleY(1); } .sh-twg[data-s="1"] .w2 { transform: scaleY(.4); } .sh-twg:is([data-s="2"], [data-s="3"], [data-s="4"], [data-s="5"]) .w2 { transform: scaleY(1); }
-.sh-twg[data-s="3"] .w1 { transform: scaleY(.2); } .sh-twg:is([data-s="4"], [data-s="5"]) .w1 { transform: scaleY(0); }
-.sh-twg:is([data-s="2"], [data-s="3"]) .fl1 { transform: scaleY(1); }
+.sh-twg[data-s="3"] :is(.w1, .w2) { transform: scaleY(.2); } .sh-twg:is([data-s="4"], [data-s="5"]) :is(.w1, .w2) { transform: scaleY(0); }
+.sh-twg:is([data-s="2"], [data-s="3"]) :is(.fl1, .fl2) { transform: scaleY(1); }
 .sh-twg:is([data-s="2"], [data-s="3"], [data-s="4"], [data-s="5"]) .fibs { opacity: 0; } .sh-twg[data-s="1"] .f1.fibs { transform: scale(.5); } .sh-twg[data-s="1"] .flcs { opacity: 1; }
-.sh-twg[data-s="1"] .f2.fibs, .sh-twg:is([data-s="2"]) .f2.fibs { opacity: 1; } .sh-twg:is([data-s="3"], [data-s="4"], [data-s="5"]) .f2.fibs { opacity: .0; }
-.sh-twg:is([data-s="4"], [data-s="5"]) .sg { transform: scaleY(1); } .sh-twg[data-s="5"] .dr { transform: translateX(-64px); } .sh-twg[data-s="5"] .pull { opacity: 1; }
+.sh-twg[data-s="1"] .f2.fibs { opacity: 1; }
+.sh-twg:is([data-s="4"], [data-s="5"]) .sg { transform: scaleY(1); } .sh-twg:is([data-s="4"], [data-s="5"]) :is(.fl1, .fl2) { transform: scaleY(0); } .sh-twg[data-s="5"] .dr { transform: translateX(-64px); } .sh-twg[data-s="5"] .pull { opacity: 1; }
 .sh-twg[data-s="0"] .inn, .sh-twg[data-s="1"] .inn2, .sh-twg[data-s="2"] .inn2 { opacity: 1; } .sh-twg[data-s="3"] :is(.duct, .out) { opacity: 1; } .sh-twg[data-s="1"] .bubs { opacity: 1; }
 .sh-twg:is([data-s="0"], [data-s="1"], [data-s="2"], [data-s="3"], [data-s="4"]) .l0, .sh-twg:is([data-s="1"], [data-s="2"], [data-s="3"], [data-s="4"]) :is(.l1, .l2), .sh-twg:is([data-s="2"], [data-s="3"], [data-s="4"]) .l3 { fill: var(--aq); }
 .sh-twg[data-s="5"] .lt { fill: #FF5A3C; animation: shBlink 1s steps(2, jump-none) infinite; } @keyframes shBlink { 50% { opacity: .25; } }
