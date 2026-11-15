@@ -152,6 +152,13 @@ window.SITE = {
       process: [{ title: "Research", text: "4.9m people in the UK still smoke, and half want to quit." }, { title: "Ideation", text: "Eight mechanisms sketched, scored and cut to one thumb, one cigarette." }, { title: "Model", text: "A pebble-sized case, an always-on e-ink screen and four colourways." }, { title: "App", text: "Nine calm screens that end on a quit date." }],
       summary: "A connected cigarette case that spaces out each cigarette and steps you down to a quit date you choose.",
       blocks: []
+    },
+    {
+      slug: "shield", title: "Shield", category: "product-design",
+      year: 2022, status: "archive", hero: "images/shield/hero.jpg",
+      scope: "Final year project",
+      summary: "A retrofit unit that captures microfibres from washing-machine wastewater, with no filter to replace.",
+      blocks: []
     }
   ],
 

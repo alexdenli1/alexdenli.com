@@ -122,6 +122,11 @@
       <nav class="p-exits" aria-label="Where next"><a class="ul" href="#/work/${esc(c.id)}">More ${esc(c.label.toLowerCase())}</a><a class="ul" href="#/archive">Archive</a></nav>${foot()}`;
       return { title: p.title, label: p.title, html: window.RELINQUIT.render(p, tail), after: () => window.RELINQUIT.wire() };
     }
+    if (p.slug === "shield" && window.SHIELD) {
+      const tail = `<a class="p-next" href="${link(next)}" ><small>Next project</small><span class="giant">${esc(next.title)}</span><img src="${esc(next.hero)}" alt=""></a>
+      <nav class="p-exits" aria-label="Where next"><a class="ul" href="#/work/${esc(c.id)}">More ${esc(c.label.toLowerCase())}</a><a class="ul" href="#/archive">Archive</a></nav>${foot()}`;
+      return { title: p.title, label: p.title, html: window.SHIELD.render(p, tail), after: () => window.SHIELD.wire() };
+    }
     if (p.slug === "rescue" && window.RESCUE) {
       const tail = `<a class="p-next" href="${link(next)}" ><small>Next project</small><span class="giant">${esc(next.title)}</span><img src="${esc(next.hero)}" alt=""></a>
       <nav class="p-exits" aria-label="Where next"><a class="ul" href="#/work/${esc(c.id)}">More ${esc(c.label.toLowerCase())}</a><a class="ul" href="#/archive">Archive</a></nav>${foot()}`;
