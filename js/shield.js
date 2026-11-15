@@ -335,7 +335,7 @@
       ec(el, p) { const k = p < .3 ? 0 : p < .62 ? 1 : 2; const st = $(".sh-stage", el); if (st.dataset.k != k) st.dataset.k = k; },
       forms(el, p) {
         const k = cl(p / .86) * 4, ims = $$(".ff", el), lis = $$(".sh-fl li", el);
-        ims.forEach((im, i) => { const d = Math.abs(k - i), o = cl(1.35 - d * 1.9); im.style.opacity = o.toFixed(3); im.style.transform = `translateY(${((k - i) * -26).toFixed(1)}px) scale(${(1 - Math.min(d, 1) * .05).toFixed(3)})`; });
+        ims.forEach((im, i) => { const d = Math.abs(k - i), o = cl(1.35 - d * 1.9); im.style.opacity = o.toFixed(3); im.style.transform = `translateY(${((k - i) * -12).toFixed(1)}px) scale(${(1 - Math.min(d, 1) * .05).toFixed(3)})`; });
         const a = Math.min(4, Math.max(0, Math.round(k - .1))); lis.forEach((l, i) => l.classList.toggle("on", i === a));
         $(".sh-fv", el).classList.toggle("fin", a === 4);
       },

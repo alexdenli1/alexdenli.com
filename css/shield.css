@@ -193,7 +193,7 @@
 .sh-fv { position: relative; height: 100%; min-height: 0; }
 .sh-drop { position: absolute; inset: 0; margin: auto; width: 62vh; height: 62vh; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #FFFFFF, #E1F0F0 62%, #D4E8E8); transition: box-shadow .6s; }
 .sh-fv.fin .sh-drop { box-shadow: 0 0 0 3px var(--tl); }
-.sh-fv .ff { position: absolute; inset: 0; margin: auto; height: 66vh; width: auto; max-width: 100%; opacity: 0; will-change: transform, opacity; }
+.sh-fv .ff { position: absolute; inset: 0; margin: auto; height: 54vh; width: auto; max-width: 100%; opacity: 0; will-change: transform, opacity; }
 
 /* ---------- testing ---------- */
 .sh-te { background: linear-gradient(180deg, #0B1B2B, #0E2438); }
