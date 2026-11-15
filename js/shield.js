@@ -250,14 +250,14 @@
     <section class="sh-dark sh-te " data-sec="Testing"><div class="sh-wrap">
       <header class="sh-h sm"><small>Testing &amp; electronics</small><h2>Proving the process</h2><p>Bench tests chose the electrode pair; a single microcontroller runs both cells and every safety function.</p></header>
       <div class="sh-tg"><div class="sh-tl"><div class="sh-chart rv"><p class="sh-k">Electrode testing · separation vs voltage</p>
-          <svg viewBox="0 0 900 440" role="img" aria-label="Estimated separation after 20 minutes against voltage. Aluminium and iron reaches 90 percent at 12 volts, iron and iron 75, aluminium and aluminium 60. The target is at least 70 percent.">
+          <svg viewBox="0 0 990 440" role="img" aria-label="Estimated separation after 20 minutes against voltage. Aluminium and iron reaches 90 percent at 12 volts, iron and iron 75, aluminium and aluminium 60. The target is at least 70 percent.">
             <rect x="90" y="${ty(100)}" width="760" height="${ty(70) - ty(100)}" fill="#6FD3D6" opacity=".14"/><text x="104" y="${ty(70) - 10}" class="tt tq">PDS TARGET ≥ 70 %</text>
             ${[0, 20, 40, 60, 80, 100].map((v) => `<line x1="90" y1="${ty(v)}" x2="850" y2="${ty(v)}" class="gl"/><text x="76" y="${ty(v) + 4}" text-anchor="end" class="tt">${v}%</text>`).join("")}
             ${volts.map((v, i) => `<text x="${tx(i)}" y="408" text-anchor="middle" class="tt">${v}</text>`).join("")}
             <path class="ln aa" d="${pth(test.aa)}" pathLength="1"/><path class="ln fe" d="${pth(test.fe)}" pathLength="1"/><path class="ln al" d="${pth(test.al)}" pathLength="1"/>
             ${test.al.map((v, i) => `<circle class="pp al" style="--i:${i}" cx="${tx(i)}" cy="${ty(v)}" r="5"/>`).join("")}
             <text x="${tx(7) + 14}" y="${ty(90) + 5}" class="lb al">Al–Fe 90%</text><text x="${tx(7) + 14}" y="${ty(75) + 5}" class="lb fe">Fe–Fe 75%</text><text x="${tx(7) + 14}" y="${ty(60) + 5}" class="lb aa">Al–Al 60%</text>
-            <text x="470" y="436" text-anchor="middle" class="tt">ESTIMATED SEPARATION AFTER 20 MIN · 1.5 L WATER + 3 G COLOURED FLOUR · ELECTRODES 75 MM APART</text></svg></div>
+            <text x="495" y="436" text-anchor="middle" class="tt">ESTIMATED SEPARATION AFTER 20 MIN · 1.5 L WATER + 3 G COLOURED FLOUR · ELECTRODES 75 MM APART</text></svg></div>
         <ul class="sh-ph">${[["t1", "Bench rig, 75 mm gap"], ["t2", "Al–Fe, low voltage"], ["t3", "Al–Fe, 10.5 V"], ["t4", "Al–Fe, 12 V: clear"]].map((t, i) => `<li class="rv" style="--i:${i}">${IMG(t[0] + ".webp", t[1])}<span>${t[1]}</span></li>`).join("")}</ul>
         <p class="sh-fn">1.5 L of water with 3 g of coloured flour; 20 minutes per test; separation estimated from turbidity and collected solids. Bench scale: full-size tests with real laundry water are the next step.</p></div>
         <div class="sh-tr"><div class="sh-res rv"><b>90%</b><span>estimated separation with the aluminium–iron pair at 12 V in 20 minutes, inside the 30-minute cycle.</span></div>

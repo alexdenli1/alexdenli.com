@@ -310,3 +310,17 @@
 .sh-mx td { padding: clamp(.8rem, 2.3vh, 1.6rem) .6rem; }
 .sh-cg .sh-op p { font-size: clamp(1.15rem, 1.55vw, 1.6rem); line-height: 1.45; }
 .sh-cg .sh-op { display: flex; flex-direction: column; justify-content: center; }
+
+/* testing: one grid so the right column starts level with the title and ends level with the footnote */
+.sh-te .sh-wrap { display: grid; grid-template-columns: minmax(0, 1.28fr) minmax(0, 1fr); column-gap: 1.4rem; row-gap: 1rem; align-items: stretch; }
+.sh-te .sh-tg, .sh-te .sh-tl, .sh-te .sh-tr { display: contents; }
+.sh-te .sh-wrap > .sh-h { grid-column: 1; grid-row: 1; margin: 0; align-self: end; }
+.sh-te .sh-chart { grid-column: 1; grid-row: 2; }
+.sh-te .sh-ph { grid-column: 1; grid-row: 3; }
+.sh-te .sh-tl > .sh-fn { grid-column: 1; grid-row: 4; margin: 0; align-self: center; font-size: 1rem; }
+.sh-te .sh-res { grid-column: 2; grid-row: 1; margin-top: 0; }
+.sh-te .sh-ctl { grid-column: 2; grid-row: 2 / 4; display: flex; flex-direction: column; justify-content: center; }
+.sh-te .sh-two { grid-column: 2; grid-row: 4; }
+.sh-te .sh-chart svg { height: 40vh; }
+.sh-te .sh-ctl .sh-cs { zoom: 1.3; }
+.sh-te .sh-ctl .sh-k { font-size: 1.15rem; margin-bottom: 1.2rem; }
