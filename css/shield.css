@@ -319,8 +319,10 @@
 .sh-te .sh-ph { grid-column: 1; grid-row: 3; }
 .sh-te .sh-tl > .sh-fn { grid-column: 1; grid-row: 4; margin: 0; align-self: center; font-size: 1rem; }
 .sh-te .sh-res { grid-column: 2; grid-row: 1; margin-top: 0; }
-.sh-te .sh-ctl { grid-column: 2; grid-row: 2 / 4; display: flex; flex-direction: column; justify-content: center; }
-.sh-te .sh-two { grid-column: 2; grid-row: 4; }
-.sh-te .sh-chart svg { height: 40vh; }
-.sh-te .sh-ctl .sh-cs { zoom: 1.3; }
+.sh-te .sh-ctl { grid-column: 2; grid-row: 2; display: flex; flex-direction: column; justify-content: center; }
+.sh-te .sh-two { grid-column: 2; grid-row: 3 / 5; }
+.sh-te .sh-chart svg { height: 37vh; }
+.sh-te .sh-ctl .sh-cs { zoom: 1.1; }
+.sh-te .mcu { padding: 1rem .5rem; } .sh-te .mcu em { font-size: .8rem; line-height: 1.3; overflow-wrap: anywhere; } .sh-te .mcu em small { font-size: .7rem; }
+.sh-te .sh-two > div { display: flex; flex-direction: column; justify-content: center; }
 .sh-te .sh-ctl .sh-k { font-size: 1.15rem; margin-bottom: 1.2rem; }

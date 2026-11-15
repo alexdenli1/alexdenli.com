@@ -263,7 +263,7 @@
         <div class="sh-tr"><div class="sh-res rv"><b>90%</b><span>estimated separation with the aluminium–iron pair at 12 V in 20 minutes, inside the 30-minute cycle.</span></div>
           <div class="sh-ctl rv"><p class="sh-k">Control system</p>
             <div class="sh-cs"><ul class="in">${[["Float switches ×4", "upper + safety, per cell"], ["Inlet flow sensor", "detects machine drain"], ["Drawer sensor + full float", ""], ["Override button", "child-safe cover"]].map((x) => `<li><b>${x[0]}</b>${x[1] ? `<span>${x[1]}</span>` : ""}</li>`).join("")}</ul>
-              <div class="mcu"><b>Microcontroller</b><span>PIC18F45K20 · 3.3 V</span><em>24 V SELV adapter<small>external · regulators 12 V / 5 V</small></em></div>
+              <div class="mcu"><b>Microcontroller</b><span>PIC18F45K20 · 3.3 V</span><em>24 V SELV adapter<small>external · 12 / 5 V</small></em></div>
               <ul class="out">${[["Solenoid valves ×6", "inlet · decant · sludge"], ["Drain pump", "12 V, lifts to standpipe"], ["Electrode driver", "constant current, reversing"], ["Light bar + lock", "5 LEDs · drawer solenoid"]].map((x) => `<li><b>${x[0]}</b><span>${x[1]}</span></li>`).join("")}</ul></div></div>
           <div class="sh-two"><div class="rv"><h3>Fail-safe</h3><p>A second float drains a cell if a valve sticks; a passive overflow means the machine pump is never blocked.</p></div><div class="rv"><h3>Child-safe</h3><p>Drain-now button under a slide cover; the drawer locks while sludge is released.</p></div></div></div></div></div></section>
 
