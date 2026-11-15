@@ -201,7 +201,7 @@
         <h1 class="sh-title" aria-label="Shield">${MARK(78)}<span class="sh-word" aria-hidden="true">${first}</span></h1>
         <p class="sh-lead">${esc("A retrofit electrocoagulation unit that captures microfibres from washing-machine wastewater, before they reach the sea.")}</p>
         <ul class="sh-chips"><li>No filters to replace</li><li>Fits any UK machine</li><li>~90% separation in test</li></ul></div>
-      <p class="sh-tagl">Protecting the ocean, one wash at a time.</p><p class="sh-sc">Scroll</p></section>
+      <p class="sh-sc">Scroll</p></section>
 
     <section class="sh-pin sh-dark sh-prob " data-pin="prob" data-sec="Research" style="height:330vh"><div class="sh-stage">
       <header class="sh-h"><small>Research</small><h2>The problem with every wash</h2><p>Synthetic clothes shed plastic fibres in every wash. They are too small for the machine to catch and too small for the treatment works to stop reliably.</p></header>
