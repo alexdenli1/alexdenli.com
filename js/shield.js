@@ -203,7 +203,7 @@
         <ul class="sh-chips"><li>No filters to replace</li><li>Fits any UK machine</li><li>~90% separation in test</li></ul></div>
       <p class="sh-tagl">Protecting the ocean, one wash at a time.</p><p class="sh-sc">Scroll</p></section>
 
-    <section class="sh-pin sh-dark sh-prob sh-wv" data-pin="prob" data-sec="Research" style="height:330vh"><div class="sh-stage">
+    <section class="sh-pin sh-dark sh-prob " data-pin="prob" data-sec="Research" style="height:330vh"><div class="sh-stage">
       <header class="sh-h"><small>Research</small><h2>The problem with every wash</h2><p>Synthetic clothes shed plastic fibres in every wash. They are too small for the machine to catch and too small for the treatment works to stop reliably.</p></header>
       <div class="sh-stats" style="opacity:calc(1 - ${H(.46, .56)});transform:translateY(calc(${H(.46, .56)} * -40px))">${stats.map((s, i) => `<div class="sh-st" style="--i:${i}"><i style="transform:scaleX(${H(.02 + i * .05, .14 + i * .05)})"></i><b data-to="${s[0]}" data-dec="${s[1]}" data-pre="${s[2]}" data-suf="${esc(s[3])}">0${esc(s[3])}</b><span>${esc(s[4])}</span></div>`).join("")}</div>
       <div class="sh-jr" data-n="0" style="opacity:${H(.5, .6)}"><p class="sh-k">How a fibre reaches the sea</p>
@@ -212,28 +212,21 @@
         <ol>${journey.map((j, i) => `<li class="nd"><span class="ring"><svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2">${ICON[j[0]]}</svg></span><b>${esc(j[1])}</b><span>${esc(j[2])}</span></li>`).join("")}</ol></div>
     </div></section>
 
-    <section class="sh-pin sh-dark sh-scale" data-pin="scale" data-sec="Research" style="height:240vh"><div class="sh-stage">
-      <header class="sh-h"><small>Research</small><h2>How small is a microfibre?</h2></header>
-      <div class="sh-ruler">${ruler()}</div>
-      <p class="sh-call" style="${fade(.78, .92, 20)}">A fine mesh has gaps wider than the fibre is thick. Clumped into flocs, the fibres can no longer slip through.</p>
-      <p class="sh-fn">Logarithmic scale · fibre dimensions from Napper &amp; Thompson (2016)</p>
-    </div></section>
-
-    <section class="sh-pap sh-in sh-wv" data-sec="Research"><div class="sh-wrap">
+    <section class="sh-pap sh-in " data-sec="Research"><div class="sh-wrap">
       
       <div class="sh-ig"><div class="sh-col"><header class="sh-h sm"><small>Research</small><h2>Inside the washing machine</h2><p>How and when water leaves the machine, and where a device can live in a real kitchen, set Shield’s size, connection and timing.</p></header><div class="sh-card rv sh-mc">${machine()}<ul class="sh-figs"><li><b>≈ 50 L</b>drained per cycle</li><li><b>2</b>inlet solenoid valves</li><li><b>Ø 19 mm</b>drain hose, outside dia.</li></ul></div></div>
         <div class="sh-col"><div class="sh-card rv sh-dc">${drains()}</div>
           <div class="sh-card rv sh-pc"><p class="sh-k">Where can a retrofit device live?</p><div class="sh-plans">${[["A · Behind the machine", "Semester 2 starting point", "Machine must be pulled out"], ["B · Beside the machine", "Chosen: slim 150 mm tower", "Front access, no moving"], ["C · In an adjacent unit", "Same tower, fitted in a 300 mm unit", "Inside sink unit"]].map((x, i) => `<figure class="${i === 1 ? "pick" : ""}">${plan(i)}<figcaption><b>${x[0]}</b><span>${x[1]}</span></figcaption></figure>`).join("")}</div></div>
           <div class="sh-ins rv"><p class="sh-k">Key insights</p><ul><li>Connect on the drain hose, after the pump: no changes to the machine or plumbing.</li><li>Handle ~50 L per cycle, arriving in separate drains 20–45 minutes apart, and never block the pump.</li><li>Sit beside the machine, 150 mm wide, so the user can reach it without moving anything.</li></ul></div></div></div></div></section>
 
-    <section class="sh-pin sh-dark sh-ecs sh-wv" data-pin="ec" data-sec="Research" style="height:340vh"><div class="sh-stage" data-k="0">
+    <section class="sh-pin sh-dark sh-ecs " data-pin="ec" data-sec="Research" style="height:340vh"><div class="sh-stage" data-k="0">
       <header class="sh-h"><small>Research</small><h2>Separating fibres without a filter</h2><p>Electrocoagulation generates a coagulant from metal plates, clumping fibres and dirt into flocs that settle out of still water.</p></header>
       <div class="sh-ecg"><div class="sh-ecv">${ecCell()}</div>
         <div class="sh-ecr"><ol class="sh-ecs-l">${[["Dose", "Sacrificial anode releases metal ions"], ["Destabilise & flocculate", "Hydroxides neutralise charge; fibres clump"], ["Separate", "Flocs settle (or float on H₂ bubbles)"]].map((s, i) => `<li><i>${i + 1}</i><div><b>${s[0]}</b><span>${s[1]}</span></div></li>`).join("")}</ol>
           <div class="sh-rx"><p class="sh-k">Electrode reactions</p><p>Anode <code>Al → Al³⁺ + 3e⁻</code></p><p>Cathode <code>2H₂O + 2e⁻ → H₂ + 2OH⁻</code></p><p>Bulk <code>Al³⁺ + 3OH⁻ → Al(OH)₃</code></p><p class="sh-note">No chemicals added: the coagulant is generated in place from the plates.</p><p class="sh-warn">Needs still water and time.</p></div></div></div>
     </div></section>
 
-    <section class="sh-pap sh-in sh-wv" data-sec="Research"><div class="sh-wrap">
+    <section class="sh-pap sh-in " data-sec="Research"><div class="sh-wrap">
       <header class="sh-h sm"><small>Research</small><h2>Why electrocoagulation</h2></header>
       <div class="sh-cg"><div class="sh-card rv sh-map"><p class="sh-k">Market map</p><div class="sh-mapbox"><i class="vx"></i><i class="hx"></i><span class="ax t">On the drain line</span><span class="ax b">In the drum</span><span class="ax l">← Consumable filter / bag</span><span class="ax r">No consumables →</span>
           ${MAP.map((m, i) => `<span class="spt" style="left:${m[2] * 100}%;top:${m[3] * 100}%;--i:${i}"><i></i><b>${m[0]}</b><em>${m[1]}</em></span>`).join("")}<span class="spt me" style="left:92%;top:7%"><i></i><b>Shield</b><em>electrocoagulation</em></span></div></div>
@@ -254,7 +247,7 @@
         <div class="sh-fv"><i class="sh-drop"></i>${FORMS.map((f, i) => IMG(`form-${i + 1}.webp`, `Form ${i + 1}: ${f[0]}. ${f[1]}`, "ff", false)).join("")}<span class="sh-fcap"></span></div></div>
     </div></section>
 
-    <section class="sh-dark sh-te sh-wv" data-sec="Testing"><div class="sh-wrap">
+    <section class="sh-dark sh-te " data-sec="Testing"><div class="sh-wrap">
       <header class="sh-h sm"><small>Testing &amp; electronics</small><h2>Proving the process</h2><p>Bench tests chose the electrode pair; a single microcontroller runs both cells and every safety function.</p></header>
       <div class="sh-tg"><div class="sh-tl"><div class="sh-chart rv"><p class="sh-k">Electrode testing · separation vs voltage</p>
           <svg viewBox="0 0 900 440" role="img" aria-label="Estimated separation after 20 minutes against voltage. Aluminium and iron reaches 90 percent at 12 volts, iron and iron 75, aluminium and aluminium 60. The target is at least 70 percent.">
@@ -274,24 +267,24 @@
               <ul class="out">${[["Solenoid valves ×6", "inlet · decant · sludge"], ["Drain pump", "12 V, lifts to standpipe"], ["Electrode driver", "constant current, reversing"], ["Light bar + lock", "5 LEDs · drawer solenoid"]].map((x) => `<li><b>${x[0]}</b><span>${x[1]}</span></li>`).join("")}</ul></div></div>
           <div class="sh-two"><div class="rv"><h3>Fail-safe</h3><p>A second float drains a cell if a valve sticks; a passive overflow means the machine pump is never blocked.</p></div><div class="rv"><h3>Child-safe</h3><p>Drain-now button under a slide cover; the drawer locks while sludge is released.</p></div></div></div></div></div></section>
 
-    <section class="sh-pin sh-pap sh-ex sh-wv" data-pin="parts" data-sec="Design" style="height:420vh"><div class="sh-stage">
+    <section class="sh-pin sh-pap sh-ex " data-pin="parts" data-sec="Design" style="height:420vh"><div class="sh-stage">
       <header class="sh-h sm"><small>Design</small><h2>Details</h2><p>850 × 600 × 150 mm. Everything the user touches is on the front or top; the hoses connect once at the back.</p></header>
       <div class="sh-eg"><div class="sh-ev2"><div class="sh-exw">${IMG("exploded.webp", "Exploded view of Shield: top cap, light bar, electrode cassettes, twin cells, divider, electronics bay, manifold, hopper base, ports, pump and valves, mesh basket and drawer", "", false)}${PP.map((q, i) => `<span class="spt" data-i="${i}" style="left:${q[0]}%;top:${q[1]}%">${i + 1}</span>`).join("")}</div></div>
         <div class="sh-pr"><p class="sh-now"><i>01</i><b>${PARTS[0]}</b></p><ol class="sh-pl">${PARTS.map((n, i) => `<li><i>${i + 1}</i>${n}</li>`).join("")}</ol></div></div>
     </div></section>
 
-    <section class="sh-pin sh-mist sh-tw sh-wv" data-pin="steps" data-sec="Design" style="height:440vh"><div class="sh-stage"><div class="sh-twg" data-s="0">
+    <section class="sh-pin sh-mist sh-tw " data-pin="steps" data-sec="Design" style="height:440vh"><div class="sh-stage"><div class="sh-twg" data-s="0">
       <div class="sh-twl"><header class="sh-h sm"><small>Design</small><h2>How Shield works</h2><p>Each drain is held in its own still cell. Five alternating aluminium and iron plates generate the coagulant; after 30 minutes the floc settles into a hopper base. Clear water is decanted from 20% height and pumped to the standpipe, then the floating and settled floc drop together into a drawer.</p></header>
         <ol class="sh-sl">${STEPS.map((s, i) => `<li><i>0${i + 1}</i><div><b>${s[0]}</b><span>${s[1]}</span><em>${s[2]}</em></div></li>`).join("")}</ol></div>
       <div class="sh-twv">${tower()}</div></div></div></section>
 
-    <section class="sh-pin sh-dark sh-dt sh-wv" data-pin="details" data-sec="Design" style="height:440vh"><div class="sh-stage">
+    <section class="sh-pin sh-dark sh-dt " data-pin="details" data-sec="Design" style="height:440vh"><div class="sh-stage">
       <header class="sh-h sm"><small>Design</small><h2>Made to live in a kitchen</h2></header>
       <div class="sh-trk">${[["lightbar", "Light bar", "Five segments show progress; the bar flashes red when the drawer is full."], ["drawer", "Front drawer", "A reusable 100 µm mesh basket holds the floc as a damp cake for a prepaid return pouch."], ["lift", "Lift-out electrodes", "Plate cassettes pull straight up for replacement every 2–5 years."], ["home", "In the home", "Matches the machine’s height and depth; only the front edge shows."]].map((d, i) => `<figure><div class="im">${IMG(d[0] + ".webp", d[1] + ": " + d[2], "", i > 0)}</div><figcaption><i>0${i + 1}</i><b>${d[1]}</b><span>${d[2]}</span></figcaption></figure>`).join("")}</div>
       <div class="sh-bar"><i style="transform:scaleX(var(--p))"></i></div>
     </div></section>
 
-    <section class="sh-pap sh-bz sh-wv" data-sec="Business"><div class="sh-wrap">
+    <section class="sh-pap sh-bz " data-sec="Business"><div class="sh-wrap">
       <header class="sh-h sm"><small>Business</small><h2>Cost analysis</h2><p>Shield costs more up front than a cartridge filter, but never needs another purchase.</p></header>
       <div class="sh-card rv sh-cost"><p class="sh-k">Where £200 goes · cost per unit at 20,000 units a year</p>
         <div class="bar">${costs.map((c, i) => `<i style="--w:${c[1] / 2}%;--c:${c[2]};--i:${i}"></i>`).join("")}</div>
@@ -309,7 +302,7 @@
           <div class="sh-two"><div class="rv"><h3>Lower the cost</h3><p>Components are 54% of cost, mostly solenoid valves: bulk pricing and 2-channel relays bring it down, and a die-cut card insert can replace foam packaging.</p></div><div class="rv"><h3>Close the loop</h3><p>Prepaid return pouches send fibre cake for recovery and spent plates for metal recycling, building a long-term service relationship.</p></div></div></div></div>
       <p class="sh-fn">Cartridge filter based on published pricing (≈ €100 in year one, €45 a year after), converted at about €1 = £0.85. Processing costed with the Swift &amp; Booker method.</p></div></section>
 
-    <section class="sh-end sh-dark sh-wv" data-sec="Overview"><div class="sh-ei"><figure class="rv sh-poster">${IMG("hero.jpg", "The Shield poster: Protecting the ocean, one wash at a time. No filters to buy or replace, about 90 percent fibre separation in test, 150 mm wide and fitting beside any machine.")}</figure>
+    <section class="sh-end sh-dark " data-sec="Overview"><div class="sh-ei"><figure class="rv sh-poster">${IMG("hero.jpg", "The Shield poster: Protecting the ocean, one wash at a time. No filters to buy or replace, about 90 percent fibre separation in test, 150 mm wide and fitting beside any machine.")}</figure>
       <p class="sh-cred">Final year design project · Product design · Alex Denli</p></div></section>
     ${tail}</article>`;
   }

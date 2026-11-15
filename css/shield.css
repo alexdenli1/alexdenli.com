@@ -16,7 +16,6 @@
 .sh-fix span:not(:empty)::before { content: "\00b7"; margin: 0 .9rem; opacity: .5; }
 
 /* waves between worlds: the water edge slides with the scroll */
-.sh-wv::before { content: ""; position: absolute; left: 0; right: 0; top: 1px; height: 56px; transform: translateY(-100%); background: var(--bgc); z-index: 3; pointer-events: none;
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 56'%3E%3Cpath d='M0 56V30Q150 2 300 30T600 30T900 30T1200 30V56Z'/%3E%3C/svg%3E") 0 0 / 1200px 56px repeat-x;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 56'%3E%3Cpath d='M0 56V30Q150 2 300 30T600 30T900 30T1200 30V56Z'/%3E%3C/svg%3E") 0 0 / 1200px 56px repeat-x;
   -webkit-mask-position: calc(var(--sy, 0) * -.4px) 0; mask-position: calc(var(--sy, 0) * -.4px) 0; }
@@ -119,7 +118,7 @@
 .sh-figs { list-style: none; margin: 1rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; border-top: 1px solid #D9E1E1; padding-top: 1rem; font-size: 1rem; color: var(--soft); }
 .sh-figs b { display: block; font-size: 1.9rem; letter-spacing: -.03em; color: var(--teal); }
 .sh-dc svg { display: block; width: 100%; height: 27vh; }
-.sh-dc .gl, .sh-co .gl, .sh-chart .gl { stroke: #D3DADC; stroke-dasharray: 3 5; } .sh-dc .sbr { fill: #1FA2A8; transform-box: fill-box; transform-origin: 50% 100%; transform: scaleY(0); transition: transform 1s var(--ease) calc(var(--i) * .22s + .2s); } .sh-dc.in .br { transform: none; }
+.sh-dc .gl, .sh-co .gl, .sh-chart .gl { stroke: #D3DADC; stroke-dasharray: 3 5; } .sh-dc .sbr { fill: #1FA2A8; transform-box: fill-box; transform-origin: 50% 100%; transform: scaleY(0); transition: transform 1s var(--ease) calc(var(--i) * .22s + .2s); } .sh-dc.in .sbr, .calm .sh-dc .sbr { transform: none; }
 .sh-dc .arc { fill: none; stroke: var(--rust); stroke-width: 2; stroke-dasharray: 5 5; opacity: 0; transition: opacity .6s 1s; } .sh-dc.in .arc { opacity: 1; } .sh-dc .rs2 { fill: var(--rust); font-size: 15px; font-weight: 600; opacity: 0; transition: opacity .6s 1.1s; } .sh-dc.in .rs2 { opacity: 1; }
 .sh-plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 0; }
 .sh-plans figure { margin: 0; padding: .5rem; border-radius: 14px; border: 2px solid transparent; }
