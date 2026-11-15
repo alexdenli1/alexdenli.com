@@ -178,9 +178,9 @@ window.SITE = {
   ],
 
   gallery: [
-    { src: "images/xfly/hero.jpg", project: "xfly" }, { src: "images/adverts/hero.jpg", project: "adverts" }, { src: "images/signature-logo/hero.jpg", project: "signature-logo" },
-    { src: PH(4), project: "ball-cabinet" }, { src: "images/rescue/hero-1920.jpg", project: "rescue" }, { src: PH(13), project: "brand-identity" },
-    { src: PH(6), project: "signature-logo" }, { src: PH(2), project: "adverts" }, { src: PH(3), project: "xfly" },
+    { src: "images/shield/hero.jpg", project: "shield" }, { src: "images/relinquit/hero.jpg", project: "relinquit" }, { src: PH(4), project: "ball-cabinet" },
+    { src: "images/shield/hero-render.webp", project: "shield" }, { src: PH(13), project: "brand-identity" }, { src: "images/relinquit/hero-case.webp", project: "relinquit" },
+    { src: "images/shield/lift.webp", project: "shield" }, { src: PH(6), project: "ball-cabinet" }, { src: "images/relinquit/open.webp", project: "relinquit" },
     { src: PH(14), project: "brand-identity" }
   ],
 

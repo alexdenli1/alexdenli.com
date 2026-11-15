@@ -30,7 +30,8 @@
   const ZAP = `<svg class="zap" aria-hidden="true"><rect width="100%" height="100%" pathLength="1"/><rect width="100%" height="100%" pathLength="1"/></svg>`;
 
   function home() {
-    const n = S.projects.length;
+    const HP = S.projects.filter((p) => p.status === "current" || p.featured);
+    const n = HP.length;
     // Every piece: the image, then below it the name (large), the category and year, and one line about the project.
     const piece = (p, i) => {
       const t = SLOTS[i % SLOTS.length];
@@ -40,9 +41,9 @@
           <span class="piece-cap"><span class="piece-name">${esc(p.title)}</span><span class="piece-sub"><span class="piece-go">Let's go <i aria-hidden="true">&rarr;</i></span><span class="piece-meta">${esc(p.scope || cat(p.category).label)}, ${esc(p.year)}</span>
           <span class="piece-line">${esc(p.line || p.summary || "")}</span></span></span></span></a>`;
     };
-    const slides = S.projects.map(piece).join("");
-    const rows = S.projects.map((p, i) => piece(p, i).replace('loading="eager"', 'loading="lazy"')).join("");
-    const index = S.projects.map((p) => `<li><a href="${link(p)}" data-slug="${esc(p.slug)}" class="${p.hidden ? "lost" : ""}${found.has(p.slug) ? " got" : ""}">
+    const slides = HP.map(piece).join("");
+    const rows = HP.map((p, i) => piece(p, i).replace('loading="eager"', 'loading="lazy"')).join("");
+    const index = HP.map((p) => `<li><a href="${link(p)}" data-slug="${esc(p.slug)}" class="${p.hidden ? "lost" : ""}${found.has(p.slug) ? " got" : ""}">
       <b>${p.hidden && !found.has(p.slug) ? "·····" : esc(p.title)}</b></a></li>`).join("");
     return {
       title: "", label: "Home", scroll: 0,
