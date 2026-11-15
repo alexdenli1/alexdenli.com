@@ -362,6 +362,19 @@
       fix.classList.toggle("on", !!show); if (show) fix.lastElementChild.textContent = cur.dataset.sec;
     };
     let raf = 0;
+    const fit = () => {
+      $$(".sh-pin:not(.sh-dt) .sh-stage", root).forEach((st) => {
+        const kids = [...st.children]; kids.forEach((k) => (k.style.zoom = ""));
+        const cs = getComputedStyle(st), avail = st.clientHeight - parseFloat(cs.paddingBottom);
+        const need = Math.max(...[...st.querySelectorAll("*")].filter((e) => !e.closest("svg") || e.tagName === "svg").map((k) => k.getBoundingClientRect().bottom)) - st.getBoundingClientRect().top;
+        let z = Math.max(.5, Math.min(1, avail / need));
+        if (z < .995) { kids.forEach((k) => (k.style.zoom = z.toFixed(3)));
+          const n2 = Math.max(...[...st.querySelectorAll("*")].filter((e) => !e.closest("svg") || e.tagName === "svg").map((k) => k.getBoundingClientRect().bottom)) - st.getBoundingClientRect().top;
+          if (n2 > avail + 1) { z = Math.max(.5, z * avail / n2); kids.forEach((k) => (k.style.zoom = z.toFixed(3))); } }
+      });
+    };
+    fit(); addEventListener("resize", fit); off.push(() => removeEventListener("resize", fit));
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
     const tick = () => {
       raf = 0;
       if (!root.isConnected) { off.forEach((f) => f()); off = []; return; }
