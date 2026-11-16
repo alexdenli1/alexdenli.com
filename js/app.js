@@ -42,6 +42,8 @@
       <ol class="ledger-list">${rows}</ol></div></section>`;
   }
 
+  const catOf = (p) => { const c = S.categories.find((x) => x.id === p.category); return c ? c.label : ""; };
+
   function home() {
     const HP = ALL();
     const n = HP.length;
@@ -82,22 +84,10 @@
           <p class="brands-sub">Designing for, and working alongside, some of golf’s most trusted names.</p></div>
         <ul class="wheel">${S.brands.slice(0, 12).map((b) => `<li${b.size ? ` style="--lw:${b.size}"` : ""}><img src="${esc(b.logo)}" alt="${esc(b.name)}" draggable="false"></li>`).join("")}</ul>
       </div></section>` : ""}
-      <div class="work" style="--n:${Math.max(1, n)}">
-        <nav class="field-index" aria-label="Projects"><ol>${index}</ol></nav>
-        <section class="pintro" aria-label="Projects"><div class="pintro-stage">
-          <h2 class="pintro-word">Projects</h2><canvas class="pintro-cover" aria-hidden="true"></canvas><div class="pintro-dark" aria-hidden="true"></div>
-          ${slides}
-        </div></section>
-        <section class="field" aria-label="Projects list">${rows}</section>
-      </div>
-      <section class="gallery" aria-label="Gallery of all work"><div class="gallery-pin">
-        <h2 class="gallery-head">Let’s explore and discover more</h2>
-        <div class="gallery-band"><div class="gallery-track">${(S.gallery || []).slice(0, 10).map((g) => { const p = S.projects.find((x) => x.slug === g.project);
-          const im = `<img src="${esc(g.src)}" alt="${esc(p ? p.title : "")}" loading="lazy" draggable="false">`;
-          return p ? `<a href="${link(p)}" aria-label="${esc(p.title)}">${im}</a>` : `<span class="gallery-item">${im}</span>`; }).join("")}</div></div>
-      </div></section>
+      ${window.HOMEX ? window.HOMEX.dial(HP, catOf) + window.HOMEX.glass(HP, catOf) : ""}
       ${ledger()}
       <section class="home-end"><a class="giant" href="#/contact">Contact</a></section>${foot()}`,
+      after: () => window.HOMEX && window.HOMEX.wire(),
     };
   }
 
