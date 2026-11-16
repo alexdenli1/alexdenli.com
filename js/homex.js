@@ -9,7 +9,7 @@
 
   function dial(list, cat) {
     const spokes = list.map((p, i) => `<button class="hx-sp${i ? "" : " on"}" style="--a:${(i * STEP).toFixed(2)}deg" data-i="${i}"
-      aria-label="Show ${esc(p.title)}"><span class="hx-th"><img src="${esc(p.hero)}" alt="" loading="lazy" draggable="false"></span></button>`).join("");
+      aria-label="Show ${esc(p.title)}"><span class="hx-th${p.cut ? " cut" : ""}"><img src="${esc(p.thumb || p.hero)}" alt="" loading="lazy" draggable="false"></span></button>`).join("");
     const panels = list.map((p, i) => `<article class="hx-pn${i ? "" : " on"}" data-i="${i}" ${i ? 'aria-hidden="true"' : ""}>
       <figure class="hx-bn"><img src="${esc(p.hero)}" alt="${esc(p.title)}" loading="${i ? "lazy" : "eager"}" draggable="false"></figure>
       <div class="hx-tx"><p class="hx-meta"><span>${esc(cat(p))}</span><span>${esc(p.year)}</span>${p.study ? "<span>Case study</span>" : ""}</p>

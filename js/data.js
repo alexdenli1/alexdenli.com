@@ -13,6 +13,7 @@
      title     shown everywhere
      category  one of the ids in "categories" below
      year      e.g. 2026, or a range like "2022 – now" (the archive sorts by the first number in it)
+     thumb     optional cut-out image for the home dial; cut: true drops the circle and adds a shadow
      study     true marks a finished university case study (shown as a tag in the full list)
      status / featured are no longer used for routing; every project appears everywhere, newest first
      hidden    true = on the home page visitors have to find it with the cursor
@@ -66,7 +67,7 @@ window.SITE = {
   projects: [
     {
       slug: "xfly", title: "XFLY", category: "product-design",
-      year: 2026, status: "current", hero: "images/xfly/hero.jpg",
+      year: 2026, status: "current", thumb: "images/xfly/thumb.webp", cut: true, hero: "images/xfly/hero.jpg",
       line: "A golf launch monitor at a competitive price, with a Bluetooth app, for amateur to professional golfers.",
       process: [{ title: "Research", text: "Placeholder: what golfers and competing monitors showed." }, { title: "Design", text: "Placeholder: the directions explored and the one chosen." }, { title: "Prototype", text: "Placeholder: samples, testing and what changed." }, { title: "Final product", text: "Placeholder: what shipped, and the Bluetooth app." }],
       summary: "A golf launch monitor at a competitive price, with a Bluetooth app, for amateur to professional golfers.",
@@ -98,7 +99,7 @@ window.SITE = {
     },
     {
       slug: "signature-logo", title: "Signature Logo Collection", category: "graphic-design",
-      year: "2025 – now", status: "current", hero: "images/signature-logo/hero.jpg",
+      year: "2025 – now", status: "current", thumb: "images/signature-logo/thumb.webp", cut: true, hero: "images/signature-logo/hero.jpg",
       process: [{ title: "Range", text: "Placeholder: which products carry a club's logo." }, { title: "Artwork", text: "Placeholder: preparing each club's logo for every product." }, { title: "Brochure", text: "Placeholder: laying out the range and price list." }, { title: "Launch", text: "Placeholder: how it reached golf clubs." }],
       summary: "A fully custom logo range of promotional products for golf clubs.",
       blocks: [
