@@ -122,7 +122,7 @@ window.SITE = {
     },
     {
       slug: "ball-cabinet", title: "Ball Cabinet", category: "product-design",
-      year: 2025, status: "archive", hero: PH(4),
+      year: 2025, status: "archive", featured: true, hero: PH(4),
       process: [{ title: "Research", text: "Placeholder: shipping, storage and what the old cabinet cost." }, { title: "Sketches", text: "Placeholder: flat-pack options explored." }, { title: "Final product", text: "Placeholder: the cabinet that ships efficiently." }],
       summary: "Redesigning a flat-pack golf ball cabinet for efficient shipping, logistics and storage, for a top-selling product.",
       blocks: [
@@ -136,7 +136,7 @@ window.SITE = {
     },
     {
       slug: "brand-identity", title: "Brand Identity", category: "graphic-design",
-      year: 2025, status: "archive", hero: PH(13),
+      year: 2025, status: "archive", featured: true, hero: PH(13),
       process: [{ title: "Idea", text: "Placeholder: what the identity needed to say." }, { title: "Logo", text: "Placeholder: marks and how they were refined." }, { title: "System", text: "Placeholder: colour, type and where they are used." }],
       summary: "Placeholder: logos, colour and type systems.",
       blocks: [
@@ -185,10 +185,11 @@ window.SITE = {
   ],
 
   gallery: [
-    { src: "images/shield/hero.jpg", project: "shield" }, { src: "images/relinquit/hero.jpg", project: "relinquit" }, { src: PH(4), project: "ball-cabinet" },
-    { src: "images/shield/hero-render.webp", project: "shield" }, { src: PH(13), project: "brand-identity" }, { src: "images/relinquit/hero-case.webp", project: "relinquit" },
-    { src: "images/shield/lift.webp", project: "shield" }, { src: PH(6), project: "ball-cabinet" }, { src: "images/relinquit/open.webp", project: "relinquit" },
-    { src: PH(14), project: "brand-identity" }
+    { src: "images/aeropress/hero.jpg", project: "aeropress" }, { src: "images/shield/hero.jpg", project: "shield" }, { src: "images/relinquit/hero.jpg", project: "relinquit" },
+    { src: "images/shield/hero-render.webp", project: "shield" }, { src: "images/aeropress/gesture.webp", project: "aeropress" }, { src: "images/relinquit/hero-case.webp", project: "relinquit" },
+    { src: "images/shield/lift.webp", project: "shield" }, { src: "images/aeropress/head.webp", project: "aeropress" }, { src: "images/relinquit/open.webp", project: "relinquit" },
+    { src: "images/shield/drawer.webp", project: "shield" }
   ],
+
 
 };
