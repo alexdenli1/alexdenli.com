@@ -1,23 +1,11 @@
-/* Home, below the brands: a half-screen dial of projects, then a shattered-glass wall of all the work. */
+/* Home, below the brands: a half-screen dial of projects, then a mosaic of all the work. */
 (() => {
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const STEP = 34;           // degrees between projects on the dial
   const PER = 62;            // vh of scroll per project
 
-  /* Nine pieces of broken glass. Four long cracks across the pane, tilted so nothing lines up.
-     poly: the cut, in container %.  b: the piece's bounding box, so each image fills its own shard. */
-  const P = [
-    { poly: "0% 0%, 31% 0%, 28.9% 30.5%, 0% 34%", b: [0, 0, 31, 34], c: [15, 16] },
-    { poly: "31% 0%, 62% 0%, 64.4% 26.3%, 28.9% 30.5%", b: [28.9, 0, 35.5, 30.5], c: [46.6, 14.2] },
-    { poly: "62% 0%, 100% 0%, 100% 22%, 64.4% 26.3%", b: [62, 0, 38, 26.3], c: [81.6, 12.1] },
-    { poly: "0% 34%, 28.9% 30.5%, 26.4% 65.4%, 0% 68%", b: [0, 30.5, 28.9, 37.5], c: [13.8, 49.5] },
-    { poly: "28.9% 30.5%, 64.4% 26.3%, 67.5% 61.3%, 26.4% 65.4%", b: [26.4, 26.3, 41.1, 39.1], c: [46.8, 45.9] },
-    { poly: "64.4% 26.3%, 100% 22%, 100% 58%, 67.5% 61.3%", b: [64.4, 22, 35.6, 39.3], c: [83, 41.9] },
-    { poly: "0% 68%, 26.4% 65.4%, 24% 100%, 0% 100%", b: [0, 65.4, 26.4, 34.6], c: [12.6, 83.4] },
-    { poly: "26.4% 65.4%, 67.5% 61.3%, 71% 100%, 24% 100%", b: [24, 61.3, 47, 38.7], c: [47.2, 81.7] },
-    { poly: "67.5% 61.3%, 100% 58%, 100% 100%, 71% 100%", b: [67.5, 58, 32.5, 42], c: [84.6, 79.8] }
-  ];
-  const CRACKS = "M31 0 L28.9 30.5 L26.4 65.4 L24 100 M62 0 L64.4 26.3 L67.5 61.3 L71 100 M0 34 L28.9 30.5 L64.4 26.3 L100 22 M0 68 L26.4 65.4 L67.5 61.3 L100 58 M28.9 30.5 L46 12 M67.5 61.3 L88 76 M26.4 65.4 L11 92 M64.4 26.3 L84 9";
+  /* The mosaic below the dial: twelve columns, varied spans, offsets and crops so no two tiles match. */
+  const M = [[5, 0, "4 / 3"], [4, 7, "1 / 1"], [3, 2, "3 / 4"], [3, 0, "3 / 4"], [5, 6, "4 / 3"], [4, 1, "1 / 1"], [4, 0, "1 / 1"], [3, 5, "3 / 4"], [5, 2, "4 / 3"]];
 
   function dial(list, cat) {
     const spokes = list.map((p, i) => `<button class="hx-sp${i ? "" : " on"}" style="--a:${(i * STEP).toFixed(2)}deg" data-i="${i}"
@@ -36,18 +24,14 @@
     </div></section>`;
   }
 
-  function glass(list, cat) {
-    const shards = list.slice(0, 9).map((p, i) => { const s = P[i], [bx, by, bw, bh] = s.b;
-      const dx = (s.c[0] - 50) / 34, dy = (s.c[1] - 50) / 34;
-      return `<a class="hx-sh" href="#/project/${esc(p.slug)}" style="--clip:polygon(${s.poly});--dx:${dx.toFixed(2)}%;--dy:${dy.toFixed(2)}%"
-        aria-label="${esc(p.title)}, ${esc(cat(p))}">
-        <span class="hx-shi" style="left:${bx}%;top:${by}%;width:${bw}%;height:${bh}%"><img src="${esc(p.hero)}" alt="" loading="lazy" draggable="false"></span>
-        <span class="hx-shl" style="left:${s.c[0]}%;top:${s.c[1]}%"><b>${esc(p.title)}</b><small>${esc(cat(p))}</small></span></a>`; }).join("");
-    return `<section class="hx-glass-s" aria-label="All work"><header class="hx-gh"><h2>Nine pieces of work</h2>
-      <p>Every project, broken out. Take whichever catches your eye.</p></header>
-      <div class="hx-glass">${shards}
-        <svg class="hx-cr" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="${CRACKS}"/></svg>
-      </div></section>`;
+  function mosaic(list, cat) {
+    const tiles = list.map((p, i) => { const m = M[i % M.length];
+      return `<li style="--sp:${m[0]};--mt:${m[1]}vh"><a href="#/project/${esc(p.slug)}">
+        <span class="hx-im" style="aspect-ratio:${m[2]}"><img src="${esc(p.hero)}" alt="" loading="lazy" draggable="false"></span>
+        <span class="hx-cap"><b>${esc(p.title)}</b><small>${esc(p.year)} &middot; ${esc(cat(p))}${p.study ? " &middot; Case study" : ""}</small></span></a></li>`; }).join("");
+    return `<section class="hx-mos" aria-label="All work"><header class="hx-mh"><h2>All of it</h2>
+      <p>Every project, newest first. Take whichever catches your eye.</p></header>
+      <ol class="hx-grid">${tiles}</ol></section>`;
   }
 
   let off = [];
@@ -73,7 +57,7 @@
     const at = (i) => { const r = sec.getBoundingClientRect(), span = sec.offsetHeight - innerHeight;
       scrollTo({ top: r.top + scrollY + (N > 1 ? (i / (N - 1)) * span : 0) + 2, behavior: reduce ? "auto" : "smooth" }); };
     sps.forEach((s) => s.addEventListener("click", () => flat() ? pns[+s.dataset.i].scrollIntoView({ behavior: "smooth" }) : at(+s.dataset.i)));
-    if (skip) skip.addEventListener("click", () => { const g = document.querySelector(".hx-glass-s");
+    if (skip) skip.addEventListener("click", () => { const g = document.querySelector(".hx-mos");
       g && scrollTo({ top: g.getBoundingClientRect().top + scrollY - 10, behavior: reduce ? "auto" : "smooth" }); });
 
     let raf = 0;
@@ -94,5 +78,5 @@
     tick(); setTimeout(tick, 200);
   }
 
-  window.HOMEX = { dial, glass, wire };
+  window.HOMEX = { dial, mosaic, wire };
 })();

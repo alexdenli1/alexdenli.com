@@ -84,7 +84,7 @@
           <p class="brands-sub">Designing for, and working alongside, some of golf’s most trusted names.</p></div>
         <ul class="wheel">${S.brands.slice(0, 12).map((b) => `<li${b.size ? ` style="--lw:${b.size}"` : ""}><img src="${esc(b.logo)}" alt="${esc(b.name)}" draggable="false"></li>`).join("")}</ul>
       </div></section>` : ""}
-      ${window.HOMEX ? window.HOMEX.dial(HP, catOf) + window.HOMEX.glass(HP, catOf) : ""}
+      ${window.HOMEX ? window.HOMEX.dial(HP, catOf) + window.HOMEX.mosaic(HP, catOf) : ""}
       ${ledger()}
       <section class="home-end"><a class="giant" href="#/contact">Contact</a></section>${foot()}`,
       after: () => window.HOMEX && window.HOMEX.wire(),
