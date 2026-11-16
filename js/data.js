@@ -159,6 +159,13 @@ window.SITE = {
       scope: "Final year project",
       summary: "A retrofit unit that captures microfibres from washing-machine wastewater, with no filter to replace.",
       blocks: []
+    },
+    {
+      slug: "aeropress", title: "Aeropress Coffee Machine", category: "product-design",
+      year: 2022, status: "archive", hero: "images/aeropress/hero.jpg",
+      scope: "University team project",
+      summary: "A hands-free AeroPress machine: wave to choose a brew and it stirs, steeps and presses the coffee for you.",
+      blocks: []
     }
   ],
 
