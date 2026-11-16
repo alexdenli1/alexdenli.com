@@ -149,7 +149,7 @@ window.SITE = {
     },
     {
       slug: "relinquit", title: "Relinquit", category: "product-design",
-      study: true, year: 2021, status: "archive", hero: "images/relinquit/hero.jpg",
+      study: true, year: 2021, status: "archive", thumb: "images/relinquit/thumb.webp", cut: true, hero: "images/relinquit/hero.jpg",
       process: [{ title: "Research", text: "4.9m people in the UK still smoke, and half want to quit." }, { title: "Ideation", text: "Eight mechanisms sketched, scored and cut to one thumb, one cigarette." }, { title: "Model", text: "A pebble-sized case, an always-on e-ink screen and four colourways." }, { title: "App", text: "Nine calm screens that end on a quit date." }],
       summary: "A connected cigarette case that spaces out each cigarette and steps you down to a quit date you choose.",
       blocks: []
