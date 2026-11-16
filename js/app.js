@@ -29,8 +29,21 @@
   ];
   const ZAP = `<svg class="zap" aria-hidden="true"><rect width="100%" height="100%" pathLength="1"/><rect width="100%" height="100%" pathLength="1"/></svg>`;
 
+  const ALL = () => S.projects.slice().sort((a, b) => parseInt(b.year, 10) - parseInt(a.year, 10));
+
+  function ledger() {
+    const rows = ALL().map((p) => { const c = S.categories.find((x) => x.id === p.category);
+      return `<li><a href="${link(p)}"><span class="lg-y">${esc(parseInt(p.year, 10))}</span><span class="lg-t">${esc(p.title)}</span>
+        <span class="lg-c">${esc(c ? c.label : "")}</span><span class="lg-k">${p.study ? "Case study" : ""}</span>
+        <span class="lg-th"><img src="${esc(p.hero)}" alt="" loading="lazy" draggable="false"></span></a></li>`; }).join("");
+    return `<section class="ledger" aria-label="All work"><div class="ledger-wrap">
+      <header class="ledger-head"><h2>Full list</h2>
+        <p>Everything, newest first. The university projects are written up in full as case studies. The commercial work is ongoing, and those write-ups are being added as each one finishes.</p></header>
+      <ol class="ledger-list">${rows}</ol></div></section>`;
+  }
+
   function home() {
-    const HP = S.projects.filter((p) => p.status === "current" || p.featured);
+    const HP = ALL();
     const n = HP.length;
     // Every piece: the image, then below it the name (large), the category and year, and one line about the project.
     const piece = (p, i) => {
@@ -83,8 +96,8 @@
           const im = `<img src="${esc(g.src)}" alt="${esc(p ? p.title : "")}" loading="lazy" draggable="false">`;
           return p ? `<a href="${link(p)}" aria-label="${esc(p.title)}">${im}</a>` : `<span class="gallery-item">${im}</span>`; }).join("")}</div></div>
       </div></section>
-      <section class="home-end">
-        <a class="giant" href="#/projects">Projects</a><a class="giant" href="#/archive">Archive</a><a class="giant" href="#/contact">Contact</a></section>${foot()}`,
+      ${ledger()}
+      <section class="home-end"><a class="giant" href="#/contact">Contact</a></section>${foot()}`,
     };
   }
 
@@ -120,22 +133,22 @@
     found.add(p.slug);
     if (p.slug === "relinquit" && window.RELINQUIT) {
       const tail = `<a class="p-next" href="${link(next)}" ><small>Next project</small><span class="giant">${esc(next.title)}</span><img src="${esc(next.hero)}" alt=""></a>
-      <nav class="p-exits" aria-label="Where next"><a class="ul" href="#/work/${esc(c.id)}">More ${esc(c.label.toLowerCase())}</a><a class="ul" href="#/archive">Archive</a></nav>${foot()}`;
+      <nav class="p-exits" aria-label="Where next"><a class="ul" href="#/work/${esc(c.id)}">More ${esc(c.label.toLowerCase())}</a><a class="ul" href="#/">All work</a></nav>${foot()}`;
       return { title: p.title, label: p.title, html: window.RELINQUIT.render(p, tail), after: () => window.RELINQUIT.wire() };
     }
     if (p.slug === "shield" && window.SHIELD) {
       const tail = `<a class="p-next" href="${link(next)}" ><small>Next project</small><span class="giant">${esc(next.title)}</span><img src="${esc(next.hero)}" alt=""></a>
-      <nav class="p-exits" aria-label="Where next"><a class="ul" href="#/work/${esc(c.id)}">More ${esc(c.label.toLowerCase())}</a><a class="ul" href="#/archive">Archive</a></nav>${foot()}`;
+      <nav class="p-exits" aria-label="Where next"><a class="ul" href="#/work/${esc(c.id)}">More ${esc(c.label.toLowerCase())}</a><a class="ul" href="#/">All work</a></nav>${foot()}`;
       return { title: p.title, label: p.title, html: window.SHIELD.render(p, tail), after: () => window.SHIELD.wire() };
     }
     if (p.slug === "aeropress" && window.AEROPRESS) {
       const tail = `<a class="p-next" href="${link(next)}" ><small>Next project</small><span class="giant">${esc(next.title)}</span><img src="${esc(next.hero)}" alt=""></a>
-      <nav class="p-exits" aria-label="Where next"><a class="ul" href="#/work/${esc(c.id)}">More ${esc(c.label.toLowerCase())}</a><a class="ul" href="#/archive">Archive</a></nav>${foot()}`;
+      <nav class="p-exits" aria-label="Where next"><a class="ul" href="#/work/${esc(c.id)}">More ${esc(c.label.toLowerCase())}</a><a class="ul" href="#/">All work</a></nav>${foot()}`;
       return { title: p.title, label: p.title, html: window.AEROPRESS.render(p, tail), after: () => window.AEROPRESS.wire() };
     }
     if (p.slug === "rescue" && window.RESCUE) {
       const tail = `<a class="p-next" href="${link(next)}" ><small>Next project</small><span class="giant">${esc(next.title)}</span><img src="${esc(next.hero)}" alt=""></a>
-      <nav class="p-exits" aria-label="Where next"><a class="ul" href="#/work/${esc(c.id)}">More ${esc(c.label.toLowerCase())}</a><a class="ul" href="#/archive">Archive</a></nav>${foot()}`;
+      <nav class="p-exits" aria-label="Where next"><a class="ul" href="#/work/${esc(c.id)}">More ${esc(c.label.toLowerCase())}</a><a class="ul" href="#/">All work</a></nav>${foot()}`;
       return { title: p.title, label: p.title, html: window.RESCUE.render(p, tail), after: () => window.RESCUE.wire() };
     }
     return { title: p.title, label: p.title, html: `<article class="page"><header class="p-head">
@@ -144,54 +157,7 @@
       <div class="p-hero mask"><img src="${esc(p.hero)}" alt="${esc(p.title)}"></div>
       <div class="blocks">${(p.blocks || []).map((b) => (BLOCK[b.type] ? BLOCK[b.type](b) : "")).join("")}</div>
       <a class="p-next" href="${link(next)}" ><small>Next project</small><span class="giant">${esc(next.title)}</span><img src="${esc(next.hero)}" alt=""></a>
-      <nav class="p-exits" aria-label="Where next"><a class="ul" href="#/">Back home</a><a class="ul" href="#/work/${esc(c.id)}">More ${esc(c.label.toLowerCase())}</a><a class="ul" href="#/archive">Archive</a></nav>${foot()}</article>` };
-  }
-
-  function now() {
-    // Projects: key-project images fade in and out behind the page as you scroll into each category.
-    const secs = S.categories.map((c) => {
-      const list = S.projects.filter((p) => p.category === c.id && (p.status === "current" || p.featured));
-      const key = list.find((p) => p.status === "current") || list[0];
-      return list.length ? { c, list, key } : null;
-    }).filter(Boolean);
-    const TABS = [{ id: "product-design", label: "Product" }, { id: "graphic-design", label: "Graphic" }, { id: "ux-ui", label: "UX/UI" }, { id: "e-commerce", label: "E-commerce" }];
-    return { title: "Projects", label: "Projects", after: () => {
-      const imgs = $$(".pbg img");
-      $$(".pj-tabs a").forEach((a) => {
-        const i = +a.dataset.i;
-        a.addEventListener("mouseenter", () => { if (imgs[i]) { imgs[i].classList.add("peek"); $(".pbg").classList.add("hov"); } });
-        a.addEventListener("mouseleave", () => { if (imgs[i]) { imgs[i].classList.remove("peek"); $(".pbg").classList.remove("hov"); } });
-        a.addEventListener("click", (e) => {
-          e.preventDefault();
-          const on = a.classList.contains("on"), tabs = $$(".pj-tabs a");
-          tabs.forEach((x) => x.classList.remove("on"));
-          if (!on) a.classList.add("on");
-          const id = on ? "" : a.dataset.id; let n = 0;
-          $$(".pj-grid > li").forEach((li) => { const show = !id || li.dataset.cat === id; li.hidden = !show; if (show) n++; });
-          $(".pj-empty").hidden = n > 0;
-          $("#pjGrid").scrollIntoView({ behavior: "smooth", block: "start" });
-        });
-      });
-    }, html: `<div class="page proj-page">
-      <div class="pbg" aria-hidden="true">${secs.map((s) => `<img src="${esc(s.key.hero)}" alt="">`).join("")}</div>
-      <header class="pj-hero"><h1 class="giant">Projects</h1>
-        <nav class="pj-tabs" aria-label="Project categories">${TABS.map((t) => { const i = secs.findIndex((x) => x.c.id === t.id); return `<a href="#/work/${esc(t.id)}" data-i="${i}" data-id="${esc(t.id)}">${esc(t.label)}</a>`; }).join("")}</nav>
-      </header>
-      <section class="pj-grid-wrap" id="pjGrid"><p class="pj-empty" hidden>Nothing here yet. New work will appear in this category soon.</p>
-      <ol class="pj-grid">${S.projects.filter((p) => p.status === "current" || p.featured).map((p) => { const c = S.categories.find((x) => x.id === p.category);
-        return `<li data-cat="${esc(p.category)}"><a class="pt" href="${link(p)}">
-          <span class="pt-img"><img src="${esc(p.hero)}" alt="${esc(p.title)}" loading="lazy">
-            <span class="pt-over"><small>${esc(c ? c.label : "")}</small><span class="pt-sum">${esc(p.summary)}</span>
-              <span class="pt-more">Let's go <i>→</i></span></span></span>
-          <span class="pt-cap"><b>${esc(p.title)}</b><small>${esc(p.year)}</small></span></a></li>`; }).join("")}</ol></section>
-      ${foot()}</div>` };
-  }
-
-  function archive() {
-    const list = S.projects.filter((p) => p.status !== "current" && !p.featured).sort((a, b) => parseInt(b.year, 10) - parseInt(a.year, 10));
-    return { title: "Archive", label: "Archive", html: `<div class="page"><header class="page-head arch-head"><h1 class="giant">Archive</h1><p>Previous projects that didn't make the cut, but are still worth a look.</p></header>
-      <ol class="grid">${list.map((p) => `<li><a class="tile" href="${link(p)}">
-        <span class="tile-img"><img src="${esc(p.hero)}" alt="${esc(p.title)}" loading="lazy"></span><span class="tile-cap"><b>${esc(p.title)}</b><small>${esc(p.year)}</small></span></a></li>`).join("")}</ol>${foot()}</div>` };
+      <nav class="p-exits" aria-label="Where next"><a class="ul" href="#/">Back home</a><a class="ul" href="#/work/${esc(c.id)}">More ${esc(c.label.toLowerCase())}</a><a class="ul" href="#/">All work</a></nav>${foot()}</article>` };
   }
 
   function contact() {
@@ -207,10 +173,12 @@
   const lost = () => ({ title: "Out of bounds", label: "Out of bounds", bare: true, html: `<div class="lost-page"><h1 class="giant">Out of bounds</h1>
     <p>This page is not on the course. Take a drop and carry on from the clubhouse.</p><a class="ul" href="#/">Back home</a></div>` });
 
-  const PAGES = { home, work, project, projects: now, archive, contact };
+  const PAGES = { home, work, project, contact };
+  const ALIAS = { projects: "home", archive: "home" };
   function resolve() {
     const [a = "", b] = location.hash.replace(/^#\/?/, "").split("/");
-    const key = a || "home";
+    let key = a || "home";
+    if (ALIAS[key]) { key = ALIAS[key]; try { history.replaceState(null, "", "#/"); } catch (e) {} }
     return { key, sub: b, page: (PAGES[key] && PAGES[key](b)) || lost() };
   }
 

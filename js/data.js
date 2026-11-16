@@ -13,8 +13,8 @@
      title     shown everywhere
      category  one of the ids in "categories" below
      year      e.g. 2026, or a range like "2022 – now" (the archive sorts by the first number in it)
-     status    "current" (shows on Projects) or "archive" (shows on Archive)
-     featured  true keeps an archive-status project on Projects as well, and off the Archive page (e.g. Rescue)
+     study     true marks a finished university case study (shown as a tag in the full list)
+     status / featured are no longer used for routing; every project appears everywhere, newest first
      hidden    true = on the home page visitors have to find it with the cursor
      hero      main image
      preview   optional: pictures for the Archive hover slideshow, e.g. preview: ["images/x/1.jpg", "images/x/2.jpg"].
@@ -110,7 +110,7 @@ window.SITE = {
     },
     {
       slug: "rescue", title: "Rescue", category: "ux-ui",
-      year: "2026 redevelopment", status: "archive", featured: true, hero: "images/rescue/hero.jpg",
+      study: true, year: "2026 redevelopment", status: "archive", featured: true, hero: "images/rescue/hero.jpg",
       process: [{ title: "Storyboard", text: "Josh's day, drawn out to find where energy saving could fit." }, { title: "Bodystorming", text: "Acting the app out with people and props, before any design." }, { title: "Prototype", text: "A clickable Marvel prototype so real people could try the route." }, { title: "Redevelopment", text: "In 2026: Pip the red panda, a core daily loop and a playable gate." }],
       summary: "A children's app for learning about energy saving, designed at university and redone in 2026.",
       blocks: [
@@ -148,21 +148,21 @@ window.SITE = {
     },
     {
       slug: "relinquit", title: "Relinquit", category: "product-design",
-      year: 2021, status: "archive", hero: "images/relinquit/hero.jpg",
+      study: true, year: 2021, status: "archive", hero: "images/relinquit/hero.jpg",
       process: [{ title: "Research", text: "4.9m people in the UK still smoke, and half want to quit." }, { title: "Ideation", text: "Eight mechanisms sketched, scored and cut to one thumb, one cigarette." }, { title: "Model", text: "A pebble-sized case, an always-on e-ink screen and four colourways." }, { title: "App", text: "Nine calm screens that end on a quit date." }],
       summary: "A connected cigarette case that spaces out each cigarette and steps you down to a quit date you choose.",
       blocks: []
     },
     {
       slug: "shield", title: "Shield", category: "product-design",
-      year: 2022, status: "archive", hero: "images/shield/hero.jpg",
+      study: true, year: 2022, status: "archive", hero: "images/shield/hero.jpg",
       scope: "Final year project",
       summary: "A retrofit unit that captures microfibres from washing-machine wastewater, with no filter to replace.",
       blocks: []
     },
     {
       slug: "aeropress", title: "Aeropress Coffee Machine", category: "product-design",
-      year: 2022, status: "archive", hero: "images/aeropress/hero.jpg",
+      study: true, year: 2022, status: "archive", hero: "images/aeropress/hero.jpg",
       scope: "University team project",
       summary: "A hands-free AeroPress machine: wave to choose a brew and it stirs, steeps and presses the coffee for you.",
       blocks: []
