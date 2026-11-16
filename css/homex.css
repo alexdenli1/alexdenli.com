@@ -26,8 +26,8 @@
 .hx-sp:hover .hx-th.cut, .hx-sp:focus-visible .hx-th.cut { transform-origin: 100% 50%; transform: scale(2.9); border-color: transparent; }
 
 .hx-pns { position: absolute; inset: 0 0 0 30vw; }
-.hx-pn { position: absolute; inset: 0; display: grid; grid-template-columns: minmax(0, 27rem) minmax(0, 1fr);
-  gap: 3vw; align-items: center; opacity: 0; pointer-events: none; transition: opacity .55s var(--ease); }
+.hx-pn { position: absolute; inset: 0; display: grid; grid-template-columns: minmax(0, 25.5rem) minmax(0, 1fr);
+  gap: 1.8vw; align-items: center; opacity: 0; pointer-events: none; transition: opacity .55s var(--ease); }
 .hx-pn.on { opacity: 1; pointer-events: auto; }
 .hx-bn { grid-column: 2; grid-row: 1; position: relative; height: 66vh; margin: 0; overflow: hidden;
   -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 11%, #000 84%, transparent 100%);
