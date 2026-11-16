@@ -182,7 +182,9 @@ window.SITE = {
     { name: "Clicgear", logo: "images/brands/clicgear.png" },
     { name: "Longridge", logo: "images/brands/longridge.png" },
     { name: "BagBoy", logo: "images/brands/bagboy.png" },
-    { name: "EzeGlide", logo: "images/brands/ezeglide-white.png" }   // white version: the colour one vanishes on black (colour file: ezeglide.png)
+    { name: "EzeGlide", logo: "images/brands/ezeglide-white.png" },  // white version: the colour one vanishes on black (colour file: ezeglide.png)
+    { name: "XFLY", logo: "images/brands/xfly-white.png" },          // white version of the black wordmark
+    { name: "The Schoolwear Specialists", logo: "images/brands/schoolwear-specialists.png" }
   ],
 
   gallery: [

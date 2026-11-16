@@ -43,6 +43,8 @@
   }
 
   const catOf = (p) => { const c = S.categories.find((x) => x.id === p.category); return c ? c.label : ""; };
+  /* how many logos per row: the widest wrap that doesn't strand one on its own at the end */
+  const cols = (n) => { for (const c of [4, 3, 5]) { const r = n % c; if (n <= c || r === 0 || r > 1) return c; } return 4; };
 
   function home() {
     const HP = ALL();
@@ -82,7 +84,7 @@
         <div class="brands-head"><h2>Brands I’ve worked with</h2>
           <div class="brands-rule" aria-hidden="true"></div>
           <p class="brands-sub">Designing for, and working alongside, some of golf’s most trusted names.</p></div>
-        <ul class="wheel">${S.brands.slice(0, 12).map((b) => `<li${b.size ? ` style="--lw:${b.size}"` : ""}><img src="${esc(b.logo)}" alt="${esc(b.name)}" draggable="false"></li>`).join("")}</ul>
+        <ul class="wheel" style="--cols:${cols(Math.min(12, S.brands.length))}">${S.brands.slice(0, 12).map((b) => `<li${b.size ? ` style="--lw:${b.size}"` : ""}><img src="${esc(b.logo)}" alt="${esc(b.name)}" draggable="false"></li>`).join("")}</ul>
       </div></section>` : ""}
       ${window.HOMEX ? window.HOMEX.dial(HP, catOf) + window.HOMEX.mosaic(HP, catOf) : ""}
       ${ledger()}
