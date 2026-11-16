@@ -74,7 +74,7 @@
           <div class="disco-acts"><button class="btn" type="button" data-again>Play again</button><button class="btn" type="button" data-enter>Enter the site</button></div></div></section>`}
       <section class="lead" aria-label="Introduction">
         ${S.owner.collage ? `<div class="lead-art" aria-hidden="true"><div class="lead-frost"><canvas></canvas></div>
-          <div class="lead-lens"><img src="${esc(S.owner.collage)}" alt="" decoding="async" draggable="false"></div></div>` : ""}
+          <canvas class="lead-flow"></canvas><canvas class="lead-reveal"></canvas></div>` : ""}
         <div class="lead-in"><h1 class="lead-title">${esc(S.owner.headline || "Creative Designer")}</h1>
         <ul class="lead-disc">${(S.owner.disciplines || []).map((t) => `<li>${esc(t)}</li>`).join("")}</ul></div>
       </section>
@@ -210,7 +210,7 @@
       pieces: $$(".pintro .piece"), rows: $$(".field .piece"), scrubs: $$("[data-scrub]"), masks: $$(".mask img"),
       names: $$(".field-index a"), wheel: $(".field-index ol"), active: -1,
       gallery: $(".gallery"), track: $(".gallery-track"), run: 0,
-      lead: $(".lead"), leadArt: $(".lead-art"), lens: $(".lead-lens"), lensImg: $(".lead-lens img"),
+      lead: $(".lead"), leadArt: $(".lead-art"),
       brandsEl: $(".brands"), logos: $$(".wheel li"),
       secs: $$(".pcat"), bgs: $$(".pbg img"), bgOn: -1
     };
@@ -297,14 +297,7 @@
     }
     if (live.leadArt) {
       paintFrost($(".lead-frost canvas"), S.owner.collage);
-      const sizeLens = () => { if (!live.lensImg) return; live.lensImg.style.width = live.lead.clientWidth + "px"; live.lensImg.style.height = live.lead.clientHeight + "px"; live.lensD = live.lens.offsetWidth; };
-      live.sizeLens = sizeLens; sizeLens();
-      if (fine) {
-        // the window's mouse listener already schedules the lens update; here we only switch it on once
-        live.lead.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse") live.lead.classList.add("lensing"); });
-        live.lead.addEventListener("mousemove", () => { if (!live.lead.classList.contains("lensing")) live.lead.classList.add("lensing"); }, { passive: true });
-        live.lead.addEventListener("pointerleave", () => live.lead.classList.remove("lensing"));
-      }
+      if (fine && !reduce && window.LEADWATER) live.stopWater = window.LEADWATER.start(live.leadArt, S.owner.collage);
     }
     if (key === "archive") wireArchive();
     $$("[data-top]").forEach((a) => a.addEventListener("click", (e) => { e.preventDefault(); toTop(); }));
@@ -569,11 +562,6 @@
       }
     }
     if (leadR && leadR.bottom > 0 && leadR.top < vh) {
-      if (live.lens && live.lead.classList.contains("lensing")) {
-        const d = live.lensD || 400, cx = mx - leadR.left, cy = my - leadR.top, s = 1.12;
-        live.lens.style.transform = `translate3d(${(cx - d / 2).toFixed(1)}px, ${(cy - d / 2).toFixed(1)}px, 0)`;
-        live.lensImg.style.transform = `translate3d(${(d / 2 - cx * s).toFixed(1)}px, ${(d / 2 - cy * s).toFixed(1)}px, 0) scale(${s})`;
-      }
       // the frosted art settles into place as the section rises over the intro
       const p = Math.max(0, Math.min(1, (vh - leadR.top) / vh));
       if (!reduce) live.leadArt.style.transform = p < 1 ? `scale(${(1.1 - 0.1 * p).toFixed(4)})` : "";
