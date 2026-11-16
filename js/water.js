@@ -2,12 +2,12 @@
    spread from it, and the more you work an area the wider and clearer it opens up. */
 (() => {
   const GW = 160, GH = 90;            // simulation grid
-  const CORE = 4.2;                   // always-clear spot at the pointer, in cells
-  const DRAG = 6.6;                   // wider, softer deposit along the pointer's path
-  const DECAY = 0.9935;               // how slowly a worked area closes over again
-  const SPREAD = 0.14;                // how much the clearing creeps outward
-  const LO = 0.24, HI = 0.78;         // wet values that map to hidden / fully clear
-  const RING_V = 23;                  // ring speed, cells a second
+  const CORE = 5.45;                   // always-clear spot at the pointer, in cells
+  const DRAG = 8.9;                   // wider, softer deposit along the pointer's path
+  const DECAY = 0.9937;               // how slowly a worked area closes over again
+  const SPREAD = 0.105;               // how much the clearing creeps outward
+  const LO = 0.205, HI = 0.75;         // wet values that map to hidden / fully clear
+  const RING_V = 13.5;                // ring speed, cells a second — heavy water travels slowly
   const MAX_RINGS = 9;
 
   const sm = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
@@ -61,14 +61,14 @@
 
       /* rings: a travelling wave packet, drawn only across the band it currently occupies */
       for (let k = rings.length - 1; k >= 0; k--) { const g = rings[k]; g.t += dt;
-        const rad = g.t * RING_V, amp = g.a * Math.exp(-g.t * 1.15);
+        const rad = g.t * RING_V, amp = g.a * Math.exp(-g.t * 0.72);
         if (amp < 0.012 || rad > GW) { rings.splice(k, 1); continue; }
-        const x0 = Math.max(0, (g.x - rad - 7) | 0), x1 = Math.min(GW - 1, (g.x + rad + 7) | 0);
-        const y0 = Math.max(0, (g.y - rad - 7) | 0), y1 = Math.min(GH - 1, (g.y + rad + 7) | 0);
+        const x0 = Math.max(0, (g.x - rad - 9) | 0), x1 = Math.min(GW - 1, (g.x + rad + 9) | 0);
+        const y0 = Math.max(0, (g.y - rad - 9) | 0), y1 = Math.min(GH - 1, (g.y + rad + 9) | 0);
         for (let y = y0; y <= y1; y++) { const ddy = y - g.y;
           for (let x = x0; x <= x1; x++) { const ddx = x - g.x, d = Math.sqrt(ddx * ddx + ddy * ddy) - rad;
-            if (d < -7 || d > 7) continue;
-            wet[y * GW + x] += amp * Math.cos(d * 1.05) * Math.exp(-d * d / 16) * dt * 13;
+            if (d < -9 || d > 9) continue;
+            wet[y * GW + x] += amp * Math.cos(d * 0.72) * Math.exp(-d * d / 30) * dt * 10;
           } }
       }
 
@@ -86,17 +86,17 @@
       const blobs = [[0.26, 0.34, "14,104,70", 0.44, 0.7, 1.0], [0.74, 0.66, "22,78,120", 0.3, 0.9, 1.4],
                      [0.56, 0.22, "60,130,96", 0.2, 1.3, 0.8], [0.34, 0.8, "18,118,104", 0.26, 1.1, 1.7]];
       for (let i = 0; i < blobs.length; i++) { const [bx, by, c, a, sx, sy] = blobs[i];
-        const cx = (bx + 0.075 * Math.sin(t * 0.21 * sx + i)) * w, cy = (by + 0.08 * Math.cos(t * 0.17 * sy + i * 1.7)) * h;
-        const r = (0.3 + 0.045 * Math.sin(t * 0.3 + i * 2.1)) * w;
+        const cx = (bx + 0.08 * Math.sin(t * 0.14 * sx + i)) * w, cy = (by + 0.085 * Math.cos(t * 0.115 * sy + i * 1.7)) * h;
+        const r = (0.3 + 0.05 * Math.sin(t * 0.2 + i * 2.1)) * w;
         const g = fx.createRadialGradient(cx, cy, 0, cx, cy, r);
         g.addColorStop(0, `rgba(${c},${a})`); g.addColorStop(1, `rgba(${c},0)`);
         fx.fillStyle = g; fx.fillRect(0, 0, w, h);
       }
       /* the same rings, travelling through the colour */
       fx.globalCompositeOperation = "source-over";
-      for (const g of rings) { const rad = g.t * RING_V * (w / GW), a = g.a * Math.exp(-g.t * 1.9) * 0.5;
+      for (const g of rings) { const rad = g.t * RING_V * (w / GW), a = g.a * Math.exp(-g.t * 1.1) * 0.5;
         if (a < 0.015) continue;
-        fx.strokeStyle = `rgba(190,255,225,${a.toFixed(3)})`; fx.lineWidth = 1.6;
+        fx.strokeStyle = `rgba(190,255,225,${a.toFixed(3)})`; fx.lineWidth = 2.2;
         fx.beginPath(); fx.arc(g.x * w / GW, g.y * h / GH, rad, 0, 6.2832); fx.stroke();
       }
     };
@@ -134,7 +134,7 @@
         const d = Math.hypot(gx - lx, gy - ly), n = Math.min(14, Math.ceil(d));
         for (let i = 1; i <= n; i++) dab(lx + (gx - lx) * i / n, ly + (gy - ly) * i / n, DRAG, 0.16 * Math.min(1.2, d / n));
         since += d;
-        if (since > 4.5 && rings.length < MAX_RINGS) { rings.push({ x: gx, y: gy, t: 0, a: Math.min(0.62, 0.26 + since * 0.03) }); since = 0; }
+        if (since > 6.5 && rings.length < MAX_RINGS) { rings.push({ x: gx, y: gy, t: 0, a: Math.min(0.68, 0.3 + since * 0.03) }); since = 0; }
       }
       lx = gx; ly = gy; px = x; py = y; has = true;
       root.classList.add("wet"); kick();
