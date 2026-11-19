@@ -213,6 +213,11 @@ main:focus { outline: none; }
 .wheel { --lw0: clamp(140px, 17vw, 330px); --gx: clamp(2rem, 4vw, 4.5rem); flex: 1; width: 100%; max-width: calc(var(--cols, 4) * var(--lw0) + (var(--cols, 4) - 1) * var(--gx) + 2px); padding-top: 10.8vh; display: flex; flex-wrap: wrap; justify-content: center; align-content: flex-start; gap: clamp(1.5rem, 4.5vh, 3.75rem) var(--gx); }
 .wheel li { width: calc(var(--lw0) * var(--lw, 1)); aspect-ratio: 16 / 7; opacity: 0; will-change: transform, opacity; }
 .wheel img { width: 100%; height: 100%; object-fit: contain; }
+/* desktop: logos scattered across the space under the heading, 25% smaller than the old grid, clear of the bottom edge */
+@media (min-width: 821px) {
+  .wheel { --lw0: clamp(105px, 12.75vw, 250px); position: relative; display: block; flex: 1; width: 100%; max-width: 1480px; padding: 0; margin: 7vh auto 11vh; }
+  .wheel li { position: absolute; left: calc(var(--x) * 1%); top: calc(var(--y) * 1%); translate: -50% -50%; }
+}
 
 /* ---------- Home: gallery strip that slides left as you scroll ---------- */
 .gallery { position: relative; z-index: 1; background: var(--bg); margin-top: 13vh; }
