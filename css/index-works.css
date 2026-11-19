@@ -12,6 +12,7 @@
 .iw-row { display: block; overflow: hidden; padding: 0 var(--pad); color: inherit; text-decoration: none; outline-offset: -3px; }
 .iw-run { display: inline-block; white-space: nowrap; font-size: var(--row); font-weight: 500; font-stretch: 92%;
   line-height: 1.16; letter-spacing: -.025em; will-change: transform; }
+.iw-t { display: inline-block; padding-right: 2.4em; }       /* the gap before the line comes round again */
 .iw-run i { color: var(--muted); font-size: .5em; vertical-align: .55em; margin: 0 .08em; }
 .iw-run em { font-style: normal; color: var(--zap); }
 .iw-row.on .iw-run { color: var(--fg); }
@@ -24,7 +25,8 @@
 
 .iw.split .iw-list { margin-left: 50%; }
 .iw.split .iw-pic { opacity: 1; transform: translate(0, -50%); pointer-events: auto; transition-delay: .25s, 0s; }
-.iw.split .iw-row .iw-run { opacity: .38; transition: opacity .4s; }
+.iw-run { transition: opacity .5s; }
+.iw.split .iw-row .iw-run { opacity: .4; }
 .iw.split .iw-row.on .iw-run { opacity: 1; }
 
 @media (prefers-reduced-motion: reduce) { .iw-list, .iw-pic { transition: none; } }
