@@ -38,39 +38,17 @@
   const catOf = (p) => { const c = S.categories.find((x) => x.id === p.category); return c ? c.label : ""; };
   /* how many logos per row: the widest wrap that doesn't strand one on its own at the end */
   const cols = (n) => { for (const c of [4, 3, 5]) { const r = n % c; if (n <= c || r === 0 || r > 1) return c; } return 4; };
-  /* brand logos are scattered, not gridded: a seeded best-candidate spread, so it looks random but never overlaps
-     and is the same on every visit. Units: the scatter box is 100 wide by H tall; a logo is LW x LH. */
+  /* brand logos sit in three even rows, the longest row in the middle, offset like brickwork.
+     Every row uses the same spacing between logos, and the outer logos keep clear of the screen edges.
+     Positions are percentages of the logo box. */
   const scatter = (n) => {
-    const H = 40, LW = 16.5, LH = 7.3;
-    const gap = (a, b) => Math.hypot((a.x - b.x) / (LW + 3), (a.y - b.y) / (LH + 3.5));
-    const layout = (seed) => {
-      let s = seed; const rnd = () => { s |= 0; s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
-      const pts = [];
-      for (let i = 0; i < n; i++) {
-        let best = null, bestD = -1;
-        for (let c = 0; c < 40; c++) {
-          const p = { x: LW / 2 + rnd() * (100 - LW), y: LH / 2 + rnd() * (H - LH) };
-          let d = 1e9; for (const q of pts) d = Math.min(d, gap(p, q));
-          if (d > bestD) { bestD = d; best = p; }
-        }
-        pts.push(best);
-      }
-      return pts;
-    };
-    // try many seeded layouts and keep the one with no near neighbours and no large empty patch
-    let pick = null, score = -1;
-    for (let seed = 1; seed <= 120; seed++) {
-      const pts = layout(seed * 7919);
-      let near = 1e9; for (let a = 0; a < n; a++) for (let b = a + 1; b < n; b++) near = Math.min(near, gap(pts[a], pts[b]));
-      let hole = 0;
-      for (let gx = 0; gx <= 10; gx++) for (let gy = 0; gy <= 4; gy++) {
-        const p = { x: LW / 2 + gx * (100 - LW) / 10, y: LH / 2 + gy * (H - LH) / 4 };
-        let d = 1e9; for (const q of pts) d = Math.min(d, gap(p, q)); hole = Math.max(hole, d);
-      }
-      const sc = near - 0.45 * hole;
-      if (sc > score) { score = sc; pick = pts; }
-    }
-    return pick.map((p) => ({ x: +p.x.toFixed(2), y: +(p.y / H * 100).toFixed(2) }));
+    const R = Math.min(3, n), base = Math.floor(n / R), extra = n % R;
+    const counts = Array.from({ length: R }, (_, r) => base + (extra === 1 ? (r === 1 ? 1 : 0) : extra === 2 ? (r !== 1 ? 1 : 0) : 0));
+    const most = Math.max(...counts), EDGE = 9, pitch = most > 1 ? (100 - 2 * EDGE) / (most - 1) : 0;
+    const out = [];
+    counts.forEach((c, r) => { const x0 = 50 - pitch * (c - 1) / 2;
+      for (let i = 0; i < c; i++) out.push({ x: +(x0 + i * pitch).toFixed(2), y: +((r + 0.5) / R * 100).toFixed(2) }); });
+    return out;
   };
 
   function home() {

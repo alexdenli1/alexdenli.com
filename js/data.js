@@ -179,6 +179,7 @@ window.SITE = {
     { name: "Oakley", logo: "images/brands/oakley.png", size: 0.88 },
     { name: "SuperStroke", logo: "images/brands/superstroke.png" },
     { name: "Bettinardi", logo: "images/brands/bettinardi.png" },
+    { name: "Skins Golf", logo: "images/brands/skins-golf-white.png" },   // left of the middle row
     { name: "Clicgear", logo: "images/brands/clicgear.png" },
     { name: "Longridge", logo: "images/brands/longridge.png" },
     { name: "BagBoy", logo: "images/brands/bagboy.png" },
