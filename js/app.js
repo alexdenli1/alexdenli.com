@@ -32,14 +32,7 @@
   const ALL = () => S.projects.slice().sort((a, b) => parseInt(b.year, 10) - parseInt(a.year, 10));
 
   function ledger() {
-    const rows = ALL().map((p) => { const c = S.categories.find((x) => x.id === p.category);
-      return `<li><a href="${link(p)}"><span class="lg-y">${esc(parseInt(p.year, 10))}</span><span class="lg-t">${esc(p.title)}</span>
-        <span class="lg-c">${esc(c ? c.label : "")}</span><span class="lg-k">${p.study ? "Case study" : ""}</span>
-        <span class="lg-th"><img src="${esc(p.hero)}" alt="" loading="lazy" draggable="false"></span></a></li>`; }).join("");
-    return `<section class="ledger" aria-label="All work"><div class="ledger-wrap">
-      <header class="ledger-head"><h2>Full list</h2>
-        <p>Everything, newest first. The university projects are written up in full as case studies. The commercial work is ongoing, and those write-ups are being added as each one finishes.</p></header>
-      <ol class="ledger-list">${rows}</ol></div></section>`;
+    return window.INDEXWORKS ? window.INDEXWORKS.render(ALL(), (p) => { const c = S.categories.find((x) => x.id === p.category); return c ? c.label : ""; }, link) : "";
   }
 
   const catOf = (p) => { const c = S.categories.find((x) => x.id === p.category); return c ? c.label : ""; };
@@ -113,7 +106,7 @@
       ${window.HOMEX ? window.HOMEX.dial(HP, catOf) : ""}
       ${ledger()}
       <section class="home-end"><a class="giant" href="#/contact">Contact</a></section>${foot()}`,
-      after: () => window.HOMEX && window.HOMEX.wire(),
+      after: () => { if (window.HOMEX) window.HOMEX.wire(); if (window.INDEXWORKS) window.INDEXWORKS.wire(); },
     };
   }
 
