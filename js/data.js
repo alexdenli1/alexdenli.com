@@ -156,7 +156,7 @@ window.SITE = {
     },
     {
       slug: "shield", title: "Shield", category: "product-design",
-      study: true, year: 2022, status: "archive", hero: "images/shield/hero.jpg",
+      study: true, year: 2022, status: "archive", thumb: "images/shield/thumb.webp", cut: true, hero: "images/shield/hero.jpg",
       scope: "Final year project",
       summary: "A retrofit unit that captures microfibres from washing-machine wastewater, with no filter to replace.",
       blocks: []
