@@ -193,9 +193,9 @@ main:focus { outline: none; }
 .lead-frost canvas { display: block; width: 100%; height: 100%; opacity: 0; transition: opacity .8s; }
 .lead-frost canvas.ready { opacity: 1; }
 .lead-flow, .lead-reveal { position: absolute; inset: 0; display: block; width: 100%; height: 100%; pointer-events: none; }
-.lead-flow { filter: blur(34px); mix-blend-mode: screen; opacity: 0; transition: opacity 1.2s; }
+.lead-flow { filter: blur(44px); mix-blend-mode: screen; opacity: 0; transition: opacity 1.2s; }
 .lead-reveal { opacity: 0; transition: opacity .9s; }
-.lead-art.ready .lead-flow { opacity: .4; }
+.lead-art.ready .lead-flow { opacity: .52; }
 .lead-art.ready.wet .lead-reveal { opacity: 1; }
 .lead-in { position: relative; z-index: 2; width: fit-content; max-width: 100%; text-align: center; pointer-events: none; }
 .lead-title { font-family: "Fraunces", Georgia, serif; font-weight: 300; font-size: clamp(3.6rem, 9.6vw, 12.5rem); line-height: .92; letter-spacing: -.035em;
