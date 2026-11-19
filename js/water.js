@@ -4,7 +4,7 @@
   const GW = 160, GH = 90;            // simulation grid
   const CORE = 5.45;                   // always-clear spot at the pointer, in cells
   const DRAG = 8.9;                   // wider, softer deposit along the pointer's path
-  const DECAY = 0.9944;               // how slowly a worked area closes over again
+  const DECAY = 0.9903;               // how slowly a worked area closes over again
   const SPREAD = 0.082;               // how much the clearing creeps outward
   const LO = 0.205, HI = 0.86;         // wet values that map to hidden / fully clear
   const RING_V = 9;                // ring speed, cells a second — heavy water travels slowly
