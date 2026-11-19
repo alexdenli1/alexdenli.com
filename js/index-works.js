@@ -12,14 +12,12 @@
   function render(list, cat, link) {
     const rows = list.map((p, i) => {
       let text = String(p.line || p.summary || "").replace(/\.$/, "");
-      if (/^[A-Z][a-z' ]/.test(text)) text = text[0].toLowerCase() + text.slice(1);   // "Product design, a golf launch monitor…"
-      text = esc(text);
+            text = esc(text);
       return `<li><a class="iw-row" href="${link(p)}" data-i="${i}" data-img="${esc(p.hero)}">
-        <span class="iw-run">${esc(p.title)} <i>(${esc(parseInt(p.year, 10))})</i> — ${esc(cat(p))}, ${text}${p.study ? ` <em>— full case study</em>` : ""}</span></a></li>`;
+        <span class="iw-run">${esc(p.title)} <i>(${esc(parseInt(p.year, 10))})</i> — ${text}${p.study ? ` <em>— full case study</em>` : ""}</span></a></li>`;
     }).join("");
     return `<section class="iw" aria-label="Index of works">
-      <header class="iw-head"><h2>Index<br><i>of works</i></h2>
-        <p>${list.length} projects, newest first.<br>Hover a line to read it, rest on one to see it.</p></header>
+      <header class="iw-head"><h2>Index<br><i>of works</i></h2></header>
       <div class="iw-body">
         <figure class="iw-pic" aria-hidden="true"><img alt="" draggable="false"><img alt="" draggable="false"></figure>
         <ol class="iw-list">${rows}</ol>

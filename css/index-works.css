@@ -12,7 +12,7 @@
 .iw-row { display: block; overflow: hidden; padding: 0 var(--pad); color: inherit; text-decoration: none; outline-offset: -3px; }
 .iw-run { display: inline-block; white-space: nowrap; font-size: var(--row); font-weight: 500; font-stretch: 92%;
   line-height: 1.16; letter-spacing: -.025em; will-change: transform; }
-.iw-run i { color: var(--muted); }
+.iw-run i { color: var(--muted); font-size: .5em; vertical-align: .55em; margin: 0 .08em; }
 .iw-run em { font-style: normal; color: var(--zap); }
 .iw-row.on .iw-run { color: var(--fg); }
 
