@@ -64,17 +64,7 @@
       <b>${p.hidden && !found.has(p.slug) ? "·····" : esc(p.title)}</b></a></li>`).join("");
     return {
       title: "", label: "Home", scroll: 0,
-      html: `${seenGate ? "" : `<section class="gate" aria-label="Introduction"><h1 class="gate-mark"><svg class="logo" viewBox="0 0 64.91 16.89" role="img" aria-label="Alex Denli Archive"><use href="#logo"/></svg></h1>
-        <canvas class="disco-lights" aria-hidden="true"></canvas>
-        <canvas class="gate-fx" aria-hidden="true"></canvas><div class="gate-fall"></div>
-        <button class="disco-btn" type="button" aria-pressed="false" aria-label="Play the disco catch game" title="Disco mode">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5v3.2"/><circle cx="12" cy="13.2" r="8.3"/><ellipse cx="12" cy="13.2" rx="8.3" ry="3.1"/><ellipse cx="12" cy="13.2" rx="3.4" ry="8.3"/><path d="M4.6 9.4h14.8M4.6 17h14.8M20 2.2v3M18.5 3.7h3"/></svg></button>
-        <button class="mute-btn" type="button" hidden aria-pressed="false" aria-label="Mute the music" title="Music">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13L7.5 14.5H4z"/><path class="wave" d="M15.5 9.2a4 4 0 0 1 0 5.6M18 6.8a7.5 7.5 0 0 1 0 10.4"/><path class="cross" d="M16 9.5l5 5m0-5l-5 5"/></svg></button>
-        <div class="disco-hud" hidden><span>Caught <b class="disco-score">0</b></span><span class="disco-time">20</span></div>
-        <div class="disco-end" hidden><p>Time</p><p class="giant"><span class="disco-final">0</span> caught</p><p class="disco-of"></p>
-          <div class="disco-acts"><button class="btn" type="button" data-again>Play again</button><button class="btn" type="button" data-enter>Enter the site</button></div></div></section>`}
-      <section class="lead" aria-label="Introduction">
+      html: `      <section class="lead" aria-label="Introduction">
         ${S.owner.collage ? `<div class="lead-art" aria-hidden="true"><div class="lead-frost"><canvas></canvas></div>
           <canvas class="lead-flow"></canvas><canvas class="lead-reveal"></canvas></div>` : ""}
         <div class="lead-in"><h1 class="lead-title">${esc(S.owner.headline || "Creative Designer")}</h1>
@@ -86,7 +76,7 @@
           <p class="brands-sub">Designing for, and working alongside, some of golf’s most trusted names.</p></div>
         <ul class="wheel" style="--cols:${cols(Math.min(12, S.brands.length))}">${S.brands.slice(0, 12).map((b) => `<li${b.size ? ` style="--lw:${b.size}"` : ""}><img src="${esc(b.logo)}" alt="${esc(b.name)}" draggable="false"></li>`).join("")}</ul>
       </div></section>` : ""}
-      ${window.HOMEX ? window.HOMEX.dial(HP, catOf) + window.HOMEX.mosaic(HP, catOf) : ""}
+      ${window.HOMEX ? window.HOMEX.dial(HP, catOf) : ""}
       ${ledger()}
       <section class="home-end"><a class="giant" href="#/contact">Contact</a></section>${foot()}`,
       after: () => window.HOMEX && window.HOMEX.wire(),
