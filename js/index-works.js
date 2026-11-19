@@ -14,7 +14,7 @@
       let text = String(p.line || p.summary || "").replace(/\.$/, "");
             text = esc(text);
       return `<li><a class="iw-row" href="${link(p)}" data-i="${i}" data-img="${esc(p.hero)}">
-        <span class="iw-run">${esc(p.title)} <i>(${esc(parseInt(p.year, 10))})</i> — ${text}${p.study ? ` <em>— full case study</em>` : ""}</span></a></li>`;
+        <span class="iw-run">${esc(p.title)} <i>(${esc(parseInt(p.year, 10))})</i> — ${text}</span></a></li>`;
     }).join("");
     return `<section class="iw" aria-label="Index of works">
       <header class="iw-head"><h2>Index<br><i>of works</i></h2></header>
