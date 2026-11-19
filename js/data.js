@@ -176,16 +176,16 @@ window.SITE = {
   /* Brands and organisations you have worked with or for: the wheel on the home page (first 10 shown).
      Logos look best as transparent PNG or SVG, in colour or white — they sit on black. */
   brands: [
+    { name: "SuperStroke", logo: "images/brands/superstroke.png" },                 // colour: top-left corner
     { name: "Oakley", logo: "images/brands/oakley.png", size: 0.88 },
-    { name: "SuperStroke", logo: "images/brands/superstroke.png" },
+    { name: "Longridge", logo: "images/brands/longridge.png" },                    // colour: top-right corner
+    { name: "Skins Golf", logo: "images/brands/skins-golf-white.png" },
     { name: "Bettinardi", logo: "images/brands/bettinardi.png" },
-    { name: "Skins Golf", logo: "images/brands/skins-golf-white.png" },   // left of the middle row
-    { name: "Clicgear", logo: "images/brands/clicgear.png" },
-    { name: "Longridge", logo: "images/brands/longridge.png" },
-    { name: "BagBoy", logo: "images/brands/bagboy.png" },
-    { name: "EzeGlide", logo: "images/brands/ezeglide-white.png" },  // white version: the colour one vanishes on black (colour file: ezeglide.png)
-    { name: "XFLY", logo: "images/brands/xfly-white.png" },          // white version of the black wordmark
-    { name: "The Schoolwear Specialists", logo: "images/brands/schoolwear-specialists.png" }
+    { name: "XFLY", logo: "images/brands/xfly-white.png" },                        // white version of the black wordmark
+    { name: "The Schoolwear Specialists", logo: "images/brands/schoolwear-specialists.png" },
+    { name: "BagBoy", logo: "images/brands/bagboy.png" },                          // colour: bottom-left corner
+    { name: "EzeGlide", logo: "images/brands/ezeglide-white.png" },              // white version: the colour one vanishes on black (colour file: ezeglide.png)
+    { name: "Clicgear", logo: "images/brands/clicgear.png" }                       // colour: bottom-right corner
   ],
 
   gallery: [
