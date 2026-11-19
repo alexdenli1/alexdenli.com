@@ -86,7 +86,7 @@ window.SITE = {
     },
     {
       slug: "adverts", title: "Adverts", category: "graphic-design",
-      year: "2025 – now", status: "current", hero: "images/adverts/hero.jpg",
+      year: "2025 – now", status: "current", thumb: "images/adverts/thumb.webp", cut: true, hero: "images/adverts/hero.jpg",
       process: [{ title: "Brief", text: "Placeholder: the product, the audience and the page it runs on." }, { title: "Concept", text: "Placeholder: the idea that stops a reader on a crowded page." }, { title: "Layout", text: "Placeholder: image, headline and offer, built to the magazine spec." }, { title: "Print-ready", text: "Placeholder: proofs, sign-off and the final files." }],
       summary: "Magazine adverts for print and online, produced monthly.",
       blocks: [
