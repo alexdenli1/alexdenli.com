@@ -316,7 +316,7 @@
     }
     if (live.leadArt) {
       paintFrost($(".lead-frost canvas"), S.owner.collage);
-      if (fine && !reduce && window.LEADWATER) live.stopWater = window.LEADWATER.start(live.leadArt, S.owner.collage);
+      if (fine && !reduce && window.LEADWATER) live.stopWater = window.LEADWATER.start(live.leadArt, S.owner.collage, ALL().map((p) => p.hero).filter((h) => /\.(jpe?g|png|webp)$/i.test(h)));
     }
     if (key === "archive") wireArchive();
     $$("[data-top]").forEach((a) => a.addEventListener("click", (e) => { e.preventDefault(); toTop(); }));

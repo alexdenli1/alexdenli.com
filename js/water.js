@@ -12,7 +12,7 @@
 
   const sm = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 
-  function start(root, src) {
+  function start(root, src, wallSrcs) {
     const flow = root.querySelector(".lead-flow"), rev = root.querySelector(".lead-reveal");
     if (!flow || !rev) return null;
     const fx = flow.getContext("2d"), rx = rev.getContext("2d", { alpha: true });
@@ -26,6 +26,7 @@
     const wet = new Float32Array(GW * GH), tmp = new Float32Array(GW * GH);
     const rings = [];
     let img = null, W = 0, H = 0, dw = 0, dh = 0, dx = 0, dy = 0;
+    const wall = wallSrcs && wallSrcs.length && window.LEADWALL ? window.LEADWALL.make(wallSrcs) : null;
     let px = -1, py = -1, has = false, raf = 0, last = 0, live = false, seen = true, drift = 0;
 
     const size = () => {
@@ -34,7 +35,8 @@
       const cap = Math.min(1.6, devicePixelRatio || 1), cw = Math.min(1700, Math.round(W * cap));
       rev.width = cw; rev.height = Math.round(cw * H / W);
       flow.width = 150; flow.height = Math.max(1, Math.round(150 * H / W));
-      if (img) { const s = Math.max(rev.width / img.width, rev.height / img.height);
+      if (wall) { wall.size(rev.width, rev.height); dw = rev.width; dh = rev.height; dx = dy = 0; }
+      else if (img) { const s = Math.max(rev.width / img.width, rev.height / img.height);
         dw = img.width * s; dh = img.height * s; dx = (rev.width - dw) / 2; dy = (rev.height - dh) / 2; }
     };
 
@@ -111,6 +113,7 @@
       step(dt);
       paintFlow(drift);
 
+      if (wall) wall.tick(drift, dt, has ? px * rev.width / W : -1, has ? py * rev.height / H : -1);
       rx.clearRect(0, 0, rev.width, rev.height);
       if (img) {
         rx.globalCompositeOperation = "source-over";
@@ -151,9 +154,10 @@
     addEventListener("resize", onResize);
     document.addEventListener("visibilitychange", () => { seen = !document.hidden; kick(); });
 
-    const im = new Image(); im.decoding = "async";
-    im.onload = () => { img = im; size(); live = true; root.classList.add("ready"); kick(); };
-    im.src = src;
+    if (wall) wall.onReady = () => { img = wall.canvas; size(); live = true; root.classList.add("ready"); kick(); };
+    else { const im = new Image(); im.decoding = "async";
+      im.onload = () => { img = im; size(); live = true; root.classList.add("ready"); kick(); };
+      im.src = src; }
     size();
 
     return () => { live = false; cancelAnimationFrame(raf); io && io.disconnect();
