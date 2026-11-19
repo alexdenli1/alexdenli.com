@@ -28,14 +28,13 @@ html.intro-on { overflow: hidden; }
   -webkit-mask-composite: source-in; mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent), linear-gradient(to bottom, transparent, #000 7%, #000 93%, transparent);
   mask-composite: intersect; transition: transform 1.3s cubic-bezier(.45, 0, .2, 1), filter 1.2s; }
 .intro.out { opacity: 0; pointer-events: none; }
-.intro.out video, .intro.out img { transform: scale(1.06); filter: blur(3px); }
 </style>
 </head>
 <body>
 <div class="intro" id="intro" aria-hidden="true">
   <video muted playsinline preload="auto" disablepictureinpicture>
-    <source src="images/intro/intro.webm" type="video/webm">
-    <source src="images/intro/intro.mp4" type="video/mp4">
+    <source src="images/intro/intro.webm?v=2" type="video/webm">
+    <source src="images/intro/intro.mp4?v=2" type="video/mp4">
   </video>
 </div>
 <script>
@@ -62,7 +61,15 @@ html.intro-on { overflow: hidden; }
     var im = new Image(); im.alt = ""; im.src = "images/intro/last.jpg"; el.appendChild(im);
     finish(900);
   }
-  v.addEventListener("ended", function () { finish(350); });
+  // the film ends by fading to black; the screen around it follows frame by frame, so the whole page goes dark with it
+  var BG = { 106: "#e1ddd7", 107: "#ccc9c4", 108: "#a4a39e", 109: "#636361", 110: "#30302f", 111: "#181818", 112: "#090909" };
+  (function sync() {
+    if (done || !el.isConnected) return;
+    var f = Math.floor(v.currentTime * 30);
+    el.style.background = f >= 113 ? "#000" : (BG[f] || "#eee9e3");
+    requestAnimationFrame(sync);
+  })();
+  v.addEventListener("ended", function () { el.style.background = "#000"; finish(200); });
   v.addEventListener("error", fail, true);
   var p = v.play(); if (p && p.catch) p.catch(fail);
   setTimeout(function () { finish(0); }, 7000);          // never hold the site hostage
