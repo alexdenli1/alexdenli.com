@@ -9,8 +9,8 @@
    Clicking a product (or a title) opens the project with the picture growing into the page's hero
    (app.js does the transition; the links carry data-vt for it).
 
-   The wash behind each chapter (.ch-wash) is where the project's colour will wipe in, left to
-   right, once the colours are signed off. Until then it has no colour. */
+   Chapters stay black and cream: the project colours are used elsewhere (the transition, the Index
+   of works, the next-project link), not as chapter backgrounds. */
 (() => {
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const pad2 = (n) => String(n).padStart(2, "0");
@@ -43,13 +43,11 @@
     const ch = list.map((p, i) => {
       const href = "#/project/" + p.slug;
       const lines = linesOf(p.title).map((l) => `<span>${esc(l)}</span>`).join(""), info = `<em>${esc(p.year)}</em> ${esc(p.summary || "")}`;
-      return `<section class="ch${isCut(p) ? " ch-cut" : " ch-rect"}" data-slug="${esc(p.slug)}" aria-labelledby="ch-${esc(p.slug)}"
-        style="--ch-colour:${esc(p.colour || "transparent")};--ch-ink:${inkOn(p.colour)}">
-        <i class="ch-wash" aria-hidden="true"></i>
-        <h2 class="ch-title" id="ch-${esc(p.slug)}"><a href="${href}" data-vt data-slug="${esc(p.slug)}">${lines}</a><span class="ch-ink" aria-hidden="true">${lines}</span></h2>
+      return `<section class="ch${isCut(p) ? " ch-cut" : " ch-rect"}" data-slug="${esc(p.slug)}" aria-labelledby="ch-${esc(p.slug)}">
+        <h2 class="ch-title" id="ch-${esc(p.slug)}"><a href="${href}" data-vt data-slug="${esc(p.slug)}">${lines}</a></h2>
         <a class="ch-pic" href="${href}" data-vt data-slug="${esc(p.slug)}" tabindex="-1" aria-hidden="true">
           <img src="${esc(picOf(p))}" alt="" decoding="async" draggable="false"></a>
-        <p class="ch-info"><span>${info}</span><span class="ch-ink" aria-hidden="true">${info}</span></p>
+        <p class="ch-info">${info}</p>
       </section>`;
     }).join("");
     const ring = "Selected work ".repeat(4);
@@ -141,18 +139,11 @@
 
     // as each chapter scrolls in: the product slides in from the left, the title rises a little slower
     secs.forEach((sec) => {
-      const pic = sec.querySelector(".ch-pic"), title = sec.querySelector(".ch-title"), wash = sec.querySelector(".ch-wash");
-      const info = sec.querySelector(".ch-info");
-      const inkT = title.querySelector(".ch-ink"), inkI = info.querySelector(".ch-ink");
-      // the type's second colour is cut by the same edge as the wash, so it changes exactly where the colour passes
-      const cut = (el, ink, edge) => { const w = el.offsetWidth, seen = Math.max(0, Math.min(w, edge - el.offsetLeft));
-        ink.style.clipPath = `inset(-20% ${(w - seen).toFixed(1)}px -20% 0)`; };
+      const pic = sec.querySelector(".ch-pic"), title = sec.querySelector(".ch-title");
       M.stage(sec, { draw(p) {
-        const q = 1 - p, edge = p * sec.offsetWidth;
+        const q = 1 - p;
         pic.style.transform = q > 0 ? `translate3d(${(-q * 0.42 * innerWidth).toFixed(1)}px, 0, 0)` : "";
         title.style.transform = q > 0 ? `translate3d(0, ${(q * 0.16 * innerHeight).toFixed(1)}px, 0)` : "";
-        wash.style.clipPath = `inset(0 ${(q * 100).toFixed(2)}% 0 0)`;
-        cut(title, inkT, edge); cut(info, inkI, edge);
       } }, { pin: false, span: 1 });
     });
 

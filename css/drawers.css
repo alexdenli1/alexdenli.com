@@ -1,6 +1,7 @@
 /* ---------- Home: Brands I've worked with, a wall of drawers (js/drawers.js) ----------
-   Black drawer fronts with a hairline edge and a small pull. Opening one drops it forward over the
-   drawer below and tilts its inside up into view. The only colour is a thin line in the brand's own. */
+   No boxes: each logo sits on the black with a small pull under it. Opening one drops it forward
+   over the logo below and tilts the drawer's inside up into view, on a black ground of its own.
+   The only colour is a thin line in the brand's own. */
 .dws { --dw-w: clamp(160px, 19.4vw, 380px); --dw-h: calc(var(--dw-w) * .46); --dw-gap: clamp(.75rem, 1.4vw, 1.75rem);
   position: relative; z-index: 2; background: var(--bg); padding: calc(var(--nav-h) + 8vh) var(--pad) calc(var(--dw-h) + 12vh); }
 .dws-head { display: flex; justify-content: space-between; align-items: end; gap: 2rem; margin-bottom: 7vh; }
@@ -15,19 +16,19 @@
 
 /* the front */
 .dw-front { position: absolute; inset: 0; z-index: 2; display: grid; place-items: center; padding: 0; cursor: pointer;
-  background: #000; border: 1px solid rgba(238, 233, 227, .2); border-radius: 2px; color: inherit; font: inherit;
-  transition: transform .42s var(--ease), box-shadow .42s var(--ease), border-color .3s; }
+  background: transparent; border: 0; border-radius: 0; color: inherit; font: inherit;
+  transition: transform .42s var(--ease), background-color .3s; }
 .dw-front img { width: calc(62% * var(--lw, 1)); height: 52%; object-fit: contain; pointer-events: none; }
 .dw-pull { position: absolute; left: 50%; bottom: 10%; width: 18%; height: 3px; margin-left: -9%; border-radius: 2px; background: rgba(238, 233, 227, .32); }
 .dw-front:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 /* pulled out: forward and down over the drawer below, a little past its stop and back (the overshoot) */
-.dw.open .dw-front { transform: translate3d(0, calc(var(--dw-h) * .92), 70px); border-color: rgba(238, 233, 227, .5);
-  box-shadow: 0 2.4rem 3rem -1rem rgba(0, 0, 0, .9), 0 0 0 1px rgba(0, 0, 0, .6);
-  transition: transform .62s cubic-bezier(.3, 1.45, .55, 1), box-shadow .5s var(--ease), border-color .3s; }
+.dw.open .dw-front { transform: translate3d(0, calc(var(--dw-h) * .92), 70px); background: #000;
+  box-shadow: 0 2.4rem 3rem -1rem rgba(0, 0, 0, .95);
+  transition: transform .62s cubic-bezier(.3, 1.45, .55, 1), background-color .2s; }
 
 /* the inside: the drawer's box, seen from above as it comes out */
 .dw-in { position: absolute; left: 3%; right: 3%; top: 0; height: 100%; z-index: 1; overflow: hidden; display: grid; grid-template-rows: auto 1fr; gap: .55rem;
-  padding: .8rem .9rem .7rem; background: #000; border: 1px solid rgba(238, 233, 227, .16); border-top: 2px solid var(--bc);
+  padding: .8rem .9rem .7rem; background: #000; border-top: 2px solid var(--bc);
   transform-origin: 50% 100%; transform: translate3d(0, 0, -40px) rotateX(70deg); opacity: 0;
   transition: transform .4s var(--ease), opacity .25s; }
 .dw.open .dw-in { transform: translate3d(0, calc(var(--dw-h) * .1), 30px) rotateX(16deg); opacity: 1;
@@ -36,7 +37,7 @@
 .dw-did.ph { color: var(--muted); font-style: italic; }
 .dw-pics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .4rem; min-height: 0; }
 .dw-pics img, .dw-ph { display: grid; place-items: center; width: 100%; height: 100%; min-height: 0; object-fit: cover; }
-.dw-ph { border: 1px dashed rgba(238, 233, 227, .3); font-style: normal; font-size: .6875rem; color: var(--muted); text-align: center; line-height: 1.2; padding: .2rem; }
+.dw-ph { background: rgba(238, 233, 227, .07); font-style: normal; font-size: .6875rem; color: var(--muted); text-align: center; line-height: 1.2; padding: .2rem; }
 
 @media (prefers-reduced-motion: reduce) {
   .dw-front, .dw-in, .dw.open .dw-front, .dw.open .dw-in { transition: none; }

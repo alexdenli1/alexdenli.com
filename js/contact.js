@@ -29,6 +29,8 @@
     // each letter leans towards the cursor and steps a little after it; the nearer the cursor, the more
     const lean = () => {
       raf = 0;
+      if (!sec.isConnected) return;
+      if (centres.length !== L.length) measure();   // positions are re-read after any scroll
       L.forEach((l, i) => {
         const dx = px - centres[i][0], dy = py - centres[i][1], d = Math.hypot(dx, dy), k = Math.exp(-d / 520);
         const tilt = Math.max(-1, Math.min(1, dx / 420)) * 11 * k;
