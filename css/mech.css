@@ -1,0 +1,19 @@
+/* ---------- MECH: the shared project page engine (js/mech.js) ----------
+   A stage is a tall section with one sticky screen inside it. With reduced motion the tall section
+   collapses and the same story is laid out as still frames instead. */
+@font-face { font-family: "IBM Plex Mono"; src: url("../fonts/plexmono-400.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "IBM Plex Mono"; src: url("../fonts/plexmono-600.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+
+.mech { position: relative; height: var(--len, 400vh); }
+.mech-stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
+.mech-stills { display: none; }
+
+/* annotation strokes draw in from 0 to 1 along their own length */
+.mech-line { fill: none; stroke-dasharray: 1; stroke-dashoffset: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mech { height: auto !important; }
+  .mech-stage { display: none !important; }
+  .mech-stills { display: block !important; }
+  .mech-line { stroke-dashoffset: 0; }
+}
