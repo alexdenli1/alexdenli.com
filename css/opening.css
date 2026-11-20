@@ -1,0 +1,16 @@
+/* ---------- Home: the opening ----------
+   The name fills the width of the screen with the work playing inside the letters (js/opening.js).
+   Pure black and cream: the footage is the only colour. */
+.op { --op-pad: clamp(1rem, 2.3vw, 2.75rem); position: relative; z-index: 2; height: 100vh; height: 100svh; min-height: 560px; background: #000; }
+/* the drawn name sits over everything below it while it travels up into the nav, then hands over to the logo */
+.op-type { position: fixed; left: 0; top: 0; z-index: 39; display: block; width: 100vw; height: 100vh; pointer-events: none;
+  transform-origin: 0 0; will-change: transform, opacity; }
+/* the real heading, for screen readers and search; the canvas draws it */
+.op-name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.op-line { position: absolute; left: var(--op-left, var(--op-pad)); top: calc(var(--op-top, 60vh) + clamp(1.4rem, 3.4vh, 2.6rem));
+  max-width: 46ch; font-size: clamp(1.0625rem, 1.15vw, 1.375rem); line-height: 1.4; color: var(--fg); }
+
+/* still: the name stays in its place with one picture inside it */
+@media (prefers-reduced-motion: reduce) {
+  .op-type { position: absolute; width: 100%; height: 100%; }
+}
