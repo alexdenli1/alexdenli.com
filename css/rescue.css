@@ -224,3 +224,11 @@
   .rs-strip, .rs-two { flex-wrap: wrap; justify-content: center; } .rs-sticky { position: static; grid-column: 1 / -1; } .rs-steps { grid-column: 1 / -1; }
   .rs-gr { justify-self: start; } .rs-sw6 { grid-template-columns: repeat(3, 1fr); }
 }
+
+/* ---------- the site's frame (revamp): title, year and summary, then the picture edge to edge.
+   Accent: the project's own colour (var(--project)), used for the year only up here. ---------- */
+.rs-frame { display: grid; gap: 3vh; margin-bottom: 6vh; }
+.rs-frame h1 { margin: 0; font-size: clamp(4.5rem, 13vw, 16rem); font-weight: 800; font-stretch: 75%; line-height: .8; letter-spacing: -.02em; }
+.rs-framesub { display: flex; gap: 1.4rem; align-items: baseline; max-width: 40rem; font-size: clamp(1.0625rem, 1.2vw, 1.375rem); line-height: 1.45; }
+.rs-framesub em { font-family: "Fraunces", Georgia, serif; font-size: 1.3em; flex: none; color: var(--project, var(--fg)); }
+.rs .rs-hero { margin-left: calc(var(--pad) * -1); margin-right: calc(var(--pad) * -1); border-radius: 0; }
