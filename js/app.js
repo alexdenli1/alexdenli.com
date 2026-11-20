@@ -69,12 +69,7 @@
       <b>${p.hidden && !found.has(p.slug) ? "·····" : esc(p.title)}</b></a></li>`).join("");
     return {
       title: "", label: "Home", scroll: 0,
-      html: `      <section class="lead" aria-label="Introduction">
-        ${S.owner.collage ? `<div class="lead-art" aria-hidden="true"><div class="lead-frost"><canvas></canvas></div>
-          <canvas class="lead-flow"></canvas><canvas class="lead-reveal"></canvas></div>` : ""}
-        <div class="lead-in"><h1 class="lead-title">${esc(S.owner.headline || "Creative Designer")}</h1>
-        <ul class="lead-disc">${(S.owner.disciplines || []).map((t) => `<li>${esc(t)}</li>`).join("")}</ul></div>
-      </section>
+      html: `      ${window.PROTOHERO ? window.PROTOHERO.html() : ""}
       ${(S.brands || []).length ? `<section class="brands" style="--n:${Math.min(12, S.brands.length)}" aria-label="Brands I have worked with"><div class="brands-pin">
         <div class="brands-head"><h2>Brands I’ve worked with</h2>
           <div class="brands-rule" aria-hidden="true"></div>
@@ -84,7 +79,7 @@
       ${window.HOMEX ? window.HOMEX.dial(HP, catOf) : ""}
       ${ledger()}
       <section class="home-end"><a class="giant" href="#/contact">Contact</a></section>${foot()}`,
-      after: () => { if (window.HOMEX) window.HOMEX.wire(); if (window.INDEXWORKS) window.INDEXWORKS.wire(); },
+      after: () => { if (window.PROTOHERO) window.PROTOHERO.wire(); if (window.HOMEX) window.HOMEX.wire(); if (window.INDEXWORKS) window.INDEXWORKS.wire(); },
     };
   }
 
