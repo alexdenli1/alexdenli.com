@@ -87,9 +87,20 @@
   };
 
   function fit(secs) {
-    if (innerWidth <= 820) return;
     const W = innerWidth, H = innerHeight;
     const pad = parseFloat(getComputedStyle(secs[0]).paddingLeft) || 0;
+    if (W <= 820) {
+      // phone: chapters stack; each title only has to fit the width of the screen
+      secs.forEach((sec) => {
+        const h = sec.querySelector(".ch-title"), spans = [...h.querySelectorAll("span")];
+        h.style.setProperty("--fs", "100px"); h.style.top = "";
+        const wide = Math.max(...spans.map((s) => s.getBoundingClientRect().width)) || 1;
+        h.style.setProperty("--fs", Math.min(100 * (W - 2 * pad) / wide, W * 0.3).toFixed(1) + "px");
+        const im = sec.querySelector(".ch-pic img"), pic = sec.querySelector(".ch-pic"), info = sec.querySelector(".ch-info");
+        im.style.width = im.style.height = pic.style.left = pic.style.top = info.style.maxWidth = info.style.whiteSpace = "";
+      });
+      return;
+    }
     secs.forEach((sec, i) => {
       const L = LAYOUT[i % LAYOUT.length];
       const h = sec.querySelector(".ch-title"), spans = [...h.querySelectorAll("span")];

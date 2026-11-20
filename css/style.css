@@ -503,3 +503,9 @@ main:focus { outline: none; }
 .p-meta a.ul { background: none; }
 .p-meta a.ul:hover { text-decoration: underline; text-underline-offset: 4px; }
 
+
+/* phone: the home button is just its house, so it covers less of the page */
+@media (max-width: 820px) {
+  .flag { padding: .35rem; bottom: 1rem; }
+  .flag span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+}

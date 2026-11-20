@@ -146,3 +146,33 @@
   .rq2-sks { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .rq2-n { grid-template-columns: 1fr; }
 }
+
+/* ---------- phone: each stage fits one screen ---------- */
+@media (max-width: 820px) {
+  .rq2-hero { grid-template-rows: auto 1fr; padding-top: calc(var(--nav-h) + 4vh); }
+  .rq-hc { max-height: 46vh; }
+  .rq2-disp .mech-stage { grid-template-rows: 56% 1fr; padding: var(--nav-h) var(--pad) 2vh; }
+  .rq2-cw { padding: 2vh 0 0; }
+  .rq-case { height: 44vh; }
+  .rq2-side { gap: 1.2vh; align-content: start; }
+  .rq2-count b { font-size: 20vw; }
+  .rq2-act { font-size: 13vw; }
+  .rq2-desc { font-size: 1.0625rem; }
+  .rq2-acts { gap: 1.1rem; font-size: .875rem; padding-top: .8rem; }
+  .rq2-acts li.on::before { top: calc(-.8rem - 2px); }
+  .rq2-inside .mech-stage { grid-template-rows: auto 1fr auto; row-gap: 1.6vh; padding: calc(var(--nav-h) + 2vh) var(--pad) 2vh; }
+  .rq2-h, .rq2-exw, .rq2-parts { grid-column: 1; }
+  .rq2-h { grid-row: 1; } .rq2-h p { display: none; } .rq2-h h2 { font-size: 13vw; }
+  .rq2-exw { grid-row: 2; height: 100%; max-height: 50vh; }
+  .rq2-parts { grid-row: 3; grid-template-columns: 1fr 1fr; gap: .3rem 1rem; }
+  .rq2-parts li { font-size: .9375rem; }
+  .rq2-app .mech-stage { grid-template-rows: auto 1fr; row-gap: 2vh; padding: calc(var(--nav-h) + 2vh) var(--pad) 2vh; }
+  .rq2-al { gap: 1.2vh; }
+  .rq2-al h2 { font-size: 9.5vw; max-width: none; }
+  /* only the screen in the phone is named */
+  .rq2-g li:not(.on), .rq2-g:not(:has(li.on)) { display: none; }
+  .rq2-g li { flex-direction: column; gap: .2rem; }
+  .rq2-phone { height: 100%; max-height: 60vh; }
+  .rq2-cols li img { height: 26vh; }
+  .rq2-cols ul { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 4vh; }
+}

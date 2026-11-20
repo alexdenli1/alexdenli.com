@@ -126,3 +126,28 @@
   .sh2-tph, .sh2-dets { grid-template-columns: 1fr 1fr; }
   .sh2-steps, .sh2-fst { grid-template-columns: 1fr 1fr; }
 }
+
+/* ---------- phone: each stage fits one screen ---------- */
+@media (max-width: 820px) {
+  .sh2-hero h1 { font-size: 30vw; }
+  .sh2-wash .mech-stage { grid-template-rows: 54% 1fr; padding: var(--nav-h) var(--pad) 2vh; }
+  .sh2-cv { height: 100%; }
+  .sh2-side { gap: 1vh; align-content: start; }
+  .sh2-step { font-size: 14vw; }
+  .sh2-desc { font-size: 1.0625rem; }
+  .sh2-det { display: none; }
+  .sh2-clock b { font-size: 1.75rem; }
+  .sh2-apart .mech-stage { grid-template-rows: 52% 1fr; gap: 2vh; padding: calc(var(--nav-h) + 2vh) var(--pad) 2vh; }
+  .sh2-pair { height: 100%; max-height: none; }
+  .sh2-ptx { gap: 1.2vh; align-content: start; }
+  .sh2-ptx h2 { font-size: 13vw; }
+  .sh2-ptx p { display: none; }
+  .sh2-parts { gap: .2rem 1rem; }
+  .sh2-parts li { font-size: .875rem; }
+  .sh2-forms .mech-stage { grid-template-rows: auto 1fr; gap: 2vh; padding: calc(var(--nav-h) + 3vh) var(--pad) 2vh; }
+  .sh2-ftx { gap: 1.6vh; }
+  .sh2-ftx h2 { font-size: 11vw; max-width: none; }
+  /* only the form on screen is named */
+  .sh2-ftx li:not(.on) { display: none; }
+  .sh2-fv { height: 100%; }
+}

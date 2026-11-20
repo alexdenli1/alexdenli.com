@@ -23,13 +23,18 @@
   function html(brands, title, sub) {
     const list = (brands || []).slice(0, 12);
     if (!list.length) return "";
+    /* on a phone the wall is two columns: the colour logos keep the four corners there too */
+    const colourIdx = list.map((b, k) => (b.colour ? k : -1)).filter((k) => k >= 0), n = list.length;
+    const corner = (k) => { const c = colourIdx.indexOf(k); return c < 0 ? null : [0, 1, n - 2, n - 1][c]; };
+    const others = list.map((_, k) => k).filter((k) => corner(k) === null || corner(k) === undefined);
+    const order = (k) => { const c = corner(k); return c !== null && c !== undefined ? c : 2 + others.indexOf(k); };
     let i = 0;
     const drawer = (b) => {
-      const id = "dw-" + i++, pics = (b.pics || []).slice(0, 3);
+      const k = i, id = "dw-" + i++, pics = (b.pics || []).slice(0, 3);
       const did = b.did || `Placeholder: one or two lines on what I did for ${b.name}.`;
       const shots = pics.length ? pics.map((s) => `<img src="${esc(s)}" alt="" loading="lazy">`).join("")
         : `<i class="dw-ph">Picture to come</i><i class="dw-ph">Picture to come</i><i class="dw-ph">Picture to come</i>`;
-      return `<li class="dw" style="--bc:${esc(b.colour || "var(--fg)")}">
+      return `<li class="dw" style="--bc:${esc(b.colour || "var(--fg)")};--o:${order(k)}">
         <div class="dw-in" id="${id}" role="region" aria-label="${esc(b.name)}">
           <p class="dw-did${b.did ? "" : " ph"}">${esc(did)}</p><div class="dw-pics">${shots}</div></div>
         <button class="dw-front" type="button" aria-expanded="false" aria-controls="${id}">
@@ -50,11 +55,13 @@
       li.classList.toggle("open", on);
       li.querySelector(".dw-front").setAttribute("aria-expanded", String(on));
     };
+    // on a touch screen: tap a drawer to open it, tap it again (or anywhere else) to close it
+    document.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse" && sec.isConnected && !e.target.closest(".dw")) all.forEach((o) => set(o, false)); });
     all.forEach((li) => {
       const btn = li.querySelector(".dw-front");
       li.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse") set(li, true); });
       li.addEventListener("pointerleave", (e) => { if (e.pointerType === "mouse") set(li, false); });
-      btn.addEventListener("focus", () => set(li, true));
+      btn.addEventListener("focus", () => { if (btn.matches(":focus-visible")) set(li, true); });   // keyboard focus; a tap opens it on click
       btn.addEventListener("blur", () => { if (!li.matches(":hover")) set(li, false); });
       btn.addEventListener("click", (e) => { if (e.pointerType !== "mouse") set(li, !li.classList.contains("open")); });
       btn.addEventListener("keydown", (e) => { if (e.key === "Escape") { set(li, false); } });

@@ -85,26 +85,32 @@ void main() {
     function layout() {
       W = innerWidth; H = innerHeight; dpr = Math.min(1.5, devicePixelRatio || 1);
       const pad = parseFloat(getComputedStyle(root).getPropertyValue("--op-pad")) || W * 0.023;
-      const m = mx; setFont(m, 100);
-      const t = m.measureText(NAME), w100 = t.actualBoundingBoxLeft + t.actualBoundingBoxRight;
-      const F = 100 * (W - 2 * pad) / w100;
-      setFont(m, F);
-      const tm = m.measureText(NAME), asc = tm.actualBoundingBoxAscent, desc = Math.max(0, tm.actualBoundingBoxDescent);
+      // on a phone the name stacks, one word a line, each line as wide as the screen
+      const phone = W <= 820, lines = phone ? NAME.split(" ") : [NAME], gap = phone ? H * 0.012 : 0;
+      const L = lines.map((s) => {
+        setFont(mx, 100); const a = mx.measureText(s), F = 100 * (W - 2 * pad) / (a.actualBoundingBoxLeft + a.actualBoundingBoxRight);
+        setFont(mx, F); const b = mx.measureText(s);
+        return { s, F, x: pad + b.actualBoundingBoxLeft, asc: b.actualBoundingBoxAscent, desc: Math.max(0, b.actualBoundingBoxDescent) };
+      });
       // the letters are drawn taller than they are wide (as the old "Projects" word was), so the name
       // fills the screen rather than sitting in a thin band across it
-      const SY = Math.max(1, Math.min(1.7, (H * 0.44) / (asc + desc)));
-      const h = (asc + desc) * SY, top = Math.round(H * 0.45 - h / 2);
-      const x = pad + tm.actualBoundingBoxLeft, base = top + asc * SY;
-      box = { x: pad, y: top, w: W - 2 * pad, h, F, base, left: x, sy: SY };
-      // where each letter starts, so the edit can cut letter by letter
-      edges = [];
-      for (let i = 1; i < NAME.length; i++) if (NAME[i] !== " ") edges.push(m.measureText(NAME.slice(0, i)).width + x - box.x);
-      edges.push(box.w + 4);
-      // draw the mask at full resolution
+      const raw = L.reduce((n, l) => n + l.asc + l.desc, 0);
+      const SY = Math.max(1, Math.min(phone ? 2.2 : 1.7, (H * (phone ? 0.56 : 0.44) - gap * (L.length - 1)) / raw));
+      const h = raw * SY + gap * (L.length - 1), top = Math.round(H * (phone ? 0.42 : 0.45) - h / 2);
+      box = { x: pad, y: top, w: W - 2 * pad, h, sy: SY };
+      // draw the mask at full resolution, and note where each letter starts so the edit can cut letter by letter
       mask.width = Math.round(W * dpr); mask.height = Math.round(H * dpr);
       mx.setTransform(dpr, 0, 0, dpr, 0, 0); mx.clearRect(0, 0, W, H);
-      setFont(mx, F); mx.fillStyle = "#fff"; mx.textBaseline = "alphabetic";
-      mx.translate(0, base); mx.scale(1, SY); mx.fillText(NAME, x, 0);
+      mx.fillStyle = "#fff"; mx.textBaseline = "alphabetic";
+      const at = new Set();
+      let y = top;
+      L.forEach((l) => {
+        setFont(mx, l.F);
+        for (let i = 1; i < l.s.length; i++) if (l.s[i] !== " ") at.add(Math.round(mx.measureText(l.s.slice(0, i)).width + l.x - box.x));
+        mx.save(); mx.translate(0, y + l.asc * SY); mx.scale(1, SY); mx.fillText(l.s, l.x, 0); mx.restore();
+        y += (l.asc + l.desc) * SY + gap;
+      });
+      edges = [...at].sort((a, b) => a - b); edges.push(box.w + 4);
       cv.width = mask.width; cv.height = mask.height;
       root.style.setProperty("--op-top", (box.y + box.h).toFixed(1) + "px");
       root.style.setProperty("--op-left", box.x.toFixed(1) + "px");
@@ -125,9 +131,10 @@ void main() {
       "images/rescue/hero.jpg": 0.35, "images/relinquit/hero.jpg": 0.62, "images/shield/hero.jpg": 0.45, "images/aeropress/hero.jpg": 0.55 };
     function paintShot(ctx, i, t, dx, clip) {
       const im = pics[i]; if (!im) return false;
-      const w = edit.width, h = edit.height, s = (w * 1.16) / im.naturalWidth, iw = im.naturalWidth * s, ih = im.naturalHeight * s;
+      // cover the letters whatever their shape (a wide band on a desktop, a tall block on a phone), with room to drift
+      const w = edit.width, h = edit.height, s = Math.max((w * 1.16) / im.naturalWidth, (h * 1.06) / im.naturalHeight), iw = im.naturalWidth * s, ih = im.naturalHeight * s;
       const fy = FOCUS[SHOTS[i]] ?? 0.5, z = 1 + 0.035 * t;
-      const x = -(iw - w) * (1 - t) + dx, y = -(ih * fy - h / 2);
+      const x = -(iw - w) * (1 - t) + dx, y = -Math.max(0, Math.min(ih - h, ih * fy - h / 2));
       ctx.save();
       if (clip != null) { ctx.beginPath(); ctx.rect(0, 0, clip * ES, h); ctx.clip(); }
       ctx.translate(x + iw / 2, y + ih / 2); ctx.scale(z, z); ctx.drawImage(im, -iw / 2, -ih / 2, iw, ih);
@@ -284,6 +291,8 @@ void main() {
       lastMove = performance.now(); water.trail(gx, gy); kick();
     };
     const leave = () => water && water.lift();
+    // on a touch screen the finger drags the water, as the cursor does (the page still scrolls)
+    const touch = (e) => { const t = e.touches && e.touches[0]; if (t) move({ clientX: t.clientX, clientY: t.clientY }); };
     const onScroll = () => scrub();
     const onResize = () => { layout(); prog = -1; scrub(); if (reduce) still(); kick(); };
     const onVis = () => { seen = !document.hidden; kick(); };
@@ -312,6 +321,7 @@ void main() {
     });
 
     addEventListener("pointermove", move, { passive: true });
+    addEventListener("touchstart", touch, { passive: true }); addEventListener("touchmove", touch, { passive: true }); addEventListener("touchend", leave);
     document.addEventListener("pointerleave", leave);
     addEventListener("scroll", onScroll, { passive: true });
     addEventListener("resize", onResize);
@@ -319,7 +329,8 @@ void main() {
 
     return () => {
       alive = false; cancelAnimationFrame(raf);
-      removeEventListener("pointermove", move); document.removeEventListener("pointerleave", leave);
+      removeEventListener("pointermove", move); removeEventListener("touchstart", touch); removeEventListener("touchmove", touch); removeEventListener("touchend", leave);
+      document.removeEventListener("pointerleave", leave);
       removeEventListener("scroll", onScroll); removeEventListener("resize", onResize);
       removeEventListener("intro:done", stroke); document.removeEventListener("visibilitychange", onVis);
       if (nav) { nav.classList.remove("nav-open"); nav.style.removeProperty("--logo-in"); }

@@ -44,3 +44,12 @@
 .iw.split li:has(> .iw-row.on) { border-bottom-color: var(--iw-c, var(--line)); }
 .iw-pic { outline: 2px solid transparent; outline-offset: -2px; transition: opacity .6s, transform .9s var(--ease), outline-color .4s; }
 .iw.split .iw-pic { outline-color: var(--iw-c, transparent); }
+
+/* phone: a held line's picture opens under the list, full width, and the list stays where it is */
+@media (max-width: 820px) {
+  .iw-body { display: flex; flex-direction: column; }
+  .iw.split .iw-list { margin-left: 0; }
+  .iw-pic { order: 2; position: relative; left: auto; top: auto; display: block; width: auto; max-height: none; margin: 0 var(--pad);
+    height: 0; transform: none; opacity: 0; transition: height .5s var(--ease), opacity .4s, margin .5s var(--ease); }
+  .iw.split .iw-pic { height: calc((100vw - 2 * var(--pad)) * 2 / 3); margin-top: 3vh; opacity: 1; transform: none; }
+}

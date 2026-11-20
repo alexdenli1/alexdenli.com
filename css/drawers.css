@@ -43,8 +43,14 @@
   .dw-front, .dw-in, .dw.open .dw-front, .dw.open .dw-in { transition: none; }
 }
 @media (max-width: 820px) {
-  .dws { --dw-w: 42vw; }
-  .dws-head { flex-direction: column; align-items: start; }
+  /* phone: one wall of two columns, the colour logos in its corners; deeper drawers so the inside has room */
+  .dws { --dw-w: calc((100vw - 2 * var(--pad) - var(--dw-gap)) / 2); --dw-h: calc(var(--dw-w) * .62); --dw-gap: .75rem; padding-top: calc(var(--nav-h) + 5vh); }
+  .dws-head { flex-direction: column; align-items: start; margin-bottom: 4vh; }
   .dws-head p { text-align: left; }
-  .dws-row { flex-wrap: wrap; }
+  .dws-wall { grid-template-columns: 1fr 1fr; perspective: 900px; }
+  .dws-row { display: contents; }
+  .dw { order: var(--o, 0); }
+  .dw-in { padding: .6rem .6rem .5rem; gap: .4rem; }
+  .dw-did { font-size: .8125rem; }
+  .dw-ph { font-size: .5625rem; }
 }

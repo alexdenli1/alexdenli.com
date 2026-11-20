@@ -168,7 +168,7 @@
   let morphFrom = null, lastProject = null;
   document.addEventListener("click", (e) => {
     const a = e.target.closest && e.target.closest("a[data-vt]");
-    if (!a || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (!a || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) { morphFrom = null; return; }
     morphFrom = a.querySelector("img") || (a.closest(".iw") && $(".iw.split .iw-pic img.on")) || $(`.ch[data-slug="${a.dataset.slug}"] .ch-pic img`);
   }, true);
   /* the project's colour washes across behind the growing picture: the old page leaves a little

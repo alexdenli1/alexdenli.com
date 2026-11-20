@@ -75,7 +75,7 @@
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { measure(); });
     let rs = 0; addEventListener("resize", () => { clearTimeout(rs); rs = setTimeout(() => { if (sec.isConnected) measure(); }, 150); });
     if ("IntersectionObserver" in window) new IntersectionObserver((e) => { visible = e[0].isIntersecting; if (visible) start(); }).observe(sec);
-    if (!fine) return;                                    // touch: the lines keep drifting and are plain links
+    // (touch screens are handled below, once the hold and release steps are defined)
 
     const rewind = (r, dur) => {
       if (reduce) { r.pos = 0; return; }
@@ -98,6 +98,23 @@
       held = false; sec.classList.remove("split"); shown = ""; imgs.forEach((im) => im.classList.remove("on"));
       R.forEach((r) => { r.mode = "auto"; r.pos %= r.period; }); start();
     };
+
+    if (!fine) {
+      // touch: the first tap on a line holds it (everything stops, it rewinds and reads, and its picture opens
+      // under the list, so nothing moves under the finger); a second tap on the same line opens the project
+      R.forEach((r) => r.el.addEventListener("click", (e) => {
+        if (held && cur === r) return;
+        e.preventDefault();
+        if (cur && cur !== r) { cur.el.classList.remove("on"); if (held) rewind(cur, 1); }
+        cur = r; r.el.classList.add("on");
+        if (!held) hold(); else focus(r);
+      }));
+      document.addEventListener("pointerdown", (e) => {
+        if (held && sec.isConnected && !e.target.closest(".iw-row, .iw-pic")) { if (cur) cur.el.classList.remove("on"); cur = null; release(); }
+      });
+      pic.addEventListener("click", () => { if (cur) cur.el.click(); });
+      return;
+    }
 
     const enter = (r) => {
       clearTimeout(leaveT);
