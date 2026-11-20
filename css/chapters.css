@@ -1,0 +1,59 @@
+/* ---------- Home: project chapters (js/chapters.js) ----------
+   One screen per project. The product sits on one side, the title on the other, alternating;
+   the product always arrives from the left. Black and cream until the project colours land. */
+.chs { position: relative; z-index: 1; background: var(--bg); }
+.ch { position: relative; height: 100vh; height: 100svh; min-height: 640px; overflow: hidden;
+  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 2vw; align-items: center;
+  padding: var(--nav-h) var(--pad) 0; }
+.ch-wash { position: absolute; inset: 0; background: var(--ch-colour, transparent); clip-path: inset(0 100% 0 0); pointer-events: none; }
+
+.ch-pic { position: relative; grid-row: 1; grid-column: 1 / span 6; display: grid; place-items: center; height: 100%; max-height: 80vh; will-change: transform; cursor: pointer; }
+.ch-pic img { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; }
+.ch-cut .ch-pic img { max-height: 74vh; filter: drop-shadow(0 2.4vh 3.2vh rgba(0, 0, 0, .55)); }
+/* a full picture rather than a cut-out: a sharp crop, edge to edge on its side */
+.ch-rect .ch-pic { grid-column: 1 / span 7; margin-left: calc(var(--pad) * -1); height: auto; aspect-ratio: 3 / 2; }
+.ch-rect .ch-pic img { width: 100%; height: 100%; max-height: none; object-fit: cover; }
+
+.ch-tx { position: relative; grid-row: 1; grid-column: 8 / span 5; display: grid; gap: 3.2vh; align-content: center; min-width: 0; }
+.ch-year { font-family: "Fraunces", Georgia, serif; font-style: italic; font-size: clamp(1.25rem, 1.6vw, 1.875rem); color: var(--muted); }
+.ch-title { font-size: clamp(3.5rem, 7.6vw, 9.5rem); font-weight: 800; font-stretch: 75%; line-height: .86; letter-spacing: -.02em; text-wrap: balance; }
+.ch-title a { display: block; }
+.ch-title a:hover { color: var(--muted); }
+.ch-hook { font-size: clamp(1.125rem, 1.35vw, 1.5rem); line-height: 1.45; max-width: 30em; }
+
+/* every other chapter: title on the left, product on the right */
+.ch-r .ch-tx { grid-column: 1 / span 5; }
+.ch-r .ch-pic { grid-column: 7 / span 6; }
+.ch-r.ch-rect .ch-pic { grid-column: 6 / span 7; margin-left: 0; margin-right: calc(var(--pad) * -1); }
+
+/* the pinned badge: chapter number over a ring of type that turns with the scroll */
+.ch-badge { position: fixed; right: var(--pad); bottom: 1.6rem; z-index: 35; width: 6.75rem; height: 6.75rem; display: grid; place-items: center;
+  opacity: 0; transform: translateX(-1.5rem); transition: opacity .4s var(--ease), transform .5s var(--ease); pointer-events: none; }
+.ch-badge.on { opacity: 1; transform: none; }
+/* the badge takes the corner the home button uses; on the home page that button only scrolls to the top */
+.ch-on .flag { transform: translateY(200%); }
+.ch-badge svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.ch-badge text { font-size: 9.6px; letter-spacing: .02em; fill: var(--muted); }
+.ch-badge span { display: flex; align-items: baseline; font-variant-numeric: tabular-nums; }
+.ch-badge b { font-size: 1.75rem; font-weight: 800; font-stretch: 75%; line-height: 1; }
+.ch-badge small { font-size: .875rem; color: var(--muted); margin-left: .1rem; }
+
+/* ---------- the home to project transition ---------- */
+/* the picture grows into the page's hero while the new page wipes in behind it, left to right */
+::view-transition-group(hero) { animation-duration: .82s; animation-timing-function: cubic-bezier(.7, 0, .2, 1); z-index: 2; }
+::view-transition-old(hero), ::view-transition-new(hero) { height: 100%; width: 100%; object-fit: contain; animation-duration: .82s; animation-timing-function: cubic-bezier(.7, 0, .2, 1); }
+::view-transition-old(root) { animation: none; }
+::view-transition-new(root) { animation: vt-wipe .82s cubic-bezier(.7, 0, .2, 1) both; }
+@keyframes vt-wipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+.vt-clone { position: fixed; left: 0; top: 0; z-index: 85; margin: 0; object-fit: contain; transform-origin: 0 0; pointer-events: none; will-change: transform; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ch-pic { transform: none !important; }
+  .ch-badge { transition: none; }
+}
+@media (max-width: 820px) {
+  .ch { grid-template-columns: 1fr; grid-template-rows: auto auto; align-content: center; row-gap: 4vh; height: auto; min-height: 100svh; padding-bottom: 8vh; }
+  .ch-pic, .ch-r .ch-pic, .ch-rect .ch-pic, .ch-r.ch-rect .ch-pic { grid-column: 1; grid-row: 1; margin: 0; max-height: 46vh; }
+  .ch-tx, .ch-r .ch-tx { grid-column: 1; grid-row: 2; }
+  .ch-badge { width: 5rem; height: 5rem; }
+}

@@ -76,10 +76,10 @@
           <p class="brands-sub">Designing for, and working alongside, some of golf’s most trusted names.</p></div>
         <ul class="wheel" style="--cols:${cols(Math.min(12, S.brands.length))}">${((pos) => S.brands.slice(0, 12).map((b, i) => `<li style="--x:${pos[i].x};--y:${pos[i].y}${b.size ? `;--lw:${b.size}` : ""}"><img src="${esc(b.logo)}" alt="${esc(b.name)}" draggable="false"></li>`).join(""))(scatter(Math.min(12, S.brands.length)))}</ul>
       </div></section>` : ""}
-      ${window.HOMEX ? window.HOMEX.dial(HP, catOf) : ""}
+      ${window.CHAPTERS ? window.CHAPTERS.html(S.projects) : ""}
       ${ledger()}
       <section class="home-end"><a class="giant" href="#/contact">Contact</a></section>${foot()}`,
-      after: () => { if (window.HOMEX) window.HOMEX.wire(); if (window.INDEXWORKS) window.INDEXWORKS.wire(); },
+      after: () => { if (window.CHAPTERS) window.CHAPTERS.wire(); if (window.INDEXWORKS) window.INDEXWORKS.wire(); },
     };
   }
 
@@ -164,11 +164,48 @@
     return { key, sub: b, page: (PAGES[key] && PAGES[key](b)) || lost() };
   }
 
+  /* ---------- Home <-> project: the picture grows into the page's hero ----------
+     A chapter picture (or an Index of works line) opens its project with that picture growing into
+     the project page's hero while the page wipes in behind it, left to right. Back reverses it,
+     returning to the same chapter. View Transitions where the browser has them; otherwise the
+     picture is cloned and flown to the hero's place. With reduced motion it is an instant swap. */
+  const HERO = "[data-hero], .ax-hero-img, .rq-hc, .sh-hprod, .rs-hero img, .p-hero img";
+  let morphFrom = null, lastProject = null;
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest && e.target.closest("a[data-vt]");
+    if (!a || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    morphFrom = a.querySelector("img") || (a.closest(".iw") && $(".iw.split .iw-pic img.on")) || $(`.ch[data-slug="${a.dataset.slug}"] .ch-pic img`);
+  }, true);
+  function morph(from, swap, findTo) {
+    const ease = "cubic-bezier(.7, 0, .2, 1)", dur = 820;
+    if (document.startViewTransition) {
+      from.style.viewTransitionName = "hero";
+      const t = document.startViewTransition(() => { from.style.viewTransitionName = ""; swap(); const to = findTo(); if (to) to.style.viewTransitionName = "hero"; });
+      t.finished.finally(() => { const to = findTo(); if (to) to.style.viewTransitionName = ""; });
+      return;
+    }
+    // fallback: a copy of the picture flies from where it was to where the hero now sits
+    const r = from.getBoundingClientRect(), c = from.cloneNode(false);
+    c.removeAttribute("loading"); c.className = "vt-clone"; c.alt = "";
+    document.body.appendChild(c);
+    swap();
+    const to = findTo(), t = to ? to.getBoundingClientRect() : { left: 0, top: 0, width: innerWidth, height: innerHeight };
+    if (to) to.style.visibility = "hidden";
+    // one fixed element, so its box is animated directly (keeps the picture's proportions true all the way)
+    const box = (q) => ({ transform: `translate(${q.left}px, ${q.top}px)`, width: q.width + "px", height: q.height + "px" });
+    const fly = c.animate([box(r), box(t)], { duration: dur, easing: ease, fill: "forwards" });
+    view.animate([{ clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0 0 0)" }], { duration: dur, easing: ease });
+    fly.onfinish = () => { if (to) to.style.visibility = ""; c.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 180 }).onfinish = () => c.remove(); };
+  }
+
   /* ---------- Routing with a curtain between pages ---------- */
   function show(first) {
     const { key, sub, page } = resolve();
+    // coming back home from a project: return to that project's chapter
+    const back = !first && key === "home" && lastProject ? lastProject : null;
+    lastProject = key === "project" ? sub : null;
     const swap = () => {
-      view.innerHTML = page.html;
+      view.innerHTML = page.html; document.documentElement.classList.remove("ch-on");
       document.title = (page.title ? page.title + " — " : "") + S.owner.name;
       $$("a[data-route]").forEach((a) => {
         const on = a.dataset.route === key || (key === "work" && a.dataset.cat === sub) ||
@@ -178,12 +215,17 @@
       nav.hidden = flag.hidden = !!page.bare;
       window.scrollTo(0, page.scroll || 0);
       page.after && page.after();
+      if (back) { const c = $(`.ch[data-slug="${back}"]`); if (c) window.scrollTo(0, c.getBoundingClientRect().top + scrollY); }
       bind(key);
       update();
       if (!first) view.focus({ preventScroll: true });
     };
     peek.classList.remove("on");
+    const from = morphFrom || (back ? $(HERO, view) : null); morphFrom = null;
     if (first || reduce || instant) { instant = false; return swap(); }
+    if (from && from.isConnected && (key === "project" || back)) {
+      return morph(from, swap, () => (key === "project" ? $(HERO, view) : $(`.ch[data-slug="${back}"] .ch-pic img`, view)));
+    }
     if (key === "home") return swap(); // going home is instant, no transition
     const fx = "fx-sweep", dur = 520; // every other page shares the slanted sweep (see style.css)
     curtainLabel.textContent = page.label;

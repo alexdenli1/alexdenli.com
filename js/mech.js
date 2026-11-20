@@ -15,6 +15,7 @@
      near()    called once when the stage comes within two screens: preload its pictures here
      pin       false for a section that is not pinned: progress runs from the section's top entering
                the bottom of the screen (0) to its top reaching the top third (1)
+     span      with pin false: how many screens that progress takes (default 0.67; 1 = until its top reaches the top)
    MECH.sequence(canvas, srcs)   image-sequence scrubbing: .load(), .show(i)
    MECH.line(path, t)            draw an SVG stroke in (paths need pathLength="1")
    MECH.count(el, to, t, dp)     a number counting up to its real value
@@ -38,7 +39,7 @@
       const r = st.el.getBoundingClientRect();
       if (!st.warm && r.top < vh * 2.5 && r.bottom > -vh) { st.warm = true; st.near && st.near(); }
       if (reduce || r.bottom < -vh * 0.2 || r.top > vh * 1.2) continue;
-      const p = st.pin ? clamp01(-r.top / Math.max(1, r.height - vh)) : clamp01((vh - r.top) / (vh * 0.67));
+      const p = st.pin ? clamp01(-r.top / Math.max(1, r.height - vh)) : clamp01((vh - r.top) / (vh * st.span));
       if (p !== st.p) { st.p = p; st.draw(p); }
     }
   }
@@ -47,7 +48,7 @@
   addEventListener("resize", () => { for (const st of stages) st.p = -1; queue(); });
 
   function stage(el, fns, opts) {
-    const st = { el, draw: fns.draw || (() => {}), near: fns.near, pin: !(opts && opts.pin === false), p: -1, warm: false };
+    const st = { el, draw: fns.draw || (() => {}), near: fns.near, pin: !(opts && opts.pin === false), span: (opts && opts.span) || 0.67, p: -1, warm: false };
     stages.add(st); queue();
     // a stage that starts on screen draws its first frame straight away
     if (!reduce) requestAnimationFrame(() => { st.p = -1; queue(); });

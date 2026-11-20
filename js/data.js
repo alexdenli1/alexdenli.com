@@ -14,6 +14,7 @@
      category  one of the ids in "categories" below
      year      e.g. 2026, or a range like "2022 – now" (the archive sorts by the first number in it)
      thumb     optional cut-out image for the home dial; cut: true drops the circle and adds a shadow
+     chapter   optional: the picture for the project's chapter on the home page (falls back to the cut-out, then the hero)
      study     true marks a finished university case study (shown as a tag in the full list)
      status / featured are no longer used for routing; every project appears everywhere, newest first
      hidden    true = on the home page visitors have to find it with the cursor
@@ -165,7 +166,7 @@ window.SITE = {
     },
     {
       slug: "aeropress", title: "Aeropress Coffee Machine", category: "product-design",
-      study: true, year: 2022, status: "archive", hero: "images/aeropress/hero.jpg",
+      study: true, year: 2022, status: "archive", hero: "images/aeropress/hero.jpg", chapter: "images/aeropress/final.webp",
       scope: "University team project",
       summary: "A hands-free AeroPress machine: wave to choose a brew and it stirs, steeps and presses the coffee for you.",
       blocks: []
