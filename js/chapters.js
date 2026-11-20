@@ -30,7 +30,7 @@
     const n = list.length;
     const ch = list.map((p, i) => {
       const href = "#/project/" + p.slug;
-      return `<section class="ch${i % 2 ? " ch-r" : " ch-l"}${isCut(p) ? " ch-cut" : " ch-rect"}" data-slug="${esc(p.slug)}" aria-labelledby="ch-${esc(p.slug)}">
+      return `<section class="ch${isCut(p) ? " ch-cut" : " ch-rect"}" data-slug="${esc(p.slug)}" aria-labelledby="ch-${esc(p.slug)}">
         <i class="ch-wash" aria-hidden="true"></i>
         <h2 class="ch-title" id="ch-${esc(p.slug)}"><a href="${href}" data-vt data-slug="${esc(p.slug)}">${linesOf(p.title).map((l) => `<span>${esc(l)}</span>`).join("")}</a></h2>
         <a class="ch-pic" href="${href}" data-vt data-slug="${esc(p.slug)}" tabindex="-1" aria-hidden="true">
@@ -45,30 +45,69 @@
         <span><b>01</b><small>/${pad2(n)}</small></span></div>`;
   }
 
-  /* every title fills the width: its widest line meets both margins, within a height limit.
-     Then the product is set against it: over the lower part of a one-line title, and below the first
-     line of a two-line one so the second line still reads. The info line takes the room beside it. */
+  /* Each chapter has its own arrangement, so the run of projects reads as a spread of work rather than
+     one template repeated. Fractions of the chapter's width and height:
+       t   title: which side it hangs from, how far down, and how wide its longest line is
+       c   the centre of the product's visible shape (it may sit low enough to run into the next chapter)
+     The info line takes the bottom corner on the side away from the product. Cycles past seven. */
+  const LAYOUT = [
+    { t: ["left", 0.10, 0.62], c: [0.33, 0.64] },
+    { t: ["right", 0.26, 0.66], c: [0.24, 0.72] },
+    { t: ["left", 0.06, 0.70], c: [0.68, 0.60] },
+    { t: ["right", 0.12, 0.56], c: [0.30, 0.50] },
+    { t: ["centre", 0.34, 0.56], c: [0.83, 0.56] },
+    { t: ["left", 0.40, 0.54], c: [0.62, 0.46] },
+    { t: ["right", 0.08, 0.72], c: [0.30, 0.62] }
+  ];
+  /* every product is shown at roughly the same size: the same area of visible product, whatever the
+     picture's proportions or the transparent margin around a cut-out */
+  const AREA = 0.32;            // visible product area, as a share of the screen height squared
+  const MAX_H = 0.76, MAX_W = 0.46;   // and never taller than this share of the screen height, or wider than this of its width
+  const bounds = (im) => {
+    if (im.__bb) return im.__bb;
+    const s = 160 / Math.max(im.naturalWidth, im.naturalHeight), w = Math.max(1, Math.round(im.naturalWidth * s)), h = Math.max(1, Math.round(im.naturalHeight * s));
+    const c = document.createElement("canvas"); c.width = w; c.height = h;
+    const x = c.getContext("2d", { willReadFrequently: true }); x.drawImage(im, 0, 0, w, h);
+    let d; try { d = x.getImageData(0, 0, w, h).data; } catch (e) { return (im.__bb = [0, 0, 1, 1]); }
+    let x0 = w, y0 = h, x1 = 0, y1 = 0;
+    for (let y = 0; y < h; y++) for (let k = 0; k < w; k++) if (d[(y * w + k) * 4 + 3] > 24) { if (k < x0) x0 = k; if (k > x1) x1 = k; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    return (im.__bb = x1 < x0 ? [0, 0, 1, 1] : [x0 / w, y0 / h, (x1 + 1) / w, (y1 + 1) / h]);
+  };
+
   function fit(secs) {
     if (innerWidth <= 820) return;
     const W = innerWidth, H = innerHeight;
     const pad = parseFloat(getComputedStyle(secs[0]).paddingLeft) || 0;
-    secs.forEach((sec) => {
+    secs.forEach((sec, i) => {
+      const L = LAYOUT[i % LAYOUT.length];
       const h = sec.querySelector(".ch-title"), spans = [...h.querySelectorAll("span")];
-      const pic = sec.querySelector(".ch-pic"), info = sec.querySelector(".ch-info"), rect = sec.classList.contains("ch-rect");
+      const pic = sec.querySelector(".ch-pic"), im = pic.querySelector("img"), info = sec.querySelector(".ch-info");
+      const chH = sec.offsetHeight;
+
+      // the title: its longest line takes the chosen share of the width, within a height limit
       h.style.setProperty("--fs", "100px");
       const wide = Math.max(...spans.map((s) => s.getBoundingClientRect().width)) || 1;
-      const fs = Math.min(100 * (W - 2 * pad) / wide, (H * 0.66) / (spans.length * 0.82));
+      const fs = Math.min(100 * (W * L.t[2]) / wide, (H * 0.5) / (spans.length * 0.82));
       h.style.setProperty("--fs", fs.toFixed(1) + "px");
-      const tTop = h.offsetTop, tH = spans.length * 0.82 * fs, chH = sec.offsetHeight;
-      const top = tTop + tH * (spans.length > 1 ? 0.6 : rect ? 0.62 : 0.3);
-      pic.style.top = top.toFixed(0) + "px";
-      if (!rect) pic.style.height = Math.max(H * 0.56, Math.min(H * 0.84, chH * 1.12 - top)).toFixed(0) + "px";
-      // the info line: one line where it fits beside the product, two where it does not
-      const right = sec.classList.contains("ch-r"), gap = 40;
-      const free = right ? pic.offsetLeft - pad - gap : W - (pic.offsetLeft + pic.offsetWidth) - pad - gap;
-      info.style.maxWidth = Math.max(260, free).toFixed(0) + "px";
-      info.style.whiteSpace = "nowrap";
-      if (info.scrollWidth > info.clientWidth + 1) info.style.whiteSpace = "normal";
+      h.dataset.align = L.t[0];
+      h.style.top = (chH * L.t[1]).toFixed(0) + "px";
+
+      // the product: sized by its visible area, centred on the chosen point
+      if (im.complete && im.naturalWidth) {
+        const [x0, y0, x1, y1] = bounds(im), nw = im.naturalWidth, nh = im.naturalHeight;
+        const ca = ((x1 - x0) * nw) / ((y1 - y0) * nh), A = AREA * H * H;
+        const vis = Math.min(Math.sqrt(A / ca), H * MAX_H, (W * MAX_W) / ca), ih = vis / (y1 - y0), iw = ih * nw / nh;
+        im.style.width = iw.toFixed(0) + "px"; im.style.height = ih.toFixed(0) + "px";
+        const left = W * L.c[0] - iw * (x0 + x1) / 2, top = chH * L.c[1] - ih * (y0 + y1) / 2;
+        pic.style.left = left.toFixed(0) + "px"; pic.style.top = top.toFixed(0) + "px";
+        // the info line: the bottom corner away from the product, one line where it fits beside it
+        const onRight = L.c[0] < 0.5, gap = 40, vis0 = left + iw * x0, vis1 = left + iw * x1;
+        info.dataset.side = onRight ? "right" : "left";
+        const free = onRight ? W - pad - vis1 - gap : vis0 - pad - gap;
+        info.style.maxWidth = Math.max(280, free).toFixed(0) + "px";
+        info.style.whiteSpace = "nowrap";
+        if (info.scrollWidth > info.clientWidth + 1) info.style.whiteSpace = "normal";
+      }
     });
   }
 

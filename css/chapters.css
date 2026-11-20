@@ -1,33 +1,30 @@
 /* ---------- Home: project chapters (js/chapters.js) ----------
-   The title is set huge across the width as a backdrop; the product stands in front of it, larger,
-   covering part of it, and runs over the chapter's lower edge into the next one. One small line of
-   information takes the corner left over. Sides alternate; the product always arrives from the left.
-   Black and cream until the project colours land. */
+   Each chapter has its own arrangement (LAYOUT in chapters.js): a big title as a backdrop, the product
+   in front of it at about the same size as every other product, and one small line of information in
+   the corner left over. Products run over into the next chapter. Positions and sizes are set by the
+   script; these are the defaults. Black and cream until the project colours land. */
 .chs { position: relative; z-index: 1; background: var(--bg); overflow-x: clip; padding-bottom: 14vh; }
 .ch { position: relative; height: 96vh; height: 96svh; min-height: 620px; padding: 0 var(--pad); }
 .ch-wash { position: absolute; inset: 0; z-index: 0; background: var(--ch-colour, transparent); clip-path: inset(0 100% 0 0); pointer-events: none; }
 
-/* the backdrop: each line as wide as the screen allows (font size set by chapters.js) */
+/* the backdrop title */
 .ch-title { position: absolute; z-index: 1; left: var(--pad); right: var(--pad); top: calc(var(--nav-h) + 2vh); margin: 0;
-  font-size: var(--fs, 18vw); font-weight: 800; font-stretch: 75%; line-height: .82; letter-spacing: -.03em; will-change: transform; }
+  font-size: var(--fs, 12vw); font-weight: 800; font-stretch: 75%; line-height: .82; letter-spacing: -.03em; will-change: transform; pointer-events: none; }
 .ch-title a { display: block; color: var(--fg); transition: color .3s var(--ease); }
-.ch-title span { display: block; width: fit-content; white-space: nowrap; }
-.ch-r .ch-title span { margin-left: auto; }
+.ch-title span { display: block; width: fit-content; white-space: nowrap; pointer-events: auto; }
+.ch-title[data-align="right"] span { margin-left: auto; }
+.ch-title[data-align="centre"] span { margin-left: auto; margin-right: auto; }
 .ch-title a:hover { color: var(--muted); }
 
-/* the product, in front of the title and larger than its half of the screen */
-.ch-pic { position: absolute; z-index: 2; top: 24%; left: 7vw; height: 84vh; display: flex; align-items: flex-start; will-change: transform; cursor: pointer; }
-.ch-r .ch-pic { left: auto; right: 7vw; justify-content: flex-end; }
-.ch-pic img { display: block; height: 100%; width: auto; max-width: 58vw; object-fit: contain; object-position: top; }
+/* the product, in front of the title */
+.ch-pic { position: absolute; z-index: 2; left: 30vw; top: 30%; display: block; will-change: transform; cursor: pointer; }
+.ch-pic img { display: block; width: 40vw; height: auto; max-width: none; object-fit: cover; }
 .ch-cut .ch-pic img { filter: drop-shadow(0 3vh 4vh rgba(0, 0, 0, .6)); }
-/* a full picture rather than a cut-out: a sharp crop, set lower so more of the title shows above it */
-.ch-rect .ch-pic { top: 40%; height: auto; width: 46vw; aspect-ratio: 3 / 2; }
-.ch-rect .ch-pic img { width: 100%; height: 100%; max-width: none; object-fit: cover; }
 
-/* one small line, in the corner the product leaves free */
-.ch-info { position: absolute; z-index: 3; bottom: 7vh; right: var(--pad); max-width: 48vw; text-align: right; white-space: nowrap;
-  font-size: clamp(.9375rem, .9vw, 1.0625rem); line-height: 1.45; color: var(--muted); }
-.ch-r .ch-info { right: auto; left: var(--pad); text-align: left; }
+/* one small line, in the bottom corner away from the product */
+.ch-info { position: absolute; z-index: 3; bottom: 7vh; right: var(--pad); max-width: 46vw; text-align: right; white-space: nowrap;
+  font-size: clamp(.875rem, .82vw, 1rem); line-height: 1.45; color: var(--muted); }
+.ch-info[data-side="left"] { right: auto; left: var(--pad); text-align: left; }
 .ch-info em { font-family: "Fraunces", Georgia, serif; font-style: italic; color: var(--fg); margin-right: .5em; }
 
 /* the pinned badge: chapter number over a ring of type that turns with the scroll */
@@ -57,8 +54,9 @@
 }
 @media (max-width: 820px) {
   .ch { height: auto; min-height: 100svh; padding-bottom: 8vh; }
-  .ch-pic, .ch-r .ch-pic, .ch-rect .ch-pic { position: relative; top: auto; left: auto; right: auto; height: 52vh; width: auto; margin-top: 28vh; }
-  .ch-pic img { max-width: 100%; }
-  .ch-info, .ch-r .ch-info { position: relative; bottom: auto; left: auto; right: auto; max-width: none; text-align: left; margin-top: 3vh; }
+  .ch-title { position: relative; top: auto !important; left: auto; right: auto; padding-top: calc(var(--nav-h) + 4vh); font-size: 18vw; }
+  .ch-pic { position: relative; left: auto !important; top: auto !important; margin-top: 4vh; }
+  .ch-pic img { width: 100% !important; height: auto !important; }
+  .ch-info, .ch-info[data-side="left"] { position: relative; bottom: auto; left: auto; right: auto; max-width: none; text-align: left; margin-top: 3vh; }
   .ch-badge { width: 5rem; height: 5rem; }
 }
