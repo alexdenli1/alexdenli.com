@@ -39,7 +39,7 @@
     return `<section class="op" aria-label="Introduction">
       <h1 class="op-name">${esc(o.name)}</h1>
       <canvas class="op-type" aria-hidden="true"></canvas>
-      <p class="op-line">${esc(o.intro || o.role || "")}</p>
+      <ul class="op-line op-disc" aria-label="Disciplines">${(o.disciplines || []).map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
     </section>`;
   }
 

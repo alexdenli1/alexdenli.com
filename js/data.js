@@ -44,7 +44,7 @@ window.SITE = {
     phone: "+44 7 568 599 300",       // shown on the contact page
     intro: "Graphic and product designer with 3–4 years' experience, taking products from first concept to launch.",
     headline: "Creative Designer",                               // the big line at the top of the home page
-    disciplines: ["Graphic", "Product", "UX/UI", "E-commerce"],  // the small line spread evenly beneath it
+    disciplines: ["Graphic", "Product", "UX/UI", "E-Commerce"],  // the small line spread evenly beneath it
     collage: "images/collage/collage.jpg",  // 1920x1080 (or larger) collage of your work, frosted behind the headline
     about: [
       "I work across product development, packaging, branding, marketing and Amazon e-commerce, from sketch and supplier sourcing through manufacturing, launch and promotion.",

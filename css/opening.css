@@ -14,3 +14,7 @@
 @media (prefers-reduced-motion: reduce) {
   .op-type { position: absolute; width: 100%; height: 100%; }
 }
+
+/* the disciplines, spread evenly across the full width of the name: first under its left edge, last under its right */
+.op-disc { right: var(--op-left, var(--op-pad)); max-width: none; display: flex; justify-content: space-between; gap: 1rem;
+  font-size: clamp(1.0625rem, 1.35vw, 1.625rem); line-height: 1.2; }
