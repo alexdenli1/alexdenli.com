@@ -121,6 +121,7 @@ window.SITE = {
         { type: "pair", images: [PH(11), PH(12)] }
       ]
     },
+    /* PARKED until hero shots arrive — move back into the list to show them again.
     {
       slug: "ball-cabinet", title: "Ball Cabinet", category: "product-design",
       year: 2025, status: "archive", featured: true, hero: PH(4),
@@ -147,6 +148,7 @@ window.SITE = {
         { type: "text", text: "Placeholder: where the identity is used." }
       ]
     },
+    */
     {
       slug: "relinquit", title: "Relinquit", category: "product-design",
       study: true, year: 2021, status: "archive", thumb: "images/relinquit/thumb.webp", cut: true, hero: "images/relinquit/hero.jpg",
