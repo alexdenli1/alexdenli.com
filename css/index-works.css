@@ -37,3 +37,10 @@
   .iw-head p { text-align: left; }
   .iw-pic { display: none; }
 }
+
+/* the section's one accent: the held project's own colour, on its title, its hairline and the picture's frame */
+.iw-list li { transition: border-color .4s var(--ease); }
+.iw.split .iw-row.on .iw-name { color: var(--iw-c, var(--zap)); }
+.iw.split li:has(> .iw-row.on) { border-bottom-color: var(--iw-c, var(--line)); }
+.iw-pic { outline: 2px solid transparent; outline-offset: -2px; transition: opacity .6s, transform .9s var(--ease), outline-color .4s; }
+.iw.split .iw-pic { outline-color: var(--iw-c, transparent); }

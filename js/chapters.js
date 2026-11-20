@@ -16,6 +16,18 @@
   const pad2 = (n) => String(n).padStart(2, "0");
   const picOf = (p) => p.chapter || (p.cut && p.thumb) || p.hero;
   const isCut = (p) => !!(p.chapter || (p.cut && p.thumb));
+  /* the type on a project's colour: black or cream, whichever stands out more against it */
+  const CREAM = "#EEE9E3";
+  const lum = (hex) => {
+    const v = parseInt(String(hex).slice(1), 16);
+    const c = [v >> 16, (v >> 8) & 255, v & 255].map((x) => { x /= 255; return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4); });
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  };
+  const inkOn = (hex) => {
+    if (!/^#[0-9a-f]{6}$/i.test(hex || "")) return CREAM;
+    const L = lum(hex), withCream = (lum(CREAM) + 0.05) / (L + 0.05), withBlack = (L + 0.05) / 0.05;
+    return withCream >= withBlack ? CREAM : "#000000";
+  };
 
   /* a long title breaks into two lines at the word nearest its middle, so each line can be set big */
   const linesOf = (t) => {
@@ -30,12 +42,14 @@
     const n = list.length;
     const ch = list.map((p, i) => {
       const href = "#/project/" + p.slug;
-      return `<section class="ch${isCut(p) ? " ch-cut" : " ch-rect"}" data-slug="${esc(p.slug)}" aria-labelledby="ch-${esc(p.slug)}">
+      const lines = linesOf(p.title).map((l) => `<span>${esc(l)}</span>`).join(""), info = `<em>${esc(p.year)}</em> ${esc(p.summary || "")}`;
+      return `<section class="ch${isCut(p) ? " ch-cut" : " ch-rect"}" data-slug="${esc(p.slug)}" aria-labelledby="ch-${esc(p.slug)}"
+        style="--ch-colour:${esc(p.colour || "transparent")};--ch-ink:${inkOn(p.colour)}">
         <i class="ch-wash" aria-hidden="true"></i>
-        <h2 class="ch-title" id="ch-${esc(p.slug)}"><a href="${href}" data-vt data-slug="${esc(p.slug)}">${linesOf(p.title).map((l) => `<span>${esc(l)}</span>`).join("")}</a></h2>
+        <h2 class="ch-title" id="ch-${esc(p.slug)}"><a href="${href}" data-vt data-slug="${esc(p.slug)}">${lines}</a><span class="ch-ink" aria-hidden="true">${lines}</span></h2>
         <a class="ch-pic" href="${href}" data-vt data-slug="${esc(p.slug)}" tabindex="-1" aria-hidden="true">
           <img src="${esc(picOf(p))}" alt="" decoding="async" draggable="false"></a>
-        <p class="ch-info"><em>${esc(p.year)}</em> ${esc(p.summary || "")}</p>
+        <p class="ch-info"><span>${info}</span><span class="ch-ink" aria-hidden="true">${info}</span></p>
       </section>`;
     }).join("");
     const ring = "Selected work ".repeat(4);
@@ -90,7 +104,8 @@
       const fs = Math.min(100 * (W * L.t[2]) / wide, (H * 0.5) / (spans.length * 0.82));
       h.style.setProperty("--fs", fs.toFixed(1) + "px");
       h.dataset.align = L.t[0];
-      h.style.top = (chH * L.t[1]).toFixed(0) + "px";
+      const navH = (document.getElementById("nav") || {}).offsetHeight || 0;   // titles start below the nav bar
+      h.style.top = (navH + (chH - navH) * L.t[1]).toFixed(0) + "px";
 
       // the product: sized by its visible area, centred on the chosen point
       if (im.complete && im.naturalWidth) {
@@ -127,11 +142,17 @@
     // as each chapter scrolls in: the product slides in from the left, the title rises a little slower
     secs.forEach((sec) => {
       const pic = sec.querySelector(".ch-pic"), title = sec.querySelector(".ch-title"), wash = sec.querySelector(".ch-wash");
+      const info = sec.querySelector(".ch-info");
+      const inkT = title.querySelector(".ch-ink"), inkI = info.querySelector(".ch-ink");
+      // the type's second colour is cut by the same edge as the wash, so it changes exactly where the colour passes
+      const cut = (el, ink, edge) => { const w = el.offsetWidth, seen = Math.max(0, Math.min(w, edge - el.offsetLeft));
+        ink.style.clipPath = `inset(-20% ${(w - seen).toFixed(1)}px -20% 0)`; };
       M.stage(sec, { draw(p) {
-        const q = 1 - p;
+        const q = 1 - p, edge = p * sec.offsetWidth;
         pic.style.transform = q > 0 ? `translate3d(${(-q * 0.42 * innerWidth).toFixed(1)}px, 0, 0)` : "";
         title.style.transform = q > 0 ? `translate3d(0, ${(q * 0.16 * innerHeight).toFixed(1)}px, 0)` : "";
         wash.style.clipPath = `inset(0 ${(q * 100).toFixed(2)}% 0 0)`;
+        cut(title, inkT, edge); cut(info, inkI, edge);
       } }, { pin: false, span: 1 });
     });
 
@@ -148,5 +169,5 @@
     return () => { io.disconnect(); removeEventListener("resize", onResize); };
   }
 
-  window.CHAPTERS = { html, wire };
+  window.CHAPTERS = { html, wire, inkOn };
 })();

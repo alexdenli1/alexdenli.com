@@ -2,7 +2,7 @@
    Black and cream, with one accent: the signal orange from the project's own hero (#F87830,
    a proposal until the project colours are signed off). The brew cycle is drawn on a cream sheet,
    like the technical drawings it comes from. */
-.apx { --pc: #F87830; --ink: #000; --sheet: var(--fg); --dim: rgba(238, 233, 227, .62);
+.apx { --pc: var(--project, #F87830); --ink: #000; --sheet: var(--fg); --dim: rgba(238, 233, 227, .62);
   --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
   padding: 0; background: var(--ink); color: var(--fg); }
 .apx section { position: relative; }

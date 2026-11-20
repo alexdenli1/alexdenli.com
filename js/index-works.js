@@ -15,7 +15,7 @@
   function render(list, cat, link) {
     const rows = list.map((p, i) => {
       const text = esc(String(p.line || p.summary || "").replace(/\.$/, ""));
-      return `<li><a class="iw-row" href="${link(p)}" data-i="${i}" data-img="${esc(p.hero)}" data-vt data-slug="${esc(p.slug)}">
+      return `<li><a class="iw-row" href="${link(p)}" data-i="${i}" data-img="${esc(p.hero)}" data-vt data-slug="${esc(p.slug)}" data-colour="${esc(p.colour || "")}">
         <span class="iw-run"><span class="iw-t"><b class="iw-name">${esc(p.title)}</b> <i>(${esc(parseInt(p.year, 10))})</i> — ${text}</span></span></a></li>`;
     }).join("");
     return `<section class="iw" aria-label="Index of works">
@@ -87,7 +87,8 @@
       next.onload = () => { imgs[front].classList.remove("on"); next.classList.add("on"); front ^= 1; };
       next.src = src; if (next.complete && next.naturalWidth) next.onload();
     };
-    const focus = (r) => { r.max = maxFor(r); showImg(r.el.dataset.img); rewind(r, BACK); };
+    // the held line, its hairline and the picture's frame take that project's colour
+    const focus = (r) => { r.max = maxFor(r); showImg(r.el.dataset.img); rewind(r, BACK); if (r.el.dataset.colour) sec.style.setProperty("--iw-c", r.el.dataset.colour); };
     const hold = () => {                                  // everything stops, dims, and the chosen line takes over
       held = true; sec.classList.add("split");
       R.forEach((r) => { if (r !== cur && r.mode === "auto") r.mode = "hold"; });

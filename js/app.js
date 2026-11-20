@@ -70,16 +70,11 @@
     return {
       title: "", label: "Home", scroll: 0,
       html: `${window.OPENING ? window.OPENING.html(S) : `<h1 class="op-name">${esc(S.owner.name)}</h1>`}
-      ${(S.brands || []).length ? `<section class="brands" style="--n:${Math.min(12, S.brands.length)}" aria-label="Brands I have worked with"><div class="brands-pin">
-        <div class="brands-head"><h2>Brands I’ve worked with</h2>
-          <div class="brands-rule" aria-hidden="true"></div>
-          <p class="brands-sub">Designing for, and working alongside, some of golf’s most trusted names.</p></div>
-        <ul class="wheel" style="--cols:${cols(Math.min(12, S.brands.length))}">${((pos) => S.brands.slice(0, 12).map((b, i) => `<li style="--x:${pos[i].x};--y:${pos[i].y}${b.size ? `;--lw:${b.size}` : ""}"><img src="${esc(b.logo)}" alt="${esc(b.name)}" draggable="false"></li>`).join(""))(scatter(Math.min(12, S.brands.length)))}</ul>
-      </div></section>` : ""}
+      ${window.DRAWERS ? window.DRAWERS.html(S.brands, "Brands I’ve worked with", "Designing for, and working alongside, some of golf’s most trusted names.") : ""}
       ${window.CHAPTERS ? window.CHAPTERS.html(S.projects) : ""}
       ${ledger()}
-      <section class="home-end"><a class="giant" href="#/contact">Contact</a></section>${foot()}`,
-      after: () => { if (window.CHAPTERS) window.CHAPTERS.wire(); if (window.INDEXWORKS) window.INDEXWORKS.wire(); },
+      ${window.CONTACT ? window.CONTACT.html(S.owner) : `<section class="home-end"><a class="giant" href="#/contact">Contact</a></section>`}${foot()}`,
+      after: () => { if (window.DRAWERS) window.DRAWERS.wire(); if (window.CHAPTERS) window.CHAPTERS.wire(); if (window.INDEXWORKS) window.INDEXWORKS.wire(); if (window.CONTACT) window.CONTACT.wire(); },
     };
   }
 
@@ -114,22 +109,22 @@
     const p = S.projects[i], c = cat(p.category), next = S.projects[(i + 1) % S.projects.length];
     found.add(p.slug);
     if (p.slug === "relinquit" && window.RELINQUIT) {
-      const tail = `<a class="p-next" href="${link(next)}" ><small>Next project</small><span class="giant">${esc(next.title)}</span><img src="${esc(next.hero)}" alt=""></a>
+      const tail = `<a class="p-next" href="${link(next)}" style="--nc:${esc(next.colour || "#EEE9E3")};--nk:${window.CHAPTERS ? window.CHAPTERS.inkOn(next.colour) : "#000"}"><small>Next project</small><span class="giant">${esc(next.title)}</span><img src="${esc(next.hero)}" alt=""></a>
       <nav class="p-exits" aria-label="Where next"><a class="ul" href="#/work/${esc(c.id)}">More ${esc(c.label.toLowerCase())}</a><a class="ul" href="#/">All work</a></nav>${foot()}`;
       return { title: p.title, label: p.title, html: window.RELINQUIT.render(p, tail), after: () => window.RELINQUIT.wire() };
     }
     if (p.slug === "shield" && window.SHIELD) {
-      const tail = `<a class="p-next" href="${link(next)}" ><small>Next project</small><span class="giant">${esc(next.title)}</span><img src="${esc(next.hero)}" alt=""></a>
+      const tail = `<a class="p-next" href="${link(next)}" style="--nc:${esc(next.colour || "#EEE9E3")};--nk:${window.CHAPTERS ? window.CHAPTERS.inkOn(next.colour) : "#000"}"><small>Next project</small><span class="giant">${esc(next.title)}</span><img src="${esc(next.hero)}" alt=""></a>
       <nav class="p-exits" aria-label="Where next"><a class="ul" href="#/work/${esc(c.id)}">More ${esc(c.label.toLowerCase())}</a><a class="ul" href="#/">All work</a></nav>${foot()}`;
       return { title: p.title, label: p.title, html: window.SHIELD.render(p, tail), after: () => window.SHIELD.wire() };
     }
     if (p.slug === "aeropress" && window.AEROPRESS) {
-      const tail = `<a class="p-next" href="${link(next)}" ><small>Next project</small><span class="giant">${esc(next.title)}</span><img src="${esc(next.hero)}" alt=""></a>
+      const tail = `<a class="p-next" href="${link(next)}" style="--nc:${esc(next.colour || "#EEE9E3")};--nk:${window.CHAPTERS ? window.CHAPTERS.inkOn(next.colour) : "#000"}"><small>Next project</small><span class="giant">${esc(next.title)}</span><img src="${esc(next.hero)}" alt=""></a>
       <nav class="p-exits" aria-label="Where next"><a class="ul" href="#/work/${esc(c.id)}">More ${esc(c.label.toLowerCase())}</a><a class="ul" href="#/">All work</a></nav>${foot()}`;
       return { title: p.title, label: p.title, html: window.AEROPRESS.render(p, tail), after: () => window.AEROPRESS.wire() };
     }
     if (p.slug === "rescue" && window.RESCUE) {
-      const tail = `<a class="p-next" href="${link(next)}" ><small>Next project</small><span class="giant">${esc(next.title)}</span><img src="${esc(next.hero)}" alt=""></a>
+      const tail = `<a class="p-next" href="${link(next)}" style="--nc:${esc(next.colour || "#EEE9E3")};--nk:${window.CHAPTERS ? window.CHAPTERS.inkOn(next.colour) : "#000"}"><small>Next project</small><span class="giant">${esc(next.title)}</span><img src="${esc(next.hero)}" alt=""></a>
       <nav class="p-exits" aria-label="Where next"><a class="ul" href="#/work/${esc(c.id)}">More ${esc(c.label.toLowerCase())}</a><a class="ul" href="#/">All work</a></nav>${foot()}`;
       return { title: p.title, label: p.title, html: window.RESCUE.render(p, tail), after: () => window.RESCUE.wire() };
     }
@@ -138,7 +133,7 @@
         <h1 class="giant">${esc(p.title)}</h1><p class="p-sum">${esc(p.summary)}</p></header>
       <div class="p-hero mask"><img src="${esc(p.hero)}" alt="${esc(p.title)}"></div>
       <div class="blocks">${(p.blocks || []).map((b) => (BLOCK[b.type] ? BLOCK[b.type](b) : "")).join("")}</div>
-      <a class="p-next" href="${link(next)}" ><small>Next project</small><span class="giant">${esc(next.title)}</span><img src="${esc(next.hero)}" alt=""></a>
+      <a class="p-next" href="${link(next)}" style="--nc:${esc(next.colour || "#EEE9E3")};--nk:${window.CHAPTERS ? window.CHAPTERS.inkOn(next.colour) : "#000"}"><small>Next project</small><span class="giant">${esc(next.title)}</span><img src="${esc(next.hero)}" alt=""></a>
       <nav class="p-exits" aria-label="Where next"><a class="ul" href="#/">Back home</a><a class="ul" href="#/work/${esc(c.id)}">More ${esc(c.label.toLowerCase())}</a><a class="ul" href="#/">All work</a></nav>${foot()}</article>` };
   }
 
@@ -176,8 +171,11 @@
     if (!a || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     morphFrom = a.querySelector("img") || (a.closest(".iw") && $(".iw.split .iw-pic img.on")) || $(`.ch[data-slug="${a.dataset.slug}"] .ch-pic img`);
   }, true);
-  function morph(from, swap, findTo) {
-    const ease = "cubic-bezier(.7, 0, .2, 1)", dur = 820;
+  /* the project's colour washes across behind the growing picture: the old page leaves a little
+     ahead of the new one arriving, and the colour fills the gap between them */
+  function morph(from, swap, findTo, colour) {
+    const ease = "cubic-bezier(.7, 0, .2, 1)", dur = 820, root = document.documentElement;
+    root.style.setProperty("--vt-colour", colour || "transparent");
     if (document.startViewTransition) {
       from.style.viewTransitionName = "hero";
       const t = document.startViewTransition(() => { from.style.viewTransitionName = ""; swap(); const to = findTo(); if (to) to.style.viewTransitionName = "hero"; });
@@ -194,7 +192,10 @@
     // one fixed element, so its box is animated directly (keeps the picture's proportions true all the way)
     const box = (q) => ({ transform: `translate(${q.left}px, ${q.top}px)`, width: q.width + "px", height: q.height + "px" });
     const fly = c.animate([box(r), box(t)], { duration: dur, easing: ease, fill: "forwards" });
-    view.animate([{ clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0 0 0)" }], { duration: dur, easing: ease });
+    const wash = document.createElement("div"); wash.className = "vt-wash"; wash.style.background = colour || "transparent";
+    document.body.appendChild(wash);
+    wash.animate([{ clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0 0 0)", offset: 0.45 }, { clipPath: "inset(0 0 0 100%)" }], { duration: dur, easing: ease, fill: "forwards" }).onfinish = () => wash.remove();
+    view.animate([{ clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 100% 0 0)", offset: 0.4 }, { clipPath: "inset(0 0 0 0)" }], { duration: dur, easing: ease });
     fly.onfinish = () => { if (to) to.style.visibility = ""; c.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 180 }).onfinish = () => c.remove(); };
   }
 
@@ -206,6 +207,9 @@
     lastProject = key === "project" ? sub : null;
     const swap = () => {
       view.innerHTML = page.html; document.documentElement.classList.remove("ch-on");
+      // a project page takes its own colour for its accents (--project)
+      const pc = key === "project" && (S.projects.find((p) => p.slug === sub) || {}).colour;
+      pc ? view.style.setProperty("--project", pc) : view.style.removeProperty("--project");
       document.title = (page.title ? page.title + " — " : "") + S.owner.name;
       $$("a[data-route]").forEach((a) => {
         const on = a.dataset.route === key || (key === "work" && a.dataset.cat === sub) ||
@@ -224,7 +228,8 @@
     const from = morphFrom || (back ? $(HERO, view) : null); morphFrom = null;
     if (first || reduce || instant) { instant = false; return swap(); }
     if (from && from.isConnected && (key === "project" || back)) {
-      return morph(from, swap, () => (key === "project" ? $(HERO, view) : $(`.ch[data-slug="${back}"] .ch-pic img`, view)));
+      const pr = S.projects.find((p) => p.slug === (key === "project" ? sub : back));
+      return morph(from, swap, () => (key === "project" ? $(HERO, view) : $(`.ch[data-slug="${back}"] .ch-pic img`, view)), pr && pr.colour);
     }
     if (key === "home") return swap(); // going home is instant, no transition
     const fx = "fx-sweep", dur = 520; // every other page shares the slanted sweep (see style.css)
