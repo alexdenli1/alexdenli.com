@@ -16,7 +16,7 @@
     const rows = list.map((p, i) => {
       const text = esc(String(p.line || p.summary || "").replace(/\.$/, ""));
       return `<li><a class="iw-row" href="${link(p)}" data-i="${i}" data-img="${esc(p.hero)}">
-        <span class="iw-run"><span class="iw-t">${esc(p.title)} <i>(${esc(parseInt(p.year, 10))})</i> — ${text}</span></span></a></li>`;
+        <span class="iw-run"><span class="iw-t"><b class="iw-name">${esc(p.title)}</b> <i>(${esc(parseInt(p.year, 10))})</i> — ${text}</span></span></a></li>`;
     }).join("");
     return `<section class="iw" aria-label="Index of works">
       <header class="iw-head"><h2>Index<br><i>of works</i></h2></header>

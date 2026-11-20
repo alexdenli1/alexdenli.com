@@ -14,6 +14,7 @@
   line-height: 1.16; letter-spacing: -.025em; will-change: transform; }
 .iw-t { display: inline-block; padding-right: 2.4em; }       /* the gap before the line comes round again */
 .iw-run i { color: var(--muted); font-size: .5em; vertical-align: .55em; margin: 0 .08em; }
+.iw-name { font-weight: inherit; color: var(--zap); }       /* the project title, in the site's lilac */
 .iw-run em { font-style: normal; color: var(--zap); }
 .iw-row.on .iw-run { color: var(--fg); }
 
