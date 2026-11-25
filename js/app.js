@@ -32,7 +32,7 @@
   const ALL = () => S.projects.slice().sort((a, b) => parseInt(b.year, 10) - parseInt(a.year, 10));
 
   function ledger() {
-    return window.INDEXWALL ? window.INDEXWALL.render(ALL(), catOf, link, window.CHAPTERS ? window.CHAPTERS.inkOn : () => "#fff") : "";
+    return window.INDEXWALL ? window.INDEXWALL.render(ALL(), link) : "";
   }
 
   const catOf = (p) => { const c = S.categories.find((x) => x.id === p.category); return c ? c.label : ""; };
@@ -162,7 +162,7 @@
   }
 
   /* ---------- Home <-> project: the picture grows into the page's hero ----------
-     A chapter picture (or an open row of the Index wall) opens its project with that picture growing into
+     A chapter picture opens its project with that picture growing into
      the project page's hero while the page wipes in behind it, left to right. Back reverses it,
      returning to the same chapter. View Transitions where the browser has them; otherwise the
      picture is cloned and flown to the hero's place. With reduced motion it is an instant swap. */
@@ -237,10 +237,10 @@
       if (!first) view.focus({ preventScroll: true });
     };
     peek.classList.remove("on");
-    const from = morphFrom || (back ? $(HERO, view) : null); morphFrom = null;
+    const from = morphFrom || (back && !wall ? $(HERO, view) : null); morphFrom = null;
     if (first || reduce || instant) { instant = false; return swap(); }
     if (from && from.isConnected && (key === "project" || back)) {
-      return morph(from, swap, () => (key === "project" ? $(HERO, view) : wall ? null : $(`.ch[data-slug="${back}"] .ch-pic img`, view)));
+      return morph(from, swap, () => (key === "project" ? $(HERO, view) : $(`.ch[data-slug="${back}"] .ch-pic img`, view)));
     }
     if (key === "home") return swap(); // going home is instant, no transition
     const fx = "fx-sweep", dur = 520; // every other page shares the slanted sweep (see style.css)
