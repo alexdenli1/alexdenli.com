@@ -1,4 +1,5 @@
-/* The opening: Alex's name fills the screen and the work plays inside the letters, cut like an edit.
+/* The opening: Alex's name fills the screen and the work plays inside the letters, one picture fading
+   into the next for as long as the opening is on screen.
    The cursor drags heavy water through the type (js/water.js), bending the letters and the footage.
    Scrolling compresses the name and slides it into the logo's place in the nav.
 
@@ -23,7 +24,7 @@
     return q === "title" ? n : n.toUpperCase();
   };
 
-  /* The edit: every project's hero, with a few process shots cut in between. Order follows data.js. */
+  /* The pictures: every project's hero, with a few process shots in between. Order follows data.js. */
   const EXTRA = { aeropress: ["images/aeropress/gesture.webp", "images/aeropress/head.webp"], shield: ["images/shield/hero-render.webp", "images/shield/lift.webp"] };
   const shotsOf = (site) => {
     const out = [];
@@ -115,7 +116,7 @@ void main() {
       sizeEdit(); upMask = true; fieldFor(); drawn = false;
     }
 
-    /* ---------- the edit: shots cut together, drawn just behind the type ---------- */
+    /* ---------- the pictures, drawn just behind the type ---------- */
     const SHOTS = shotsOf(site), pics = SHOTS.map(() => null);
     const edit = document.createElement("canvas"), ex = edit.getContext("2d", { alpha: false });
     let ES = 1;                                 // edit canvas pixels per css pixel
@@ -127,43 +128,31 @@ void main() {
     /* each shot: which part of the picture to show, and the slow drift through it, left to right */
     const FOCUS = { "images/xfly/hero.jpg": 0.42, "images/adverts/hero.jpg": 0.45, "images/signature-logo/hero.jpg": 0.5,
       "images/rescue/hero.jpg": 0.35, "images/relinquit/hero.jpg": 0.62, "images/shield/hero.jpg": 0.45, "images/aeropress/hero.jpg": 0.55 };
-    function paintShot(ctx, i, t, dx, clip) {
+    function paintShot(ctx, i, t, dx) {
       const im = pics[i]; if (!im) return false;
       // cover the letters whatever their shape (a wide band on a desktop, a tall block on a phone), with room to drift
       const w = edit.width, h = edit.height, s = Math.max((w * 1.16) / im.naturalWidth, (h * 1.06) / im.naturalHeight), iw = im.naturalWidth * s, ih = im.naturalHeight * s;
       const fy = FOCUS[SHOTS[i]] ?? 0.5, z = 1 + 0.035 * t;
       const x = -(iw - w) * (1 - t) + dx, y = -Math.max(0, Math.min(ih - h, ih * fy - h / 2));
       ctx.save();
-      if (clip != null) { ctx.beginPath(); ctx.rect(0, 0, clip * ES, h); ctx.clip(); }
       ctx.translate(x + iw / 2, y + ih / 2); ctx.scale(z, z); ctx.drawImage(im, -iw / 2, -ih / 2, iw, ih);
       ctx.restore();
       return true;
     }
-    /* the cut pattern: letter by letter, a push in from the left, a hard cut */
-    const CUTS = ["flap", "push", "cut", "flap", "cut", "push"];
-    const ed = { cur: 0, at: 0, hold: 1500, k: 0, ready: false };
+    /* one picture fades into the next, over and over. Each has its own clock from the moment it starts to
+       appear to the moment it has gone, so its slow drift never stops or jumps. */
+    const FADE = 1500, HOLD = 1300, LIFE = FADE + HOLD + FADE;
+    const ed = { cur: 0, at: 0 };                // the picture on show, and when it began to appear
     const nextReady = () => { let n = (ed.cur + 1) % SHOTS.length, g = 0; while (!pics[n] && g++ < SHOTS.length) n = (n + 1) % SHOTS.length; return n; };
     function paintEdit(now) {
-      const since = now - ed.at, TR = 430;
-      let nx = nextReady();
-      if (since > ed.hold + TR) { ed.cur = nx; ed.at = now; ed.k = (ed.k + 1) % CUTS.length; ed.hold = 1250 + Math.random() * 650; nx = nextReady(); }
-      const s2 = now - ed.at, tc = clamp01(s2 / (ed.hold + TR));
+      if (reduce) { ex.fillStyle = "#000"; ex.fillRect(0, 0, edit.width, edit.height); paintShot(ex, ed.cur, 0, 0); return; }
+      let age = now - ed.at, nx = nextReady();
+      if (nx === ed.cur && age > FADE + HOLD) { ed.at = now - FADE - HOLD; age = FADE + HOLD; }        // the next one is still loading: wait
+      else if (age > LIFE) { ed.cur = nx; ed.at = Math.max(ed.at + FADE + HOLD, now - FADE); age = now - ed.at; nx = nextReady(); }      // (after a pause, pick up cleanly)
       ex.fillStyle = "#000"; ex.fillRect(0, 0, edit.width, edit.height);
-      const into = s2 - ed.hold;
-      if (into <= 0 || nx === ed.cur) { paintShot(ex, ed.cur, tc, 0); return; }
-      const f = clamp01(into / TR), kind = CUTS[ed.k];
-      if (kind === "push") {
-        const e = ease(f), w = edit.width;
-        paintShot(ex, ed.cur, tc, e * w);
-        paintShot(ex, nx, 0, -(1 - e) * w);
-      } else if (kind === "flap") {
-        // one letter at a time, left to right
-        const n = Math.min(edges.length, Math.floor(f * (edges.length + 1)));
-        paintShot(ex, ed.cur, tc, 0);
-        if (n > 0) paintShot(ex, nx, 0, 0, edges[n - 1]);
-      } else {
-        paintShot(ex, f < 0.5 ? ed.cur : nx, f < 0.5 ? tc : 0, 0);
-      }
+      paintShot(ex, ed.cur, clamp01(age / LIFE), 0);
+      const into = age - FADE - HOLD;
+      if (into > 0 && nx !== ed.cur) { const f = clamp01(into / FADE); ex.globalAlpha = f * f * (3 - 2 * f); paintShot(ex, nx, into / LIFE, 0); ex.globalAlpha = 1; }
     }
 
     /* ---------- the water ---------- */
@@ -298,7 +287,7 @@ void main() {
 
     /* reduced motion: one still frame, the name with one hero inside it */
     const STILL = Math.max(0, SHOTS.indexOf("images/shield/hero.jpg"));   // a light frame, so the name reads clearly
-    function still() { if (!pics[STILL]) return; ed.cur = STILL; ed.at = performance.now(); ed.hold = 1e9; render(performance.now()); }
+    function still() { if (!pics[STILL]) return; ed.cur = STILL; ed.at = performance.now(); render(performance.now()); }
 
     const ready = document.fonts && document.fonts.load ? document.fonts.load(FONT(100), NAME).catch(() => {}) : Promise.resolve();
     ready.then(() => {
@@ -307,12 +296,10 @@ void main() {
       load(reduce ? STILL : 0).then(() => {
         if (!alive) return;
         root.classList.add("op-ready");
-        ed.at = performance.now();
+        ed.at = performance.now() - FADE;
         if (reduce) { still(); return; }
         kick();
-        // the stroke runs as soon as the opening is actually visible (after the intro film, if it plays)
-        if (document.documentElement.classList.contains("intro-on")) addEventListener("intro:done", stroke, { once: true });
-        else setTimeout(stroke, 250);
+        setTimeout(stroke, 250);
         // the rest of the shots load in order behind the first
         SHOTS.reduce((pr, _, i) => i ? pr.then(() => alive && load(i)) : pr, Promise.resolve());
       });
@@ -330,7 +317,7 @@ void main() {
       removeEventListener("pointermove", move); removeEventListener("touchstart", touch); removeEventListener("touchmove", touch); removeEventListener("touchend", leave);
       document.removeEventListener("pointerleave", leave);
       removeEventListener("scroll", onScroll); removeEventListener("resize", onResize);
-      removeEventListener("intro:done", stroke); document.removeEventListener("visibilitychange", onVis);
+      document.removeEventListener("visibilitychange", onVis);
       if (nav) { nav.style.removeProperty("--logo-in"); nav.style.removeProperty("--links"); }
       if (gl) { const x = gl.getExtension("WEBGL_lose_context"); x && x.loseContext(); }
     };

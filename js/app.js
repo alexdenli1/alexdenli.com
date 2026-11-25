@@ -150,13 +150,15 @@
   const lost = () => ({ title: "Out of bounds", label: "Out of bounds", bare: true, html: `<div class="lost-page"><h1 class="giant">Out of bounds</h1>
     <p>This page is not on the course. Take a drop and carry on from the clubhouse.</p><a class="ul" href="#/">Back home</a></div>` });
 
-  const PAGES = { home, work, project, contact };
+  const PAGES = { home, work, project, about: contact };
   const ALIAS = { projects: "home", archive: "home" };
   function resolve() {
     const [a = "", b] = location.hash.replace(/^#\/?/, "").split("/");
     let key = a || "home";
+    let jump = null;
+    if (key === "contact") { key = "home"; jump = ".ct"; try { history.replaceState(null, "", "#/"); } catch (e) {} }      // Contact is the foot of the home page
     if (ALIAS[key]) { key = ALIAS[key]; try { history.replaceState(null, "", "#/"); } catch (e) {} }
-    return { key, sub: b, page: (PAGES[key] && PAGES[key](b)) || lost() };
+    return { key, sub: b, jump, page: (PAGES[key] && PAGES[key](b)) || lost() };
   }
 
   /* ---------- Home <-> project: the picture grows into the page's hero ----------
@@ -195,11 +197,23 @@
     fly.onfinish = () => { if (to) to.style.visibility = ""; c.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 180 }).onfinish = () => c.remove(); };
   }
 
+  /* the Contact link: down to "Let's talk" when already home, otherwise home and straight there */
+  function toSection(sel, now) {
+    const go = (behavior) => { const el = $(sel); if (el) window.scrollTo({ top: el.getBoundingClientRect().top + scrollY - (nav.hidden ? 0 : nav.offsetHeight), behavior }); };
+    go(now || reduce ? "auto" : "smooth");
+    if (now) { const y = () => Math.abs(scrollY - was) < 4, was = scrollY; setTimeout(() => { if (y()) go("auto"); }, 350); }      // once more when the pictures above have settled
+  }
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest && e.target.closest('a[href="#/contact"]');
+    if (!a || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || !live.home || !$(".ct")) return;
+    e.preventDefault(); toSection(".ct");
+  });
+
   /* ---------- Routing with a curtain between pages ---------- */
   function show(first) {
-    const { key, sub, page } = resolve();
+    const { key, sub, page, jump } = resolve();
     // coming back home from a project: return to that project's chapter
-    const back = !first && key === "home" && lastProject ? lastProject : null;
+    const back = !first && !jump && key === "home" && lastProject ? lastProject : null;
     const game = !!(back && window.SHOOTOUT && window.SHOOTOUT.took());      // opened from the Index game: come back to it
     lastProject = key === "project" ? sub : null;
     const swap = () => {
@@ -219,6 +233,7 @@
       if (back) { const c = game ? $(".sg-stage") : $(`.ch[data-slug="${back}"]`); if (c) window.scrollTo(0, c.getBoundingClientRect().top + scrollY - (game ? nav.offsetHeight : Math.max(0, (innerHeight - c.offsetHeight) / 2))); }
       bind(key);
       update();
+      if (jump) toSection(jump, true);
       if (!first) view.focus({ preventScroll: true });
     };
     peek.classList.remove("on");

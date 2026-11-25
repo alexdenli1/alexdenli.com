@@ -15,7 +15,7 @@
      year      e.g. 2026, or a range like "2022 – now" (the archive sorts by the first number in it)
      thumb     optional cut-out image for the home dial; cut: true drops the circle and adds a shadow
      colour    the project's own colour (PROPOSALS awaiting sign-off): its home chapter, page accents, index hover and transition.
-               XFLY #30558A sampled from the hero, awaiting the Pantone; Adverts #E4007C process magenta; Signature Logo
+               XFLY #30558A sampled from the hero, Pantone 433 U (Anthracite grey) and 2945 U (Navy Blue), from Alex; Adverts #E4007C process magenta; Signature Logo
                #C9A243 medallion brass; Rescue #52B256 the app's green; Relinquit #4FA3B1 lagoon cap; Shield #5FCFD1 water
                cyan from its poster; Aeropress #F87830 the signal orange of its hero.
      chapter   optional: the picture for the project's chapter on the home page (falls back to the cut-out, then the hero)
