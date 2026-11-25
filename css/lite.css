@@ -11,8 +11,6 @@
 .lite .bw-wall .mono img { filter: brightness(0); }
 
 /* a held line in the Index keeps black type, so every project reads; its colour is the rule and the picture's frame */
-.lite .iw.split .iw-row.on .iw-name { color: var(--fg); }
-.lite .iw.split li:has(> .iw-row.on) { border-bottom-color: var(--iw-c, var(--fg)); box-shadow: inset 0 -2px 0 var(--iw-c, var(--fg)); }
 /* the opening's section rule is not needed between two white sections */
 .lite .ct { border-top: 0; }
 .lite :focus-visible { box-shadow: none; }
