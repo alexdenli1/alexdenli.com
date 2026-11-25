@@ -180,7 +180,7 @@ window.SITE = {
   /* Gallery strip at the bottom of the home page: it slides to the left as the visitor scrolls.
      The first 10 are shown. List them from current and archived work, in the order they should appear.
      "project" is optional: give a project slug and the image links to that project's page. */
-  /* Brands and organisations you have worked with or for: the wheel on the home page (first 10 shown).
+  /* Brands and organisations you have worked with or for: plain logos on the home page (first 12 shown).
      Logos look best as transparent PNG or SVG, in colour or white — they sit on black. */
   brands: [
     { name: "SuperStroke", logo: "images/brands/superstroke.png", colour: "#00A0E0" },                 // colour: top-left corner

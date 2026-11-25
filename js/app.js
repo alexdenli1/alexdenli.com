@@ -70,11 +70,11 @@
     return {
       title: "", label: "Home", scroll: 0,
       html: `${window.OPENING ? window.OPENING.html(S) : `<h1 class="op-name">${esc(S.owner.name)}</h1>`}
-      ${window.DRAWERS ? window.DRAWERS.html(S.brands, "Brands I’ve worked with", "Designing for, and working alongside, some of golf’s most trusted names.") : ""}
+      ${window.BRANDS ? window.BRANDS.html(S.brands, "Brands I’ve worked with", "Designing for, and working alongside, some of golf’s most trusted names.") : ""}
       ${window.CHAPTERS ? window.CHAPTERS.html(S.projects) : ""}
       ${ledger()}
       ${window.CONTACT ? window.CONTACT.html(S.owner) : `<section class="home-end"><a class="giant" href="#/contact">Contact</a></section>`}${foot()}`,
-      after: () => { if (window.DRAWERS) window.DRAWERS.wire(); if (window.CHAPTERS) window.CHAPTERS.wire(); if (window.INDEXWORKS) window.INDEXWORKS.wire(); if (window.CONTACT) window.CONTACT.wire(); },
+      after: () => { if (window.CHAPTERS) window.CHAPTERS.wire(); if (window.INDEXWORKS) window.INDEXWORKS.wire(); if (window.CONTACT) window.CONTACT.wire(); },
     };
   }
 
