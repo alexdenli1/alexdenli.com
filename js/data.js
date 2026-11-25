@@ -14,6 +14,11 @@
      category  one of the ids in "categories" below
      year      e.g. 2026, or a range like "2022 – now" (the archive sorts by the first number in it)
      thumb     optional cut-out image for the home dial; cut: true drops the circle and adds a shadow
+     colour    the project's own colour (PROPOSALS awaiting sign-off): its home chapter, page accents, index hover and transition.
+               XFLY #30558A sampled from the hero, Pantone 433 U (Anthracite grey) and 2945 U (Navy Blue), from Alex; Adverts #E4007C process magenta; Signature Logo
+               #C9A243 medallion brass; Rescue #52B256 the app's green; Relinquit #4FA3B1 lagoon cap; Shield #5FCFD1 water
+               cyan from its poster; Aeropress #F87830 the signal orange of its hero.
+     chapter   optional: the picture for the project's chapter on the home page (falls back to the cut-out, then the hero)
      study     true marks a finished university case study (shown as a tag in the full list)
      status / featured are no longer used for routing; every project appears everywhere, newest first
      hidden    true = on the home page visitors have to find it with the cursor
@@ -44,7 +49,7 @@ window.SITE = {
     phone: "+44 7 568 599 300",       // shown on the contact page
     intro: "Graphic and product designer with 3–4 years' experience, taking products from first concept to launch.",
     headline: "Creative Designer",                               // the big line at the top of the home page
-    disciplines: ["Graphic", "Product", "UX/UI", "E-commerce"],  // the small line spread evenly beneath it
+    disciplines: ["Graphic", "Product", "UX/UI", "E-Commerce"],  // the small line spread evenly beneath it
     collage: "images/collage/collage.jpg",  // 1920x1080 (or larger) collage of your work, frosted behind the headline
     about: [
       "I work across product development, packaging, branding, marketing and Amazon e-commerce, from sketch and supplier sourcing through manufacturing, launch and promotion.",
@@ -66,7 +71,7 @@ window.SITE = {
 
   projects: [
     {
-      slug: "xfly", title: "XFLY", category: "product-design",
+      slug: "xfly", title: "XFLY", category: "product-design", colour: "#30558A",
       year: 2026, status: "current", thumb: "images/xfly/thumb.webp", cut: true, hero: "images/xfly/hero.jpg",
       line: "A golf launch monitor at a competitive price, with a Bluetooth app, for amateur to professional golfers.",
       process: [{ title: "Research", text: "Placeholder: what golfers and competing monitors showed." }, { title: "Design", text: "Placeholder: the directions explored and the one chosen." }, { title: "Prototype", text: "Placeholder: samples, testing and what changed." }, { title: "Final product", text: "Placeholder: what shipped, and the Bluetooth app." }],
@@ -85,8 +90,8 @@ window.SITE = {
       ]
     },
     {
-      slug: "adverts", title: "Adverts", category: "graphic-design",
-      year: "2025 – now", status: "current", thumb: "images/adverts/thumb.webp", cut: true, hero: "images/adverts/hero.jpg",
+      slug: "adverts", title: "Adverts", category: "graphic-design", colour: "#E4007C",
+      year: "2025 – now", status: "current", thumb: "images/adverts/thumb.webp", cut: true, hero: "images/adverts/hero.jpg", chapter: "images/adverts/chapter.webp",
       process: [{ title: "Brief", text: "Placeholder: the product, the audience and the page it runs on." }, { title: "Concept", text: "Placeholder: the idea that stops a reader on a crowded page." }, { title: "Layout", text: "Placeholder: image, headline and offer, built to the magazine spec." }, { title: "Print-ready", text: "Placeholder: proofs, sign-off and the final files." }],
       summary: "Magazine adverts for print and online, produced monthly.",
       blocks: [
@@ -98,7 +103,7 @@ window.SITE = {
       ]
     },
     {
-      slug: "signature-logo", title: "Signature Logo Collection", category: "graphic-design",
+      slug: "signature-logo", title: "Signature Logo Collection", category: "graphic-design", colour: "#C9A243",
       year: "2025 – now", status: "current", thumb: "images/signature-logo/thumb.webp", cut: true, hero: "images/signature-logo/hero.jpg",
       process: [{ title: "Range", text: "Placeholder: which products carry a club's logo." }, { title: "Artwork", text: "Placeholder: preparing each club's logo for every product." }, { title: "Brochure", text: "Placeholder: laying out the range and price list." }, { title: "Launch", text: "Placeholder: how it reached golf clubs." }],
       summary: "A fully custom logo range of promotional products for golf clubs.",
@@ -110,8 +115,8 @@ window.SITE = {
       ]
     },
     {
-      slug: "rescue", title: "Rescue", category: "ux-ui",
-      study: true, year: "2026 redevelopment", status: "archive", featured: true, hero: "images/rescue/hero.jpg",
+      slug: "rescue", title: "Rescue", category: "ux-ui", colour: "#52B256",
+      study: true, year: "2026 redevelopment", status: "archive", featured: true, hero: "images/rescue/hero.jpg", chapter: "images/rescue/chapter.webp",
       process: [{ title: "Storyboard", text: "Josh's day, drawn out to find where energy saving could fit." }, { title: "Bodystorming", text: "Acting the app out with people and props, before any design." }, { title: "Prototype", text: "A clickable Marvel prototype so real people could try the route." }, { title: "Redevelopment", text: "In 2026: Pip the red panda, a core daily loop and a playable gate." }],
       summary: "A children's app for learning about energy saving, designed at university and redone in 2026.",
       blocks: [
@@ -121,6 +126,7 @@ window.SITE = {
         { type: "pair", images: [PH(11), PH(12)] }
       ]
     },
+    /* PARKED until hero shots arrive — move back into the list to show them again.
     {
       slug: "ball-cabinet", title: "Ball Cabinet", category: "product-design",
       year: 2025, status: "archive", featured: true, hero: PH(4),
@@ -147,23 +153,24 @@ window.SITE = {
         { type: "text", text: "Placeholder: where the identity is used." }
       ]
     },
+    */
     {
-      slug: "relinquit", title: "Relinquit", category: "product-design",
+      slug: "relinquit", title: "Relinquit", category: "product-design", colour: "#4FA3B1",
       study: true, year: 2021, status: "archive", thumb: "images/relinquit/thumb.webp", cut: true, hero: "images/relinquit/hero.jpg",
       process: [{ title: "Research", text: "4.9m people in the UK still smoke, and half want to quit." }, { title: "Ideation", text: "Eight mechanisms sketched, scored and cut to one thumb, one cigarette." }, { title: "Model", text: "A pebble-sized case, an always-on e-ink screen and four colourways." }, { title: "App", text: "Nine calm screens that end on a quit date." }],
       summary: "A connected cigarette case that spaces out each cigarette and steps you down to a quit date you choose.",
       blocks: []
     },
     {
-      slug: "shield", title: "Shield", category: "product-design",
+      slug: "shield", title: "Shield", category: "product-design", colour: "#5FCFD1",
       study: true, year: 2022, status: "archive", thumb: "images/shield/thumb.webp", cut: true, hero: "images/shield/hero.jpg",
       scope: "Final year project",
       summary: "A retrofit unit that captures microfibres from washing-machine wastewater, with no filter to replace.",
       blocks: []
     },
     {
-      slug: "aeropress", title: "Aeropress Coffee Machine", category: "product-design",
-      study: true, year: 2022, status: "archive", hero: "images/aeropress/hero.jpg",
+      slug: "aeropress", title: "Aeropress Coffee Machine", category: "product-design", colour: "#F87830",
+      study: true, year: 2022, status: "archive", hero: "images/aeropress/hero.jpg", chapter: "images/aeropress/final.webp",
       scope: "University team project",
       summary: "A hands-free AeroPress machine: wave to choose a brew and it stirs, steeps and presses the coffee for you.",
       blocks: []
@@ -173,19 +180,20 @@ window.SITE = {
   /* Gallery strip at the bottom of the home page: it slides to the left as the visitor scrolls.
      The first 10 are shown. List them from current and archived work, in the order they should appear.
      "project" is optional: give a project slug and the image links to that project's page. */
-  /* Brands and organisations you have worked with or for: the wheel on the home page (first 10 shown).
-     Logos look best as transparent PNG or SVG, in colour or white — they sit on black. */
+  /* Brands and organisations you have worked with or for: plain logos on the home page (first 12 shown).
+     Logos look best as transparent PNG or SVG, in colour or one flat colour. They sit on white:
+     a logo without a "colour" is shown in plain black; one with a colour is shown as it is. */
   brands: [
-    { name: "SuperStroke", logo: "images/brands/superstroke.png" },                 // colour: top-left corner
+    { name: "SuperStroke", logo: "images/brands/superstroke-dark.png", colour: "#00A0E0" },                 // colour: top-left corner
     { name: "Oakley", logo: "images/brands/oakley.png", size: 0.88 },
-    { name: "Longridge", logo: "images/brands/longridge.png" },                    // colour: top-right corner
+    { name: "Longridge", logo: "images/brands/longridge.png", colour: "#0060B0" },                    // colour: top-right corner
     { name: "Skins Golf", logo: "images/brands/skins-golf-white.png" },
     { name: "Bettinardi", logo: "images/brands/bettinardi.png" },
     { name: "XFLY", logo: "images/brands/xfly-white.png" },                        // white version of the black wordmark
     { name: "The Schoolwear Specialists", logo: "images/brands/schoolwear-specialists.png" },
-    { name: "BagBoy", logo: "images/brands/bagboy.png" },                          // colour: bottom-left corner
+    { name: "BagBoy", logo: "images/brands/bagboy.png", colour: "#F0C010" },                          // colour: bottom-left corner
     { name: "EzeGlide", logo: "images/brands/ezeglide-white.png" },              // white version: the colour one vanishes on black (colour file: ezeglide.png)
-    { name: "Clicgear", logo: "images/brands/clicgear.png" }                       // colour: bottom-right corner
+    { name: "Clicgear", logo: "images/brands/clicgear-dark.png", colour: "#D02020" }                       // colour: bottom-right corner
   ],
 
   gallery: [
