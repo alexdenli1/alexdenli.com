@@ -32,7 +32,7 @@
   const ALL = () => S.projects.slice().sort((a, b) => parseInt(b.year, 10) - parseInt(a.year, 10));
 
   function ledger() {
-    return window.SHOOTOUT ? window.SHOOTOUT.render(S.projects, link) : "";
+    return window.INDEXWALL ? window.INDEXWALL.render(ALL(), link) : "";
   }
 
   const catOf = (p) => { const c = S.categories.find((x) => x.id === p.category); return c ? c.label : ""; };
@@ -74,7 +74,7 @@
       ${window.CHAPTERS ? window.CHAPTERS.html(S.projects) : ""}
       ${ledger()}
       ${window.CONTACT ? window.CONTACT.html(S.owner) : `<section class="home-end"><a class="giant" href="#/contact">Contact</a></section>`}${foot()}</div>`,
-      after: () => { if (window.CHAPTERS) window.CHAPTERS.wire(); if (window.SHOOTOUT) window.SHOOTOUT.wire(); if (window.CONTACT) window.CONTACT.wire(); },
+      after: () => { if (window.CHAPTERS) window.CHAPTERS.wire(); if (window.INDEXWALL) window.INDEXWALL.wire(); if (window.CONTACT) window.CONTACT.wire(); },
     };
   }
 
@@ -162,7 +162,7 @@
   }
 
   /* ---------- Home <-> project: the picture grows into the page's hero ----------
-     A chapter picture (or the winner of the Index game) opens its project with that picture growing into
+     A chapter picture opens its project with that picture growing into
      the project page's hero while the page wipes in behind it, left to right. Back reverses it,
      returning to the same chapter. View Transitions where the browser has them; otherwise the
      picture is cloned and flown to the hero's place. With reduced motion it is an instant swap. */
@@ -214,7 +214,7 @@
     const { key, sub, page, jump } = resolve();
     // coming back home from a project: return to that project's chapter
     const back = !first && !jump && key === "home" && lastProject ? lastProject : null;
-    const game = !!(back && window.SHOOTOUT && window.SHOOTOUT.took());      // opened from the Index game: come back to it
+    const wall = !!(back && window.INDEXWALL && window.INDEXWALL.took());      // opened from the Index: come back to it
     lastProject = key === "project" ? sub : null;
     const swap = () => {
       view.innerHTML = page.html;
@@ -230,17 +230,17 @@
       nav.hidden = flag.hidden = !!page.bare;
       window.scrollTo(0, page.scroll || 0);
       page.after && page.after();
-      if (back) { const c = game ? $(".sg-stage") : $(`.ch[data-slug="${back}"]`); if (c) window.scrollTo(0, c.getBoundingClientRect().top + scrollY - (game ? nav.offsetHeight : Math.max(0, (innerHeight - c.offsetHeight) / 2))); }
+      if (back) { const c = wall ? $(".iw") : $(`.ch[data-slug="${back}"]`); if (c) window.scrollTo(0, c.getBoundingClientRect().top + scrollY - (wall ? nav.offsetHeight : Math.max(0, (innerHeight - c.offsetHeight) / 2))); }
       bind(key);
       update();
       if (jump) toSection(jump, true);
       if (!first) view.focus({ preventScroll: true });
     };
     peek.classList.remove("on");
-    const from = morphFrom || (back ? $(HERO, view) : null); morphFrom = null;
+    const from = morphFrom || (back && !wall ? $(HERO, view) : null); morphFrom = null;
     if (first || reduce || instant) { instant = false; return swap(); }
     if (from && from.isConnected && (key === "project" || back)) {
-      return morph(from, swap, () => (key === "project" ? $(HERO, view) : game ? null : $(`.ch[data-slug="${back}"] .ch-pic img`, view)));
+      return morph(from, swap, () => (key === "project" ? $(HERO, view) : $(`.ch[data-slug="${back}"] .ch-pic img`, view)));
     }
     if (key === "home") return swap(); // going home is instant, no transition
     const fx = "fx-sweep", dur = 520; // every other page shares the slanted sweep (see style.css)
