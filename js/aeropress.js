@@ -72,7 +72,7 @@
     <section class="ax-hero">
       <img class="ax-hero-img" src="images/aeropress/final.webp" alt="The hands-free AeroPress machine, with a hand held over its infrared tower" decoding="async">
       <div class="ax-hero-tx">
-        <h1>Aeropress<br>Coffee Machine</h1>
+        <h1>Aeropress<br>Coffee<br>Machine</h1>
         <p class="ax-hero-sub"><em>${esc(p.year)}</em><span>${esc(p.summary)}</span></p>
       </div>
     </section>

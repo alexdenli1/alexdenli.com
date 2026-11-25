@@ -2,8 +2,8 @@
 .bw { position: relative; z-index: 2; background: var(--bg); min-height: 100vh; min-height: 100svh; padding: calc(var(--nav-h) + 8vh) var(--pad) 12vh;
   display: grid; grid-template-rows: auto 1fr; gap: 8vh; }
 .bw-head { display: flex; justify-content: space-between; align-items: end; gap: 2rem; }
-.bw-head h2 { font-size: clamp(2.6rem, 5vw, 6rem); font-weight: 800; font-stretch: 75%; line-height: .9; letter-spacing: -.02em; }
-.bw-head p { max-width: 24rem; text-align: right; color: var(--muted); font-size: clamp(1rem, 1.05vw, 1.1875rem); line-height: 1.45; }
+.bw-head h2 { font-size: var(--t-head); font-weight: 800; line-height: .95; letter-spacing: var(--track); }
+.bw-head p { max-width: 24rem; text-align: right; color: var(--muted); font-size: var(--t-body); line-height: 1.45; }
 .bw-wall { display: grid; align-content: center; gap: clamp(3rem, 9vh, 7rem); }
 .bw-wall ul { display: flex; justify-content: center; gap: clamp(3rem, 7.4vw, 9rem); }
 .bw-wall li { width: clamp(110px, 12.4vw, 240px); height: clamp(52px, 5vw, 96px); display: grid; place-items: center; }

@@ -1,8 +1,8 @@
 /* ---------- Index of works: one long line per project, at the foot of the home page ---------- */
 .iw { --row: min(4.1vw, 6.5vh); position: relative; z-index: 2; background: var(--bg); padding: 4.5vh 0 5vh; overflow: hidden; }
 .iw-head { display: flex; justify-content: space-between; align-items: end; gap: 2rem; padding: 0 var(--pad); margin-bottom: 2.6vh; }
-.iw-head h2 { margin: 0; font-size: calc(var(--row) * .62); font-weight: 500; line-height: .98; letter-spacing: -.02em; }
-.iw-head h2 i, .iw-run i { font-family: "Fraunces", Georgia, serif; font-style: italic; font-weight: 300; letter-spacing: -.01em; }
+.iw-head h2 { margin: 0; font-size: calc(var(--row) * .62); font-weight: 600; line-height: .98; letter-spacing: -.02em; }
+.iw-head h2 i, .iw-run i { font-weight: 600; letter-spacing: -.01em; }
 .iw-head p { margin: 0; text-align: right; color: var(--muted); font-size: .9375rem; line-height: 1.5; }
 
 .iw-body { position: relative; }
@@ -10,11 +10,11 @@
   transition: margin-left .9s var(--ease); }
 .iw-list li { border-bottom: 1px solid var(--line); }
 .iw-row { display: block; overflow: hidden; padding: 0 var(--pad); color: inherit; text-decoration: none; outline-offset: -3px; }
-.iw-run { display: inline-block; white-space: nowrap; font-size: var(--row); font-weight: 500; font-stretch: 92%;
+.iw-run { display: inline-block; white-space: nowrap; font-size: var(--row); font-weight: 600;
   line-height: 1.16; letter-spacing: -.025em; will-change: transform; }
 .iw-t { display: inline-block; padding-right: 2.4em; }       /* the gap before the line comes round again */
 .iw-run i { color: var(--muted); font-size: .5em; vertical-align: .55em; margin: 0 .08em; }
-.iw-name { font-weight: inherit; color: var(--zap); }       /* the project title, in the site's lilac */
+.iw-name { font-weight: 800; color: var(--zap); }       /* the project title, in the site's lilac */
 .iw-run em { font-style: normal; color: var(--zap); }
 .iw-row.on .iw-run { color: var(--fg); }
 

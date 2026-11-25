@@ -80,40 +80,38 @@ void main() {
 
     /* ---------- the type as a mask ---------- */
     const mask = document.createElement("canvas"), mx = mask.getContext("2d");
-    const FONT = (px) => `condensed 800 ${px}px Bricolage, "Helvetica Neue", Arial, sans-serif`;
-    const setFont = (ctx, px) => { ctx.font = FONT(px); if ("fontStretch" in ctx) ctx.fontStretch = "condensed"; };
+    const FONT = (px) => `800 ${px}px Bricolage, "Helvetica Neue", Arial, sans-serif`;   // the same letters as every heading
+    const setFont = (ctx, px) => { ctx.font = FONT(px); if ("letterSpacing" in ctx) ctx.letterSpacing = (px * -0.045).toFixed(2) + "px"; };
     function layout() {
       W = innerWidth; H = innerHeight; dpr = Math.min(1.5, devicePixelRatio || 1);
       const pad = parseFloat(getComputedStyle(root).getPropertyValue("--op-pad")) || W * 0.023;
-      // on a phone the name stacks, one word a line, each line as wide as the screen
-      const phone = W <= 820, lines = phone ? NAME.split(" ") : [NAME], gap = phone ? H * 0.012 : 0;
-      const L = lines.map((s) => {
-        setFont(mx, 100); const a = mx.measureText(s), F = 100 * (W - 2 * pad) / (a.actualBoundingBoxLeft + a.actualBoundingBoxRight);
-        setFont(mx, F); const b = mx.measureText(s);
-        return { s, F, x: pad + b.actualBoundingBoxLeft, asc: b.actualBoundingBoxAscent, desc: Math.max(0, b.actualBoundingBoxDescent) };
-      });
-      // the letters are drawn taller than they are wide (as the old "Projects" word was), so the name
-      // fills the screen rather than sitting in a thin band across it
-      const raw = L.reduce((n, l) => n + l.asc + l.desc, 0);
-      const SY = Math.max(1, Math.min(phone ? 2.2 : 1.7, (H * (phone ? 0.56 : 0.44) - gap * (L.length - 1)) / raw));
-      const h = raw * SY + gap * (L.length - 1), top = Math.round(H * (phone ? 0.42 : 0.45) - h / 2);
-      box = { x: pad, y: top, w: W - 2 * pad, h, sy: SY };
+      // the name stacks, one word a line, both at one size and in the letters' own proportions: as wide as
+      // the screen allows, or as tall as leaves room for the line underneath
+      const phone = W <= 820, lines = NAME.split(" "), GAP = 0.09;      // GAP: between the lines, as a share of the type size
+      const ink = (s) => { const m = mx.measureText(s); return { l: m.actualBoundingBoxLeft, w: m.actualBoundingBoxLeft + m.actualBoundingBoxRight, asc: m.actualBoundingBoxAscent, desc: Math.max(0, m.actualBoundingBoxDescent) }; };
+      setFont(mx, 100);
+      const at100 = lines.map(ink), wide = Math.max(...at100.map((m) => m.w)), tall = at100.reduce((n, m) => n + m.asc + m.desc, 0) + 100 * GAP * (lines.length - 1);
+      const F = 100 * Math.min((W - 2 * pad) / wide, H * 0.66 / tall), gap = F * GAP;
+      setFont(mx, F);
+      const L = lines.map((s) => { const m = ink(s); return { s, x: pad + m.l, asc: m.asc, desc: m.desc, w: m.w }; });
+      const h = L.reduce((n, l) => n + l.asc + l.desc, 0) + gap * (L.length - 1), top = Math.round(H * (phone ? 0.42 : 0.475) - h / 2);
+      box = { x: pad, y: top, w: Math.max(...L.map((l) => l.w)), h };
       // draw the mask at full resolution, and note where each letter starts so the edit can cut letter by letter
       mask.width = Math.round(W * dpr); mask.height = Math.round(H * dpr);
       mx.setTransform(dpr, 0, 0, dpr, 0, 0); mx.clearRect(0, 0, W, H);
-      mx.fillStyle = "#fff"; mx.textBaseline = "alphabetic";
+      setFont(mx, F); mx.fillStyle = "#fff"; mx.textBaseline = "alphabetic";   // (resizing the canvas cleared the font)
       const at = new Set();
       let y = top;
       L.forEach((l) => {
-        setFont(mx, l.F);
         for (let i = 1; i < l.s.length; i++) if (l.s[i] !== " ") at.add(Math.round(mx.measureText(l.s.slice(0, i)).width + l.x - box.x));
-        mx.save(); mx.translate(0, y + l.asc * SY); mx.scale(1, SY); mx.fillText(l.s, l.x, 0); mx.restore();
-        y += (l.asc + l.desc) * SY + gap;
+        mx.fillText(l.s, l.x, y + l.asc);
+        y += l.asc + l.desc + gap;
       });
       edges = [...at].sort((a, b) => a - b); edges.push(box.w + 4);
       cv.width = mask.width; cv.height = mask.height;
       root.style.setProperty("--op-top", (box.y + box.h).toFixed(1) + "px");
       root.style.setProperty("--op-left", box.x.toFixed(1) + "px");
+      root.style.setProperty("--op-right", (W - box.x - box.w).toFixed(1) + "px");
       sizeEdit(); upMask = true; fieldFor(); drawn = false;
     }
 

@@ -23,14 +23,8 @@
     return withCream >= withBlack ? CREAM : "#000000";
   };
 
-  /* a long title breaks into two lines at the word nearest its middle, so each line can be set big */
-  const linesOf = (t) => {
-    const w = String(t).split(" ");
-    if (w.length < 2 || t.length < 11) return [t];
-    let best = 1, diff = 1e9;
-    for (let i = 1; i < w.length; i++) { const d = Math.abs(w.slice(0, i).join(" ").length - w.slice(i).join(" ").length); if (d < diff) { diff = d; best = i; } }
-    return [w.slice(0, best).join(" "), w.slice(best).join(" ")];
-  };
+  /* project names are set one word to a line, so every name can be big */
+  const linesOf = (t) => String(t).split(" ");
 
   function html(list) {
     const ch = list.map((p, i) => {

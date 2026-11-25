@@ -1,10 +1,10 @@
 /* ============ Relinquit ============
    A calm cream page inside the black site. One accent: the case's own lagoon colour
-   (var(--project), set from data.js). Type: Bricolage, with Fraunces italic for small asides. */
+   (var(--project), set from data.js). */
 .rq2 { --ink: #111; --paper: var(--fg); --dimk: rgba(0, 0, 0, .58); --hair: rgba(0, 0, 0, .14); --pc: var(--project, #4FA3B1);
   padding: 0; background: var(--paper); color: var(--ink); }
 .rq2 section { position: relative; }
-.rq2 h1, .rq2 h2, .rq2 h3 { margin: 0; font-weight: 800; font-stretch: 75%; letter-spacing: -.02em; }
+.rq2 h1, .rq2 h2, .rq2 h3 { margin: 0; font-weight: 800; letter-spacing: var(--track); }
 .rq2 figure { margin: 0; }
 .rq2 .hot { color: var(--pc); }
 .rq2 img { max-width: 100%; }
@@ -13,22 +13,22 @@
 .rq2-hero { height: 100vh; height: 100svh; min-height: 620px; overflow: hidden; display: grid; grid-template-columns: 1fr 1fr; align-items: center;
   padding: var(--nav-h) var(--pad) 0; }
 .rq2-htx { display: grid; gap: 3vh; align-content: center; }
-.rq2-hero h1 { font-size: clamp(4.5rem, 12vw, 15rem); line-height: .8; }
-.rq2-line { font-size: clamp(1.75rem, 2.8vw, 3.4rem); font-weight: 700; font-stretch: 80%; line-height: 1; }
+.rq2-hero h1 { font-size: var(--t-name); line-height: .8; }
+.rq2-line { font-size: var(--t-sub); font-weight: 800; line-height: 1; }
 .rq2-line span { color: var(--pc); }
-.rq2-sub { display: flex; gap: 1.4rem; align-items: baseline; max-width: 34rem; font-size: clamp(1.0625rem, 1.15vw, 1.3125rem); line-height: 1.45; color: var(--dimk); }
-.rq2-sub em { font-family: "Fraunces", Georgia, serif; color: var(--ink); font-size: 1.3em; flex: none; }
+.rq2-sub { display: flex; gap: 1.4rem; align-items: baseline; max-width: 34rem; font-size: var(--t-body); line-height: 1.45; color: var(--dimk); }
+.rq2-sub em { font-weight: 500; color: var(--ink); font-size: 1.3em; flex: none; }
 .rq-hc { justify-self: center; max-height: 82vh; width: auto; object-fit: contain; }
 
 /* ---------- key result ---------- */
 .rq2-key { min-height: 100vh; display: grid; align-content: center; gap: 8vh; padding: calc(var(--nav-h) + 8vh) var(--pad) 10vh; background: #000; color: var(--fg); }
-.rq2-big { font-size: clamp(2.4rem, 4.4vw, 5.6rem); font-weight: 800; font-stretch: 75%; line-height: .96; letter-spacing: -.02em; max-width: 19ch; text-wrap: balance; }
+.rq2-big { font-size: var(--t-head); font-weight: 800; line-height: .96; letter-spacing: var(--track); max-width: 19ch; text-wrap: balance; }
 .rq2-n { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 3vw; margin: 0; border-top: 1px solid var(--line); padding-top: 3vh; }
 .rq2-n div { display: grid; gap: .6rem; align-content: start; }
-.rq2-n dt { font-size: clamp(2.6rem, 5vw, 6rem); font-weight: 800; font-stretch: 75%; line-height: .9; }
+.rq2-n dt { font-size: var(--t-num); font-weight: 800; line-height: .9; }
 .rq2-n dt small { font-size: .35em; font-weight: 600; margin-left: .3em; color: var(--muted); }
 .rq2-n dd { margin: 0; color: var(--muted); max-width: 22em; }
-.rq2-me { font-size: clamp(1.0625rem, 1.15vw, 1.3125rem); }
+.rq2-me { font-size: var(--t-body); }
 
 /* ---------- the dispensing stage ---------- */
 .rq2-disp .mech-stage { display: grid; grid-template-columns: 1fr 1fr; align-items: center; padding: var(--nav-h) var(--pad) 0; }
@@ -37,12 +37,12 @@
 .rq-case .rq-slider, .rq-case .rq-cig { transition: none; }
 .rq2-side { display: grid; gap: 3vh; align-content: center; max-width: 38rem; }
 .rq2-count { display: flex; align-items: baseline; gap: 1rem; }
-.rq2-count b { font-size: clamp(5rem, 11vw, 13rem); font-weight: 800; font-stretch: 75%; line-height: .8; color: var(--pc); font-variant-numeric: tabular-nums; }
-.rq2-count span { font-family: "Fraunces", Georgia, serif; font-style: italic; font-size: clamp(1.25rem, 1.6vw, 1.875rem); color: var(--dimk); }
-.rq2-act { font-size: clamp(3rem, 6vw, 7.5rem); line-height: .86; }
+.rq2-count b { font-size: var(--t-huge); font-weight: 800; line-height: .8; color: var(--pc); font-variant-numeric: tabular-nums; }
+.rq2-count span { font-weight: 500; font-size: var(--t-sub); color: var(--dimk); }
+.rq2-act { font-size: var(--t-step); line-height: .86; }
 .rq2-act.wipe { animation: rq2-wipe .5s var(--ease); }
 @keyframes rq2-wipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
-.rq2-desc { font-size: clamp(1.125rem, 1.35vw, 1.5rem); line-height: 1.45; max-width: 28em; }
+.rq2-desc { font-size: var(--t-body); line-height: 1.45; max-width: 28em; }
 .rq2-acts { display: flex; gap: 2rem; border-top: 1px solid var(--hair); padding-top: 1.2rem; color: var(--dimk); }
 .rq2-acts li { position: relative; transition: color .3s; }
 .rq2-acts li.on { color: var(--ink); }
@@ -55,16 +55,16 @@
 .rq2-inside .mech-stage { display: grid; grid-template-columns: 1fr 1.1fr 1fr; grid-template-rows: auto 1fr; align-items: center; column-gap: 3vw;
   padding: calc(var(--nav-h) + 4vh) var(--pad) 4vh; background: #fff; }
 .rq2-h { grid-column: 1; grid-row: 1 / span 2; display: grid; gap: 2.4vh; align-content: center; }
-.rq2-h h2 { font-size: clamp(3rem, 6vw, 7.5rem); line-height: .86; }
-.rq2-h p { font-size: clamp(1.0625rem, 1.15vw, 1.3125rem); line-height: 1.5; color: var(--dimk); max-width: 26em; }
+.rq2-h h2 { font-size: var(--t-head); line-height: .86; }
+.rq2-h p { font-size: var(--t-body); line-height: 1.5; color: var(--dimk); max-width: 26em; }
 .rq2-exw { grid-column: 2; grid-row: 1 / span 2; position: relative; height: min(78vh, calc(100vh - var(--nav-h) - 10vh)); aspect-ratio: 687 / 1089; justify-self: center; align-self: center; }
 .rq2-exw img { width: 100%; height: 100%; object-fit: contain; transform-origin: 50% 50%; }
 .rq2-pt { position: absolute; width: 2.1rem; height: 2.1rem; margin: -1.05rem 0 0 -1.05rem; border-radius: 50%; display: grid; place-items: center;
   background: #111; color: var(--fg); font-weight: 700; font-size: .9375rem; box-shadow: 0 0 0 3px #fff; transform: scale(0); transition: transform .45s cubic-bezier(.3, 1.6, .5, 1); }
 .rq2-pt.on { transform: scale(1); }
 .rq2-parts { grid-column: 3; grid-row: 1 / span 2; display: grid; gap: .9rem; align-content: center; }
-.rq2-parts li { display: flex; align-items: baseline; gap: 1rem; font-size: clamp(1.125rem, 1.4vw, 1.625rem); font-weight: 600; color: rgba(0, 0, 0, .22); transition: color .3s; }
-.rq2-parts li b { font-family: "Fraunces", Georgia, serif; font-style: italic; font-weight: 400; min-width: 1.4em; }
+.rq2-parts li { display: flex; align-items: baseline; gap: 1rem; font-size: var(--t-sub); font-weight: 600; color: rgba(0, 0, 0, .22); transition: color .3s; }
+.rq2-parts li b { font-weight: 500; min-width: 1.4em; }
 .rq2-parts li.on { color: var(--ink); }
 .rq2-parts li.now b { color: var(--pc); }
 .rq2-exs { display: grid; grid-template-columns: 1fr 1fr; gap: 4vw; align-items: center; padding: 12vh var(--pad); background: #fff; }
@@ -75,7 +75,7 @@
 .rq2-cols ul { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2vw; align-items: end; }
 .rq2-cols li { display: grid; gap: 1.2rem; justify-items: center; }
 .rq2-cols li img { height: 46vh; width: auto; object-fit: contain; }
-.rq2-cols li span { font-family: "Fraunces", Georgia, serif; font-style: italic; color: var(--dimk); }
+.rq2-cols li span { font-weight: 500; color: var(--dimk); }
 .rq2-dim { display: grid; gap: 1.6rem; }
 .rq2-dim img { background: #fff; padding: 2vh 2vw; }
 .rq2-dim p { color: var(--dimk); line-height: 1.5; }
@@ -83,13 +83,13 @@
 /* ---------- the app ---------- */
 .rq2-app .mech-stage { display: grid; grid-template-columns: 1fr 1fr; align-items: center; padding: calc(var(--nav-h) + 4vh) var(--pad) 4vh; background: #000; color: var(--fg); }
 .rq2-al { display: grid; gap: 3.2vh; align-content: center; }
-.rq2-al h2 { font-size: clamp(2.6rem, 4.6vw, 5.75rem); line-height: .9; max-width: 11ch; }
+.rq2-al h2 { font-size: var(--t-head); line-height: .9; max-width: 11ch; }
 .rq2-g { display: grid; gap: .7rem; }
-.rq2-g small { font-family: "Fraunces", Georgia, serif; font-style: italic; font-size: 1rem; color: var(--muted); }
+.rq2-g small { font-weight: 500; font-size: var(--t-small); color: var(--muted); }
 .rq2-g ol { display: grid; gap: .25rem; }
 .rq2-g li { display: flex; gap: 1.2rem; align-items: baseline; color: rgba(238, 233, 227, .3); transition: color .3s; }
-.rq2-g li b { font-size: clamp(1.25rem, 1.6vw, 1.875rem); font-weight: 700; font-stretch: 80%; min-width: 7.5em; }
-.rq2-g li span { font-size: 1rem; }
+.rq2-g li b { font-size: var(--t-sub); font-weight: 800; min-width: 7.5em; }
+.rq2-g li span { font-size: var(--t-small); }
 .rq2-g li.on { color: var(--fg); }
 .rq2-g li.on b { color: var(--pc); }
 .rq2-phone { justify-self: center; height: 82vh; aspect-ratio: 620 / 1342; border-radius: 3.2vh; overflow: hidden; background: #111; box-shadow: 0 0 0 .9vh #1c1c1c, 0 0 0 1.05vh #333; }
@@ -97,26 +97,26 @@
 .rq2-strip img { display: block; width: 100%; height: auto; }
 .rq2-scr { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4vh 2vw; padding: 12vh var(--pad); background: #000; color: var(--fg); }
 .rq2-scr li { display: grid; gap: .4rem; align-content: start; }
-.rq2-scr span { color: var(--muted); font-size: .9375rem; }
+.rq2-scr span { color: var(--muted); font-size: var(--t-small); }
 
 /* ---------- process ---------- */
 .rq2-row { min-height: 100vh; padding: 14vh var(--pad); display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 5vh 2.4vw; align-content: center; }
-.rq2-ph { font-size: clamp(2.6rem, 4.6vw, 5.75rem); line-height: .92; text-wrap: balance; }
-.rq2-ph small { display: block; margin-bottom: 1.6rem; font-family: "Fraunces", Georgia, serif; font-style: italic; font-weight: 400; font-stretch: 100%; letter-spacing: 0; font-size: clamp(1.125rem, 1.3vw, 1.5rem); color: var(--dimk); }
+.rq2-ph { font-size: var(--t-head); line-height: .92; text-wrap: balance; }
+.rq2-ph small { display: block; margin-bottom: 1.6rem; font-weight: 500; letter-spacing: 0; font-size: var(--t-small); color: var(--dimk); }
 .rq2-res .rq2-ph { grid-column: 1 / span 6; }
 .rq2-facts { grid-column: 7 / span 6; grid-row: 1 / span 2; display: grid; gap: 4vh; margin: 0; align-content: center; }
 .rq2-facts div { display: grid; gap: .4rem; border-top: 1px solid var(--hair); padding-top: 1.4rem; }
-.rq2-facts dt { font-size: clamp(2.2rem, 3.6vw, 4.5rem); font-weight: 800; font-stretch: 75%; line-height: .9; }
-.rq2-facts dt i { font-family: "Fraunces", Georgia, serif; font-weight: 400; font-size: .5em; color: var(--dimk); }
+.rq2-facts dt { font-size: var(--t-num); font-weight: 800; line-height: .9; }
+.rq2-facts dt i { font-weight: 500; font-size: .5em; color: var(--dimk); }
 .rq2-facts dd { margin: 0; color: var(--dimk); max-width: 34em; line-height: 1.45; }
-.rq2-src { grid-column: 1 / span 5; align-self: end; font-size: .875rem; color: var(--dimk); line-height: 1.5; }
+.rq2-src { grid-column: 1 / span 5; align-self: end; font-size: var(--t-small); color: var(--dimk); line-height: 1.5; }
 .rq2-idea .rq2-ph { grid-column: 1 / span 7; }
 .rq2-sks { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 1.2vw; }
 .rq2-sks li { display: grid; gap: .6rem; opacity: .4; transition: opacity .3s; }
 .rq2-sks li.pick { opacity: 1; }
 .rq2-sks li img { width: 100%; aspect-ratio: 270 / 493; object-fit: contain; background: #fff; }
 .rq2-sks li.pick img { outline: 3px solid var(--pc); outline-offset: -3px; }
-.rq2-sks span { font-size: .9375rem; }
+.rq2-sks span { font-size: var(--t-small); }
 .rq2-score { grid-column: 1 / span 6; display: grid; gap: .8rem; }
 .rq2-score div { display: grid; grid-template-columns: 9em 1fr 2.5em; gap: 1rem; align-items: center; color: var(--dimk); }
 .rq2-score i { height: 10px; background: rgba(0, 0, 0, .18); transform-origin: 0 50%; transform: scaleX(var(--v)); }
@@ -127,11 +127,11 @@
 /* ---------- outcome ---------- */
 .rq2-out { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 4vw; padding: 12vh var(--pad); background: #000; color: var(--fg); }
 .rq2-otx { display: grid; gap: 5vh; }
-.rq2-out h2 { font-size: clamp(3.4rem, 6.6vw, 8.5rem); line-height: .86; }
+.rq2-out h2 { font-size: var(--t-step); line-height: .86; }
 .rq2-out h2 span { color: var(--pc); }
 .rq2-out ol { display: grid; gap: 1rem; counter-reset: o; max-width: 34em; }
-.rq2-out li { display: flex; gap: 1rem; color: var(--muted); font-size: clamp(1.0625rem, 1.15vw, 1.3125rem); line-height: 1.45; }
-.rq2-out li::before { counter-increment: o; content: counter(o); font-family: "Fraunces", Georgia, serif; font-style: italic; color: var(--fg); }
+.rq2-out li { display: flex; gap: 1rem; color: var(--muted); font-size: var(--t-body); line-height: 1.45; }
+.rq2-out li::before { font-weight: 500; counter-increment: o; content: counter(o); color: var(--fg); }
 .rq2-out figure img { width: 100%; max-height: 80vh; object-fit: contain; }
 
 .rq2 .p-next { margin: 0; }
@@ -155,20 +155,20 @@
   .rq2-cw { padding: 2vh 0 0; }
   .rq-case { height: 44vh; }
   .rq2-side { gap: 1.2vh; align-content: start; }
-  .rq2-count b { font-size: 20vw; }
-  .rq2-act { font-size: 13vw; }
-  .rq2-desc { font-size: 1.0625rem; }
+  .rq2-count b { font-size: var(--t-huge); }
+  .rq2-act { font-size: var(--t-step); }
+  .rq2-desc { font-size: var(--t-body); }
   .rq2-acts { gap: 1.1rem; font-size: .875rem; padding-top: .8rem; }
   .rq2-acts li.on::before { top: calc(-.8rem - 2px); }
   .rq2-inside .mech-stage { grid-template-rows: auto 1fr auto; row-gap: 1.6vh; padding: calc(var(--nav-h) + 2vh) var(--pad) 2vh; }
   .rq2-h, .rq2-exw, .rq2-parts { grid-column: 1; }
-  .rq2-h { grid-row: 1; } .rq2-h p { display: none; } .rq2-h h2 { font-size: 13vw; }
+  .rq2-h { grid-row: 1; } .rq2-h p { display: none; } .rq2-h h2 { font-size: var(--t-head); }
   .rq2-exw { grid-row: 2; height: 100%; max-height: 50vh; }
   .rq2-parts { grid-row: 3; grid-template-columns: 1fr 1fr; gap: .3rem 1rem; }
-  .rq2-parts li { font-size: .9375rem; }
+  .rq2-parts li { font-size: var(--t-sub); }
   .rq2-app .mech-stage { grid-template-rows: auto 1fr; row-gap: 2vh; padding: calc(var(--nav-h) + 2vh) var(--pad) 2vh; }
   .rq2-al { gap: 1.2vh; }
-  .rq2-al h2 { font-size: 9.5vw; max-width: none; }
+  .rq2-al h2 { font-size: var(--t-head); max-width: none; }
   /* only the screen in the phone is named */
   .rq2-g li:not(.on), .rq2-g:not(:has(li.on)) { display: none; }
   .rq2-g li { flex-direction: column; gap: .2rem; }

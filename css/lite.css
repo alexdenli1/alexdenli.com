@@ -19,8 +19,3 @@
 
 /* phone: the bar's links step aside while the name flies past them, and come back with the logo */
 @media (max-width: 820px) { .nav.nav-open .nav-pages { opacity: var(--links, 1); } }
-
-/* one voice for the headings on white: the same light serif as the project titles */
-.lite .bw-head h2, .lite .ct-big { font-family: "Fraunces", Georgia, serif; font-weight: 300; font-stretch: 100%; font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0; letter-spacing: -.035em; }
-.lite .bw-head h2 { font-size: clamp(2.6rem, 4.4vw, 5.5rem); line-height: 1; }
-.lite .ct-big { font-size: clamp(4.5rem, 17vw, 24rem); line-height: .95; }

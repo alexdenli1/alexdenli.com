@@ -145,7 +145,7 @@
     off.forEach((f) => f()); off = [];
     const root = document.querySelector(".rs"); if (!root) return;
     const ph = document.getElementById("rsPhone"), scr = ph.querySelector(".rs-scr"), prog = [...root.querySelectorAll(".rs-prog li")];
-    const fit = () => { const s = Math.max(1, Math.min(2.1, (innerHeight * 0.8 - 24) / 480)); ph.style.setProperty("--s", s.toFixed(3)); };
+    const fit = () => { const s = Math.max(.7, Math.min(2.1, (innerHeight * 0.8 - 24) / 480, innerWidth > 820 ? 2.1 : (document.documentElement.clientWidth - 56) / 360)); ph.style.setProperty("--s", s.toFixed(3)); };
     fit(); addEventListener("resize", fit); off.push(() => removeEventListener("resize", fit));
     let n = 746, st = "start", done = false;
     const set = (k, ans) => { st = k; scr.innerHTML = SC[k](n, ans); scr.classList.toggle("rv", k === "reward"); prog.forEach((li) => li.classList.toggle("on", +li.dataset.s <= { start: 0, missions: 1, quiz: 2, reward: 3 }[k] && true)); };

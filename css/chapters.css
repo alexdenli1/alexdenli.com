@@ -10,13 +10,12 @@
 .ch-alt .ch-pic { order: 2; margin: 0 0 0 4vw; }
 
 .ch-tx { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2.6vh; min-width: 0; }
-.ch-year { font-size: clamp(.9375rem, .86vw, 1.0625rem); color: var(--muted); }
-.ch-title { margin: 0; font-family: "Fraunces", Georgia, serif; font-weight: 300; font-variation-settings: "opsz" 144, "SOFT" 0, "WONK" 0;
-  font-size: clamp(3.5rem, 6.2vw, 8.5rem); line-height: 1; letter-spacing: -.035em; }
+.ch-year { font-size: var(--t-small); color: var(--muted); }
+.ch-title { margin: 0; font-size: var(--t-name); font-weight: 800; line-height: .9; letter-spacing: var(--track); }
 .ch-title a { display: inline-block; color: var(--fg); transition: color .3s var(--ease); }
 .ch-title span { display: block; }
 .ch-title a:hover { color: var(--accent); }
-.ch-info { font-size: clamp(.9375rem, .86vw, 1.0625rem); line-height: 1.5; color: var(--muted); max-width: 100%; text-wrap: balance; }
+.ch-info { font-size: var(--t-small); line-height: 1.5; color: var(--muted); max-width: 100%; text-wrap: balance; }
 
 /* ---------- the home to project transition ---------- */
 /* the picture grows into the page's hero while the new page wipes in over the old one, left to right */
@@ -36,7 +35,7 @@
   .ch { grid-template-columns: minmax(0, 1fr); gap: 3.5vh; }
   .ch-pic, .ch-alt .ch-pic { order: 0; height: 44vh; margin: 0; }
   .ch-tx { gap: 1.4vh; }
-  .ch-title { font-size: 14vw; }
+  .ch-title { font-size: var(--t-name); }
 }
 
 /* the Adverts picture carries its own shadow, and its wires fade out at the top rather than ending in mid-air */
