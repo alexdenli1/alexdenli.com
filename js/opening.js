@@ -86,17 +86,21 @@ void main() {
     function layout() {
       W = innerWidth; H = innerHeight; dpr = Math.min(1.5, devicePixelRatio || 1);
       const pad = parseFloat(getComputedStyle(root).getPropertyValue("--op-pad")) || W * 0.023;
-      // the name stacks, one word a line, both at one size and in the letters' own proportions: as wide as
-      // the screen allows, or as tall as leaves room for the line underneath
-      const phone = W <= 820, lines = NAME.split(" "), GAP = 0.09;      // GAP: between the lines, as a share of the type size
+      // the name stacks, one word a line, both at one size and in the letters' own proportions, centred: as wide as
+      // the screen allows, or as tall as fits between the nav and the disciplines underneath
+      const lines = NAME.split(" "), GAP = 0.09;      // GAP: between the lines, as a share of the type size
       const ink = (s) => { const m = mx.measureText(s); return { l: m.actualBoundingBoxLeft, w: m.actualBoundingBoxLeft + m.actualBoundingBoxRight, asc: m.actualBoundingBoxAscent, desc: Math.max(0, m.actualBoundingBoxDescent) }; };
       setFont(mx, 100);
       const at100 = lines.map(ink), wide = Math.max(...at100.map((m) => m.w)), tall = at100.reduce((n, m) => n + m.asc + m.desc, 0) + 100 * GAP * (lines.length - 1);
-      const F = 100 * Math.min((W - 2 * pad) / wide, H * 0.66 / tall), gap = F * GAP;
+      const head = nav ? nav.offsetHeight : 68, edge = Math.max(12, H * 0.025), foot = line ? parseFloat(getComputedStyle(line).getPropertyValue("--op-gap")) * H / 100 + line.offsetHeight : 60;
+      const F = 100 * Math.min(((document.documentElement.clientWidth || W) - 2 * pad) / wide, Math.max(160, H - head - foot - 2.6 * edge) / tall), gap = F * GAP;
       setFont(mx, F);
-      const L = lines.map((s) => { const m = ink(s); return { s, x: pad + m.l, asc: m.asc, desc: m.desc, w: m.w }; });
-      const h = L.reduce((n, l) => n + l.asc + l.desc, 0) + gap * (L.length - 1), top = Math.round(H * (phone ? 0.42 : 0.475) - h / 2);
-      box = { x: pad, y: top, w: Math.max(...L.map((l) => l.w)), h };
+      const L = lines.map((s) => { const m = ink(s); return { s, l: m.l, x: 0, asc: m.asc, desc: m.desc, w: m.w }; });
+      const h = L.reduce((n, l) => n + l.asc + l.desc, 0) + gap * (L.length - 1), top = Math.round(head + Math.max(edge * .6, (H - head - h - foot) / 2));
+      const bw = Math.max(...L.map((l) => l.w));
+      const vw = document.documentElement.clientWidth || W;      // centred on the page itself, not counting the scrollbar
+      box = { x: (vw - bw) / 2, y: top, w: bw, h };
+      L.forEach((l) => { l.x = (vw - l.w) / 2 + l.l; });
       // draw the mask at full resolution, and note where each letter starts so the edit can cut letter by letter
       mask.width = Math.round(W * dpr); mask.height = Math.round(H * dpr);
       mx.setTransform(dpr, 0, 0, dpr, 0, 0); mx.clearRect(0, 0, W, H);
@@ -112,7 +116,7 @@ void main() {
       cv.width = mask.width; cv.height = mask.height;
       root.style.setProperty("--op-top", (box.y + box.h).toFixed(1) + "px");
       root.style.setProperty("--op-left", box.x.toFixed(1) + "px");
-      root.style.setProperty("--op-right", (W - box.x - box.w).toFixed(1) + "px");
+      root.style.setProperty("--op-right", (vw - box.x - box.w).toFixed(1) + "px");
       sizeEdit(); upMask = true; fieldFor(); drawn = false;
     }
 
