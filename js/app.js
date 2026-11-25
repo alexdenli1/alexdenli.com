@@ -70,10 +70,10 @@
     return {
       title: "", label: "Home", scroll: 0,
       html: `${window.OPENING ? window.OPENING.html(S) : `<h1 class="op-name">${esc(S.owner.name)}</h1>`}
-      ${window.BRANDS ? window.BRANDS.html(S.brands, "Brands I’ve worked with", "Designing for, and working alongside, some of golf’s most trusted names.") : ""}
+      <div class="lite">${window.BRANDS ? window.BRANDS.html(S.brands, "Brands I’ve worked with", "Designing for, and working alongside, some of golf’s most trusted names.") : ""}
       ${window.CHAPTERS ? window.CHAPTERS.html(S.projects) : ""}
       ${ledger()}
-      ${window.CONTACT ? window.CONTACT.html(S.owner) : `<section class="home-end"><a class="giant" href="#/contact">Contact</a></section>`}${foot()}`,
+      ${window.CONTACT ? window.CONTACT.html(S.owner) : `<section class="home-end"><a class="giant" href="#/contact">Contact</a></section>`}${foot()}</div>`,
       after: () => { if (window.CHAPTERS) window.CHAPTERS.wire(); if (window.INDEXWORKS) window.INDEXWORKS.wire(); if (window.CONTACT) window.CONTACT.wire(); },
     };
   }
@@ -171,11 +171,8 @@
     if (!a || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) { morphFrom = null; return; }
     morphFrom = a.querySelector("img") || (a.closest(".iw") && $(".iw.split .iw-pic img.on")) || $(`.ch[data-slug="${a.dataset.slug}"] .ch-pic img`);
   }, true);
-  /* the project's colour washes across behind the growing picture: the old page leaves a little
-     ahead of the new one arriving, and the colour fills the gap between them */
-  function morph(from, swap, findTo, colour) {
-    const ease = "cubic-bezier(.7, 0, .2, 1)", dur = 820, root = document.documentElement;
-    root.style.setProperty("--vt-colour", colour || "transparent");
+  function morph(from, swap, findTo) {
+    const ease = "cubic-bezier(.7, 0, .2, 1)", dur = 820;
     if (document.startViewTransition) {
       from.style.viewTransitionName = "hero";
       const t = document.startViewTransition(() => { from.style.viewTransitionName = ""; swap(); const to = findTo(); if (to) to.style.viewTransitionName = "hero"; });
@@ -192,10 +189,7 @@
     // one fixed element, so its box is animated directly (keeps the picture's proportions true all the way)
     const box = (q) => ({ transform: `translate(${q.left}px, ${q.top}px)`, width: q.width + "px", height: q.height + "px" });
     const fly = c.animate([box(r), box(t)], { duration: dur, easing: ease, fill: "forwards" });
-    const wash = document.createElement("div"); wash.className = "vt-wash"; wash.style.background = colour || "transparent";
-    document.body.appendChild(wash);
-    wash.animate([{ clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0 0 0)", offset: 0.45 }, { clipPath: "inset(0 0 0 100%)" }], { duration: dur, easing: ease, fill: "forwards" }).onfinish = () => wash.remove();
-    view.animate([{ clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 100% 0 0)", offset: 0.4 }, { clipPath: "inset(0 0 0 0)" }], { duration: dur, easing: ease });
+    view.animate([{ clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0 0 0)" }], { duration: dur, easing: ease });
     fly.onfinish = () => { if (to) to.style.visibility = ""; c.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 180 }).onfinish = () => c.remove(); };
   }
 
@@ -206,7 +200,7 @@
     const back = !first && key === "home" && lastProject ? lastProject : null;
     lastProject = key === "project" ? sub : null;
     const swap = () => {
-      view.innerHTML = page.html; document.documentElement.classList.remove("ch-on");
+      view.innerHTML = page.html;
       // a project page takes its own colour for its accents (--project)
       const pc = key === "project" && (S.projects.find((p) => p.slug === sub) || {}).colour;
       pc ? view.style.setProperty("--project", pc) : view.style.removeProperty("--project");
@@ -228,8 +222,7 @@
     const from = morphFrom || (back ? $(HERO, view) : null); morphFrom = null;
     if (first || reduce || instant) { instant = false; return swap(); }
     if (from && from.isConnected && (key === "project" || back)) {
-      const pr = S.projects.find((p) => p.slug === (key === "project" ? sub : back));
-      return morph(from, swap, () => (key === "project" ? $(HERO, view) : $(`.ch[data-slug="${back}"] .ch-pic img`, view)), pr && pr.colour);
+      return morph(from, swap, () => (key === "project" ? $(HERO, view) : $(`.ch[data-slug="${back}"] .ch-pic img`, view)));
     }
     if (key === "home") return swap(); // going home is instant, no transition
     const fx = "fx-sweep", dur = 520; // every other page shares the slanted sweep (see style.css)
@@ -243,7 +236,7 @@
     if (key !== "archive") unwireArchive();
     live.stopOpening && live.stopOpening(); live.ro && live.ro.disconnect();
     live = {
-      home: key === "home", field: $(".work"), pintro: $(".pintro"), pword: $(".pintro-word"), pdark: $(".pintro-dark"), pcover: $(".pintro-cover"),
+      home: key === "home", lite: $(".lite"), field: $(".work"), pintro: $(".pintro"), pword: $(".pintro-word"), pdark: $(".pintro-dark"), pcover: $(".pintro-cover"),
       pfirst: $(".pintro .piece"), pindex: $(".field-index"),
       pieces: $$(".pintro .piece"), rows: $$(".field .piece"), scrubs: $$("[data-scrub]"), masks: $$(".mask img"),
       names: $$(".field-index a"), wheel: $(".field-index ol"), active: -1,
@@ -453,8 +446,17 @@
     };
     requestAnimationFrame(step);
   }
+  // home: the bar is clear over the black opening, then white once the white part of the page reaches it.
+  // The home button only appears on the other pages.
+  function bar() {
+    const white = !!(live.lite && live.lite.getBoundingClientRect().top <= nav.offsetHeight * 0.5);
+    document.documentElement.classList.toggle("on-white", white);
+    nav.classList.toggle("nav-open", !!live.home && !white);
+    flag.classList.toggle("flag-away", !!live.home);
+  }
   function update() {
     queued = false;
+    bar();
     if (live.toTop) { lastY = scrollY; return; }
     const y = scrollY, vh = innerHeight, big = wide();
     // Read every position first, then write. Interleaving the two forces the browser to lay the
@@ -473,7 +475,6 @@
     // Animations play going down only. Scrolling up shows everything settled, with no reverse motion.
     if (y < lastY - 1) live.up = true; else if (y > lastY + 1) live.up = false;
     const up = !!live.up;
-    flag.classList.toggle("flag-away", live.home && y < vh);
     // "Projects" intro: the word sits big on screen, a dark disc grows from its middle and swallows it,
     // and the first project grows out of that dark from nothing into its place. The scroll input is damped
     // so a quick flick still plays smoothly.

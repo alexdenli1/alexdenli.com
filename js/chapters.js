@@ -5,15 +5,13 @@
    a little slower than the product, so the work flows on from one project to the next.
 
    As a chapter scrolls in, its product slides in from the left, tied to the scroll position.
-   A small badge pinned in the corner turns with the scroll and shows which chapter you are on.
    Clicking a product (or a title) opens the project with the picture growing into the page's hero
    (app.js does the transition; the links carry data-vt for it).
 
-   Chapters stay black and cream: the project colours are used elsewhere (the transition, the Index
-   of works, the next-project link), not as chapter backgrounds. */
+   Chapters are black on white. The project colours are used only in the Index of works and the
+   next-project link. */
 (() => {
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const pad2 = (n) => String(n).padStart(2, "0");
   const picOf = (p) => p.chapter || (p.cut && p.thumb) || p.hero;
   const isCut = (p) => !!(p.chapter || (p.cut && p.thumb));
   /* the type on a project's colour: black or cream, whichever stands out more against it */
@@ -39,7 +37,6 @@
   };
 
   function html(list) {
-    const n = list.length;
     const ch = list.map((p, i) => {
       const href = "#/project/" + p.slug;
       const lines = linesOf(p.title).map((l) => `<span>${esc(l)}</span>`).join(""), info = `<em>${esc(p.year)}</em> ${esc(p.summary || "")}`;
@@ -50,11 +47,7 @@
         <p class="ch-info">${info}</p>
       </section>`;
     }).join("");
-    const ring = "Selected work ".repeat(4);
-    return `<div class="chs" aria-label="Selected work">${ch}</div>
-      <div class="ch-badge" aria-hidden="true"><svg viewBox="0 0 120 120"><defs><path id="ch-ring" d="M60 60 m-47 0 a47 47 0 1 1 94 0 a47 47 0 1 1 -94 0"/></defs>
-        <text><textPath href="#ch-ring" textLength="292">${ring}</textPath></text></svg>
-        <span><b>01</b><small>/${pad2(n)}</small></span></div>`;
+    return `<div class="chs" aria-label="Selected work">${ch}</div>`;
   }
 
   /* Each chapter has its own arrangement, so the run of projects reads as a spread of work rather than
@@ -97,7 +90,13 @@
         const wide = Math.max(...spans.map((s) => s.getBoundingClientRect().width)) || 1;
         h.style.setProperty("--fs", Math.min(100 * (W - 2 * pad) / wide, W * 0.3).toFixed(1) + "px");
         const im = sec.querySelector(".ch-pic img"), pic = sec.querySelector(".ch-pic"), info = sec.querySelector(".ch-info");
-        im.style.width = im.style.height = pic.style.left = pic.style.top = info.style.maxWidth = info.style.whiteSpace = "";
+        im.style.width = im.style.height = im.style.transform = pic.style.left = pic.style.top = info.style.maxWidth = info.style.whiteSpace = "";
+        // a cut-out with a lot of empty space round it is grown and centred on what can be seen of it
+        if (im.complete && im.naturalWidth && sec.classList.contains("ch-cut")) {
+          const [x0, y0, x1, y1] = bounds(im), ar = im.naturalWidth / im.naturalHeight, bw = im.offsetWidth, bh = im.offsetHeight;
+          const cw = Math.min(bw, bh * ar), ch = cw / ar, k = Math.min((W - 2 * pad) / (cw * (x1 - x0)), H * 0.46 / (ch * (y1 - y0)));
+          if (k > 1.08) im.style.transform = `scale(${k.toFixed(3)}) translate(${(-((x0 + x1) / 2 - 0.5) * cw).toFixed(1)}px, ${(-((y0 + y1) / 2 - 0.5) * ch).toFixed(1)}px)`;
+        }
       });
       return;
     }
@@ -105,7 +104,7 @@
       const L = LAYOUT[i % LAYOUT.length];
       const h = sec.querySelector(".ch-title"), spans = [...h.querySelectorAll("span")];
       const pic = sec.querySelector(".ch-pic"), im = pic.querySelector("img"), info = sec.querySelector(".ch-info");
-      const chH = sec.offsetHeight;
+      const chH = sec.offsetHeight; im.style.transform = "";
 
       // the title: its longest line takes the chosen share of the width, within a height limit
       h.style.setProperty("--fs", "100px");
@@ -136,10 +135,9 @@
   }
 
   function wire() {
-    const wrap = document.querySelector(".chs"), badge = document.querySelector(".ch-badge");
+    const wrap = document.querySelector(".chs");
     if (!wrap || !window.MECH) return () => {};
-    const M = window.MECH, secs = [...wrap.querySelectorAll(".ch")], n = secs.length;
-    const num = badge.querySelector("b"), ring = badge.querySelector("svg");
+    const M = window.MECH, secs = [...wrap.querySelectorAll(".ch")];
 
     fit(secs);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => wrap.isConnected && fit(secs));
@@ -158,17 +156,7 @@
       } }, { pin: false, span: 1 });
     });
 
-    // the badge: which chapter holds the middle of the screen, and a turn tied to the scroll
-    let cur = -1;
-    M.stage(wrap, { draw(p) {
-      const k = Math.min(n - 1, Math.max(0, Math.round(p * (n - 1))));
-      if (k !== cur) { cur = k; num.textContent = pad2(k + 1); }
-      ring.style.transform = `rotate(${(p * 300).toFixed(2)}deg)`;
-    } });
-    const io = new IntersectionObserver((es) => { const on = es[0].isIntersecting && wrap.isConnected;
-      badge.classList.toggle("on", on); document.documentElement.classList.toggle("ch-on", on); }, { rootMargin: "-45% 0px -45% 0px" });
-    io.observe(wrap);
-    return () => { io.disconnect(); removeEventListener("resize", onResize); };
+    return () => { removeEventListener("resize", onResize); };
   }
 
   window.CHAPTERS = { html, wire, inkOn };

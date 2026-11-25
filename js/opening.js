@@ -252,7 +252,7 @@ void main() {
       const hand = clamp01((p - 0.86) / 0.14);          // the last stretch hands over to the logo
       cv.style.opacity = (1 - hand).toFixed(3);
       cv.style.visibility = p >= 1 ? "hidden" : "";
-      if (nav) { nav.style.setProperty("--logo-in", hand.toFixed(3)); nav.classList.toggle("nav-open", p < 1); }
+      if (nav) { nav.style.setProperty("--logo-in", hand.toFixed(3)); nav.style.setProperty("--links", Math.max(1 - clamp01(p / 0.06), hand).toFixed(3)); }   // app.js decides what the bar sits on
       if (p < 1) kick();
     }
 
@@ -333,7 +333,7 @@ void main() {
       document.removeEventListener("pointerleave", leave);
       removeEventListener("scroll", onScroll); removeEventListener("resize", onResize);
       removeEventListener("intro:done", stroke); document.removeEventListener("visibilitychange", onVis);
-      if (nav) { nav.classList.remove("nav-open"); nav.style.removeProperty("--logo-in"); }
+      if (nav) { nav.style.removeProperty("--logo-in"); nav.style.removeProperty("--links"); }
       if (gl) { const x = gl.getExtension("WEBGL_lose_context"); x && x.loseContext(); }
     };
   }

@@ -181,9 +181,10 @@ window.SITE = {
      The first 10 are shown. List them from current and archived work, in the order they should appear.
      "project" is optional: give a project slug and the image links to that project's page. */
   /* Brands and organisations you have worked with or for: plain logos on the home page (first 12 shown).
-     Logos look best as transparent PNG or SVG, in colour or white — they sit on black. */
+     Logos look best as transparent PNG or SVG, in colour or one flat colour. They sit on white:
+     a logo without a "colour" is shown in plain black; one with a colour is shown as it is. */
   brands: [
-    { name: "SuperStroke", logo: "images/brands/superstroke.png", colour: "#00A0E0" },                 // colour: top-left corner
+    { name: "SuperStroke", logo: "images/brands/superstroke-dark.png", colour: "#00A0E0" },                 // colour: top-left corner
     { name: "Oakley", logo: "images/brands/oakley.png", size: 0.88 },
     { name: "Longridge", logo: "images/brands/longridge.png", colour: "#0060B0" },                    // colour: top-right corner
     { name: "Skins Golf", logo: "images/brands/skins-golf-white.png" },
@@ -192,7 +193,7 @@ window.SITE = {
     { name: "The Schoolwear Specialists", logo: "images/brands/schoolwear-specialists.png" },
     { name: "BagBoy", logo: "images/brands/bagboy.png", colour: "#F0C010" },                          // colour: bottom-left corner
     { name: "EzeGlide", logo: "images/brands/ezeglide-white.png" },              // white version: the colour one vanishes on black (colour file: ezeglide.png)
-    { name: "Clicgear", logo: "images/brands/clicgear.png", colour: "#D02020" }                       // colour: bottom-right corner
+    { name: "Clicgear", logo: "images/brands/clicgear-dark.png", colour: "#D02020" }                       // colour: bottom-right corner
   ],
 
   gallery: [

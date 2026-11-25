@@ -1,7 +1,8 @@
 /* Home: Brands I've worked with. Plain logos on the page, nothing to hover or open.
    Three even rows, the longest in the middle, offset like brickwork, with the colour logos in the
    four corners. On a phone: two columns, with the colour logos still in the corners.
-   Order and logos come from SITE.brands in data.js (colour marks a colour logo). */
+   Order and logos come from SITE.brands in data.js: a logo with a colour is shown as it is, the
+   others in plain black. */
 (() => {
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
@@ -19,7 +20,7 @@
     // the order on a phone: colour logos first, second, second to last and last; the rest between them
     const corners = list.filter((b) => b.colour).slice(0, 4), rest = list.filter((b) => !corners.includes(b));
     const place = (b) => { const c = corners.indexOf(b); return c < 0 ? 2 + rest.indexOf(b) : [0, 1, n - 2, n - 1][c]; };
-    const item = (b) => `<li style="--o:${place(b)}${b.size ? `;--lw:${b.size}` : ""}"><img src="${esc(b.logo)}" alt="${esc(b.name)}" draggable="false" decoding="async"></li>`;
+    const item = (b) => `<li${b.colour ? "" : ' class="mono"'} style="--o:${place(b)}${b.size ? `;--lw:${b.size}` : ""}"><img src="${esc(b.logo)}" alt="${esc(b.name)}" draggable="false" decoding="async"></li>`;
     return `<section class="bw" aria-label="${esc(title)}">
       <header class="bw-head"><h2>${esc(title)}</h2><p>${esc(sub)}</p></header>
       <div class="bw-wall">${rowsOf(list).map((row) => `<ul>${row.map(item).join("")}</ul>`).join("")}</div>
