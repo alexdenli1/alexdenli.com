@@ -215,7 +215,7 @@
       nav.hidden = flag.hidden = !!page.bare;
       window.scrollTo(0, page.scroll || 0);
       page.after && page.after();
-      if (back) { const c = $(`.ch[data-slug="${back}"]`); if (c) window.scrollTo(0, c.getBoundingClientRect().top + scrollY); }
+      if (back) { const c = $(`.ch[data-slug="${back}"]`); if (c) window.scrollTo(0, c.getBoundingClientRect().top + scrollY - Math.max(0, (innerHeight - c.offsetHeight) / 2)); }
       bind(key);
       update();
       if (!first) view.focus({ preventScroll: true });
