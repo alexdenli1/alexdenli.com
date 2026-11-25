@@ -91,7 +91,7 @@ window.SITE = {
     },
     {
       slug: "adverts", title: "Adverts", category: "graphic-design", colour: "#E4007C",
-      year: "2025 – now", status: "current", thumb: "images/adverts/thumb.webp", cut: true, hero: "images/adverts/hero.jpg",
+      year: "2025 – now", status: "current", thumb: "images/adverts/thumb.webp", cut: true, hero: "images/adverts/hero.jpg", chapter: "images/adverts/chapter.webp",
       process: [{ title: "Brief", text: "Placeholder: the product, the audience and the page it runs on." }, { title: "Concept", text: "Placeholder: the idea that stops a reader on a crowded page." }, { title: "Layout", text: "Placeholder: image, headline and offer, built to the magazine spec." }, { title: "Print-ready", text: "Placeholder: proofs, sign-off and the final files." }],
       summary: "Magazine adverts for print and online, produced monthly.",
       blocks: [
@@ -116,7 +116,7 @@ window.SITE = {
     },
     {
       slug: "rescue", title: "Rescue", category: "ux-ui", colour: "#52B256",
-      study: true, year: "2026 redevelopment", status: "archive", featured: true, hero: "images/rescue/hero.jpg",
+      study: true, year: "2026 redevelopment", status: "archive", featured: true, hero: "images/rescue/hero.jpg", chapter: "images/rescue/chapter.webp",
       process: [{ title: "Storyboard", text: "Josh's day, drawn out to find where energy saving could fit." }, { title: "Bodystorming", text: "Acting the app out with people and props, before any design." }, { title: "Prototype", text: "A clickable Marvel prototype so real people could try the route." }, { title: "Redevelopment", text: "In 2026: Pip the red panda, a core daily loop and a playable gate." }],
       summary: "A children's app for learning about energy saving, designed at university and redone in 2026.",
       blocks: [

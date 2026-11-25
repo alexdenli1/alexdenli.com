@@ -48,3 +48,6 @@
   .ch-info, .ch-info[data-side="left"] { position: relative; bottom: auto; left: auto; right: auto; max-width: none; text-align: left; margin-top: 3vh; }
   .ch-info { white-space: normal !important; }
 }
+
+/* the Adverts picture carries its own shadow, and its wires fade out at the top rather than ending in mid-air */
+.ch[data-slug="adverts"] .ch-pic img { filter: none; -webkit-mask-image: linear-gradient(transparent, #000 15%); mask-image: linear-gradient(transparent, #000 15%); }

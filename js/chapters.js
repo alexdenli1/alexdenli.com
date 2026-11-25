@@ -53,11 +53,12 @@
   /* Each chapter has its own arrangement, so the run of projects reads as a spread of work rather than
      one template repeated. Fractions of the chapter's width and height:
        t   title: which side it hangs from, how far down, and how wide its longest line is
+       s   optional: how much larger than the rest (a set of posters has gaps and wires in it, so it reads small)
        c   the centre of the product's visible shape (it may sit low enough to run into the next chapter)
      The info line takes the bottom corner on the side away from the product. Cycles past seven. */
   const LAYOUT = [
     { t: ["left", 0.10, 0.62], c: [0.33, 0.64] },
-    { t: ["right", 0.26, 0.66], c: [0.24, 0.72] },
+    { t: ["right", 0.16, 0.62], c: [0.31, 0.62], s: 1.3 },
     { t: ["left", 0.06, 0.70], c: [0.68, 0.60] },
     { t: ["right", 0.12, 0.56], c: [0.30, 0.50] },
     { t: ["centre", 0.34, 0.56], c: [0.83, 0.56] },
@@ -119,7 +120,7 @@
       if (im.complete && im.naturalWidth) {
         const [x0, y0, x1, y1] = bounds(im), nw = im.naturalWidth, nh = im.naturalHeight;
         const ca = ((x1 - x0) * nw) / ((y1 - y0) * nh), A = AREA * H * H;
-        const vis = Math.min(Math.sqrt(A / ca), H * MAX_H, (W * MAX_W) / ca), ih = vis / (y1 - y0), iw = ih * nw / nh;
+        const vis = Math.min(Math.sqrt(A / ca), H * MAX_H, (W * MAX_W) / ca) * (L.s || 1), ih = vis / (y1 - y0), iw = ih * nw / nh;
         im.style.width = iw.toFixed(0) + "px"; im.style.height = ih.toFixed(0) + "px";
         const left = W * L.c[0] - iw * (x0 + x1) / 2, top = chH * L.c[1] - ih * (y0 + y1) / 2;
         pic.style.left = left.toFixed(0) + "px"; pic.style.top = top.toFixed(0) + "px";

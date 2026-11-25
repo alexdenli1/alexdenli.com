@@ -176,7 +176,9 @@
     if (document.startViewTransition) {
       from.style.viewTransitionName = "hero";
       const t = document.startViewTransition(() => { from.style.viewTransitionName = ""; swap(); const to = findTo(); if (to) to.style.viewTransitionName = "hero"; });
-      t.finished.finally(() => { const to = findTo(); if (to) to.style.viewTransitionName = ""; });
+      // a browser may skip the animation (a hidden tab, a slow frame): the page has still changed, so that is not an error
+      t.ready.catch(() => {}); t.updateCallbackDone.catch(() => {});
+      t.finished.catch(() => {}).finally(() => { const to = findTo(); if (to) to.style.viewTransitionName = ""; });
       return;
     }
     // fallback: a copy of the picture flies from where it was to where the hero now sits
