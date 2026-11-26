@@ -187,8 +187,10 @@
   /* ---------- painting it, with the crackle ---------- */
   const hash = (a, b) => { const s = Math.sin(a * 127.1 + b * 311.7) * 43758.5453; return s - Math.floor(s); };
   const GREEN = "9, 88, 56", GLOW = "46, 196, 118";
-  function paint(c, L, R, vh, drawn, frame, still) {
-    const dpr = c.canvas.width / c.canvas.clientWidth, ox = R.left, oy = R.top;      // the line's page box, on screen
+  /* the canvas is part of the page and scrolls with it; it covers the screen and a margin either side,
+     and is moved along (and redrawn) as the page scrolls. ctop: where its top edge is, down the line's box */
+  function paint(c, L, ctop, vh, drawn, time, still) {
+    const dpr = c.canvas.width / c.canvas.clientWidth, ox = 0, oy = -ctop;
     c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, c.canvas.clientWidth, vh);
     if (drawn <= 0) return;
     const { P, S, N } = L;
@@ -196,10 +198,14 @@
     let i0 = 0, i1 = P.length - 1;
     while (i1 > 0 && S[i1] > drawn) i1--;
     const vis = (i) => { const y = P[i][1] + oy; return y > -80 && y < vh + 80; };
+    // a soft crackle that drifts smoothly along the line and through time, a little livelier near the tip
+    const tf = Math.floor(time), te = (time - tf) * (time - tf) * (3 - 2 * (time - tf));
+    const n2 = (a, b) => (hash(a, b) - .5) * 2;
     const jit = (i, seed, amp) => {
       if (still) return 0;
-      const s = S[i] / 16, f = Math.floor(s), t = s - f, e = t * t * (3 - 2 * t), near = Math.max(0, 1 - (drawn - S[i]) / 420);
-      return amp * (1 + 2.2 * near) * ((hash(f, frame + seed) - .5) * (1 - e) + (hash(f + 1, frame + seed) - .5) * e) * 2;
+      const s = S[i] / 34 + seed * 7.3, f = Math.floor(s), t = s - f, e = t * t * (3 - 2 * t), near = Math.max(0, 1 - (drawn - S[i]) / 360);
+      const at = (k) => n2(f, k + seed) * (1 - e) + n2(f + 1, k + seed) * e;
+      return amp * (1 + 1.3 * near) * (at(tf) * (1 - te) + at(tf + 1) * te);
     };
     const stroke = (seed, amp, w, style, blur) => {
       c.beginPath(); let on = false;
@@ -212,17 +218,17 @@
       c.lineWidth = w; c.strokeStyle = style; c.shadowBlur = blur; c.shadowColor = `rgba(${GLOW}, .55)`; c.stroke();
     };
     c.lineCap = "round"; c.lineJoin = "round";
-    stroke(7, 2.6, 4, `rgba(${GLOW}, .16)`, 0);          // a soft halo
-    stroke(3, 1.9, .9, `rgba(${GLOW}, .55)`, 0);         // a thin second strand, crackling on its own
-    stroke(0, 1.1, 1.8, `rgb(${GREEN})`, still ? 0 : 6);  // the line itself
+    stroke(7, 1.4, 4, `rgba(${GLOW}, .14)`, 0);          // a soft halo
+    stroke(3, 1.1, .8, `rgba(${GLOW}, .45)`, 0);         // a thin second strand, crackling on its own
+    stroke(0, .45, 1.8, `rgb(${GREEN})`, still ? 0 : 5);  // the line itself
     c.shadowBlur = 0;
     // the tip, with a few sparks
     const k = Math.min(P.length - 2, i1), h = P[Math.max(0, k)], hx = h[0] + ox, hy = h[1] + oy;
-    if (drawn < S[S.length - 1] - 2 && hy > -20 && hy < vh + 20) {
+    if (drawn < S[S.length - 1] - 2 && hy > -20 && hy < vh + 20) { const frame = tf;
       c.fillStyle = `rgb(${GREEN})`; c.beginPath(); c.arc(hx, hy, 3.4, 0, TAU); c.fill();
       c.fillStyle = `rgba(${GLOW}, .25)`; c.beginPath(); c.arc(hx, hy, 9, 0, TAU); c.fill();
       if (!still) { c.strokeStyle = `rgba(${GLOW}, .8)`; c.lineWidth = 1; c.beginPath();
-        for (let s = 0; s < 3; s++) { const a = hash(frame, s) * TAU, l = 5 + hash(s, frame) * 9; c.moveTo(hx, hy); c.lineTo(hx + Math.cos(a) * l * .6 + (hash(frame + 3, s) - .5) * 4, hy + Math.sin(a) * l * .6); c.lineTo(hx + Math.cos(a) * l, hy + Math.sin(a) * l); }
+        for (let s = 0; s < 2; s++) { const a = hash(frame, s) * TAU, l = 5 + hash(s, frame) * 9; c.moveTo(hx, hy); c.lineTo(hx + Math.cos(a) * l * .6 + (hash(frame + 3, s) - .5) * 4, hy + Math.sin(a) * l * .6); c.lineTo(hx + Math.cos(a) * l, hy + Math.sin(a) * l); }
         c.stroke(); }
     }
   }
@@ -232,12 +238,14 @@
     if (!wrap) return () => {};
     const secs = [...wrap.querySelectorAll(".ch")], cv = wrap.querySelector(".ch-line canvas"), c = cv.getContext("2d");
     const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let L = null, K = null, queued = 0, raf = 0, seen = false, frame = 0, last = 0;
-    const size = () => { const d = Math.min(2, devicePixelRatio || 1); cv.width = Math.round(cv.clientWidth * d); cv.height = Math.round(innerHeight * d); };
+    let L = null, K = null, ch = 0, ctop = 0, queued = 0, raf = 0, seen = false, frame = 0, last = 0;
+    const size = () => { const d = Math.min(2, devicePixelRatio || 1); ch = Math.round(innerHeight * 1.8); cv.style.height = ch + "px"; cv.width = Math.round(cv.clientWidth * d); cv.height = Math.round(ch * d); };
     const show = (now) => {
       if (!L || !wrap.isConnected) return;
-      if (!reduce && now - last > 55) { frame++; last = now; }      // the crackle changes about eighteen times a second
-      paint(c, L, wrap.getBoundingClientRect(), innerHeight, reduce ? L.S[L.S.length - 1] : reached(K, scrollY), frame, reduce);
+      // keep the canvas over the screen, with half a screen to spare above and below, so a fast scroll never outruns it
+      const R = wrap.getBoundingClientRect(), want = Math.max(0, Math.min(L.H - ch, -R.top - innerHeight * .4));
+      if (Math.abs(want - ctop) > 1) { ctop = want; cv.style.transform = `translate3d(0, ${ctop.toFixed(1)}px, 0)`; }
+      paint(c, L, ctop, ch, reduce ? L.S[L.S.length - 1] : reached(K, scrollY), now / 140, reduce);      // the crackle drifts on every 140 ms
     };
     const loop = (now) => { raf = 0; if (!seen || !wrap.isConnected) return; show(now); raf = requestAnimationFrame(loop); };
     const redo = () => { if (!wrap.isConnected) return; fit(secs); size(); L = build(wrap); if (L) K = keys(L, wrap); show(performance.now()); };
