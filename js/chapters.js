@@ -4,7 +4,7 @@
    is shown at about the same size, and the space between projects is always the same.
 
    One line runs down through all the projects, drawn as the page scrolls, in the site's green with a faint
-   electric crackle. At each product it makes its own shape (a loop, a weave between the posters, a wave,
+   electric crackle. At each product it makes its own shape (a loop, a thread through the posters, a wave,
    an orbit, a frame, a figure of eight, a coil) and finishes it while that product is on screen, before
    travelling on to the next. It is painted on a canvas behind the products and the words.
 
@@ -53,24 +53,16 @@
   }
 
   /* every product is shown at roughly the same size: the same area of visible product, whatever the
-     picture's proportions or the transparent margin around a cut-out, and never outside its half.
-     The gaps in a row of posters are noted too, for the line to weave through. */
+     picture's proportions or the transparent margin around a cut-out, and never outside its half. */
   const SIZE = { adverts: 1.3 };   // a set of posters is partly gaps and wires, so it needs a little more
   const bounds = (im) => {
     if (im.__bb) return im.__bb;
     const s = 160 / Math.max(im.naturalWidth, im.naturalHeight), w = Math.max(1, Math.round(im.naturalWidth * s)), h = Math.max(1, Math.round(im.naturalHeight * s));
     const c = document.createElement("canvas"); c.width = w; c.height = h;
     const x = c.getContext("2d", { willReadFrequently: true }); x.drawImage(im, 0, 0, w, h);
-    let d; try { d = x.getImageData(0, 0, w, h).data; } catch (e) { im.__gaps = []; return (im.__bb = [0, 0, 1, 1]); }
+    let d; try { d = x.getImageData(0, 0, w, h).data; } catch (e) { return (im.__bb = [0, 0, 1, 1]); }
     let x0 = w, y0 = h, x1 = 0, y1 = 0;
     for (let y = 0; y < h; y++) for (let k = 0; k < w; k++) if (d[(y * w + k) * 4 + 3] > 24) { if (k < x0) x0 = k; if (k > x1) x1 = k; if (y < y0) y0 = y; if (y > y1) y1 = y; }
-    // clear columns through the middle of the picture, between its outer edges
-    const gaps = []; let run = -1;
-    for (let k = x0; k <= x1; k++) {
-      let full = false; for (let y = Math.round(y0 + (y1 - y0) * .35); y < y0 + (y1 - y0) * .85; y++) if (d[(y * w + k) * 4 + 3] > 24) { full = true; break; }
-      if (!full && run < 0) run = k; if (full && run >= 0) { if (k - run >= 2) gaps.push((run + k) / 2 / w); run = -1; }
-    }
-    im.__gaps = gaps;
     return (im.__bb = x1 < x0 ? [0, 0, 1, 1] : [x0 / w, y0 / h, (x1 + 1) / w, (y1 + 1) / h]);
   };
 
@@ -96,7 +88,7 @@
   /* ---------- the line: built as a list of points on the page ---------- */
   const TAU = Math.PI * 2;
   /* the shape each product gets; a project not named here takes the next one in turn */
-  const SHAPE = { xfly: "loop", adverts: "weave", "signature-logo": "wave", rescue: "orbit", shield: "frame", aeropress: "coil", relinquit: "eight" };
+  const SHAPE = { xfly: "loop", adverts: "thread", "signature-logo": "wave", rescue: "orbit", shield: "frame", aeropress: "coil", relinquit: "eight" };
   const TURN = ["loop", "wave", "orbit", "frame", "eight", "coil"];
 
   function build(wrap) {
@@ -105,7 +97,7 @@
       const im = sec.querySelector(".ch-pic img"); if (!im.complete || !im.naturalWidth) return null;
       const [x0, y0, x1, y1] = bounds(im), r = im.getBoundingClientRect();
       const v = { x0: r.left - R.left + r.width * x0, y0: r.top - R.top + r.height * y0, x1: r.left - R.left + r.width * x1, y1: r.top - R.top + r.height * y1 };
-      return { ...v, cx: (v.x0 + v.x1) / 2, cy: (v.y0 + v.y1) / 2, gaps: (im.__gaps || []).map((g) => r.left - R.left + r.width * g), shape: SHAPE[sec.dataset.slug] || TURN[n % TURN.length] };
+      return { ...v, cx: (v.x0 + v.x1) / 2, cy: (v.y0 + v.y1) / 2, shape: SHAPE[sec.dataset.slug] || TURN[n % TURN.length] };
     }).filter(Boolean);
     if (!items.length) return null;
 
@@ -116,15 +108,17 @@
     const curve = (fn, n) => { for (let i = 1; i <= n; i++) add(...fn(i / n)); };
     const marks = [];
     let exit = [0, 1];
-    add(W / 2, 0); marks.push({ kind: "start", i: 0 });
 
     items.forEach((it, n) => {
       const pad = Math.max(18, Math.min(it.x1 - it.x0, it.y1 - it.y0) * .1);
       const rx = Math.min((it.x1 - it.x0) / 2 + pad, it.cx - 6, W - 6 - it.cx), ry = (it.y1 - it.y0) / 2 + pad;
-      const shape = it.shape === "weave" && (phone || it.gaps.length < 2) ? "wave" : it.shape;
-      // arrive heading right, just above the product (a figure of eight arrives at its left end, heading down)
+      const shape = it.shape;
+      // arrive heading right, just above the product (a figure of eight arrives at its left end heading down, a thread at its left heading right)
       const A8 = Math.max(rx, Math.min(rx * 1.75, it.cx - 8, W - 8 - it.cx)), eight = shape === "eight";
-      const ex = shape === "weave" ? it.gaps[0] - pad * 1.2 : eight ? it.cx - A8 : it.cx, ey = eight ? it.cy : it.y0 - pad, a = at(), inn = eight ? [0, 1] : [1, 0];
+      const thread = shape === "thread", ex = thread ? Math.max(8, it.x0 - pad * 1.6) : eight ? it.cx - A8 : it.cx, ey = eight || thread ? it.cy : it.y0 - pad, inn = eight ? [0, 1] : [1, 0];
+      // the line begins here, at the first product, with a short lead-in from the left
+      if (!n) { add(ex - Math.min(170, ex - 4), ey + 70); marks.push({ kind: "start", i: 0, it }); }
+      const a = at();
       if (phone && n) {      // on a phone the words take the full width: keep to the right-hand margin between products
         const m = W - Math.max(8, parseFloat(getComputedStyle(wrap).paddingRight) * .45);
         bez([a[0] + exit[0] * 30, a[1] + exit[1] * 30], [m, a[1] + 10], [m, a[1] + 60], 18); P.push([m, ey - 70]);
@@ -136,13 +130,9 @@
       if (shape === "loop") {             // once round and a quarter, widening a little
         curve((t) => { const th = -Math.PI / 2 + t * 2.5 * Math.PI, g = 1 + .06 * t; return [cx + rx * g * Math.cos(th), cy + ry * g * Math.sin(th)]; }, 150);
         exit = [0, 1];
-      } else if (shape === "weave") {     // down between two posters, under the middle one, up between the next, over and round the last
-        const g1 = it.gaps[0], g2 = it.gaps[1], U = pad * 1.6, xr = it.x1 + pad;
-        bez([g1, T], [g1, T], [g1, T + U], 12); add(g1, B - U);
-        bez([g1, B + U], [g2, B + U], [g2, B - U], 24); add(g2, T + U);
-        bez([g2, T - U], [xr, T - U], [xr, T + U], 24); add(xr, B - U);
-        bez([xr, B + U * .6], [cx + pad, B + U * .6], [cx, B + U * .6], 20);
-        exit = [-1, 0];
+      } else if (shape === "thread") {    // a gentle wave threaded through the row, passing behind each poster
+        const xe = Math.min(W - 8, it.x1 + pad * 1.6), amp = Math.min(ry * .3, 90);
+        curve((t) => [ex + (xe - ex) * t, cy - amp * Math.sin(t * 3 * Math.PI) * Math.sin(t * Math.PI)], 180);
       } else if (shape === "wave") {      // swinging from side to side as it falls past the product
         curve((t) => [cx + rx * 1.05 * Math.sin(t * 3 * Math.PI), T + (B - T) * t], 160);
         exit = [-1, 0];
@@ -166,6 +156,7 @@
         curve((t) => { const th = -Math.PI / 2 + t * (k * TAU + Math.PI / 2); return [cx + rx * Math.cos(th), T + r2 + (B - T - 2 * r2) * t + r2 * Math.sin(th)]; }, 260);
         exit = [0, 1];
       }
+      { const p = P[P.length - 1], q = P[P.length - 2], l = Math.hypot(p[0] - q[0], p[1] - q[1]) || 1; exit = [(p[0] - q[0]) / l, (p[1] - q[1]) / l]; }      // carry on the way the shape ends
       marks.push({ kind: "done", i: P.length - 1, it });
     });
     const a = at(); bez([a[0] + exit[0] * 120, a[1] + exit[1] * 120], [a[0], H - 160], [a[0], H], 30); marks.push({ kind: "end", i: P.length - 1 });
@@ -182,8 +173,8 @@
   function keys(L, wrap) {
     const top = wrap.getBoundingClientRect().top + scrollY, vh = innerHeight, k = [];
     L.marks.forEach((m) => {
-      const y = m.kind === "start" ? 0 : m.kind === "end" ? L.H : m.kind === "enter" ? m.it.y0 : m.it.cy;
-      const s = top + y - vh * (m.kind === "start" ? .95 : m.kind === "enter" ? .97 : m.kind === "done" ? .5 : .7);
+      const y = m.kind === "start" ? m.it.y0 : m.kind === "end" ? L.H : m.kind === "enter" ? m.it.y0 : m.it.cy;
+      const s = top + y - vh * (m.kind === "start" ? 1 : m.kind === "enter" ? .86 : m.kind === "done" ? .5 : .7);
       k.push([k.length ? Math.max(k[k.length - 1][0] + 1, s) : s, L.S[m.i]]);
     });
     return k;
