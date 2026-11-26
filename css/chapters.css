@@ -40,3 +40,22 @@
 
 /* the Adverts picture carries its own shadow, and its wires fade out at the top rather than ending in mid-air */
 .ch[data-slug="adverts"] .ch-pic img { filter: none; -webkit-mask-image: linear-gradient(transparent, #000 15%); mask-image: linear-gradient(transparent, #000 15%); }
+
+/* ---------- the line through the projects (js/chapters.js): behind the products and the words ---------- */
+.ch-line { position: absolute; left: 0; top: 0; width: 100%; z-index: 0; overflow: visible; pointer-events: none; }
+.ch-line-path { fill: none; stroke: var(--fg); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.ch-line-head { fill: var(--fg); transition: opacity .3s; }
+.ch { position: relative; z-index: 1; }
+
+/* ---------- the "View project" badge, turning slowly ---------- */
+.ch-go { justify-self: start; display: block; width: clamp(5.5rem, 7vw, 7.5rem); aspect-ratio: 1; margin-top: 1vh; color: var(--fg); border-radius: 50%; }
+.ch-go svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.ch-go text { font-size: 9.6px; font-weight: 700; letter-spacing: .06em; fill: currentColor; }
+.ch-go-ring { transform-origin: 50px 50px; animation: ch-turn 14s linear infinite; }
+.ch-go-dot { fill: var(--fg); transform-origin: 50px 50px; transition: transform .45s cubic-bezier(.3, 1.6, .5, 1), fill .3s; }
+.ch-go-arrow { fill: none; stroke: var(--bg); stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; animation: ch-nudge 2.4s cubic-bezier(.6, 0, .3, 1) infinite; }
+.ch-go:hover .ch-go-dot, .ch-go:focus-visible .ch-go-dot, .ch:has(.ch-pic:hover) .ch-go-dot { transform: scale(1.3); fill: var(--accent); }
+.ch-go:hover .ch-go-ring, .ch:has(.ch-pic:hover) .ch-go-ring { animation-duration: 5s; }
+@keyframes ch-turn { to { transform: rotate(360deg); } }
+@keyframes ch-nudge { 0%, 55%, 100% { transform: none; } 25% { transform: translateX(4px); } }
+@media (prefers-reduced-motion: reduce) { .ch-go-ring, .ch-go-arrow { animation: none; } }

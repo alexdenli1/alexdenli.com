@@ -56,15 +56,18 @@ in vec2 vUv; out vec4 o;
 uniform sampler2D uMask, uEdit, uField;
 uniform vec2 uCell, uAmp;
 uniform vec4 uBox;
+uniform vec2 uA1, uB1, uA2, uB2; uniform float uK, uSplit;      // the lines joining: where each line was (A) and is (B), and the scale
 void main() {
   float hl = texture(uField, vUv - vec2(uCell.x, 0.)).r, hr = texture(uField, vUv + vec2(uCell.x, 0.)).r;
   float hu = texture(uField, vUv - vec2(0., uCell.y)).r, hd = texture(uField, vUv + vec2(0., uCell.y)).r;
   vec2 g = vec2(hr - hl, hd - hu);
   vec2 off = g * uAmp;
-  float m = texture(uMask, vUv - off).r;
+  vec2 s1 = (vUv - uB1) / uK + uA1, s2 = (vUv - uB2) / uK + uA2;
+  float m1 = s1.y < uSplit ? texture(uMask, s1 - off).r : 0., m2 = s2.y >= uSplit ? texture(uMask, s2 - off).r : 0.;
+  float m = max(m1, m2); vec2 s = m2 > m1 ? s2 : s1;
   if (m < .003) { o = vec4(0.); return; }
   // blacks inside the letters lift a touch, so a dark shot never loses the name against the black page
-  vec3 c = texture(uEdit, (vUv - off * 2.4 - uBox.xy) / uBox.zw).rgb * .9 + .085;
+  vec3 c = texture(uEdit, (s - off * 2.4 - uBox.xy) / uBox.zw).rgb * .9 + .085;
   float lit = clamp(dot(g, vec2(-.75, -.66)) * 2.6, -1., 1.);
   c = c * (1. - .28 * max(0., -lit)) + vec3(.933, .914, .89) * .42 * max(0., lit);
   o = vec4(c * m, m);
@@ -77,7 +80,7 @@ void main() {
     const NAME = nameOf(site);
     const nav = document.getElementById("nav"), logo = nav && nav.querySelector(".nav-home .logo");
     let alive = true, raf = 0, last = 0, W = 0, H = 0, dpr = 1;
-    let box = { x: 0, y: 0, w: 1, h: 1 }, edges = [], prog = -1, seen = !document.hidden;
+    let box = { x: 0, y: 0, w: 1, h: 1 }, rows = [], one = null, J = 0, edges = [], prog = -1, seen = !document.hidden;
 
     /* ---------- the type as a mask ---------- */
     const mask = document.createElement("canvas"), mx = mask.getContext("2d");
@@ -93,10 +96,10 @@ void main() {
       setFont(mx, 100);
       const at100 = lines.map(ink), wide = Math.max(...at100.map((m) => m.w)), tall = at100.reduce((n, m) => n + m.asc + m.desc, 0) + 100 * GAP * (lines.length - 1);
       const head = nav ? nav.offsetHeight : 68, edge = Math.max(12, H * 0.025), foot = line ? parseFloat(getComputedStyle(line).getPropertyValue("--op-gap")) * H / 100 + line.offsetHeight : 60;
-      const F = 100 * Math.min(((document.documentElement.clientWidth || W) - 2 * pad) / wide, Math.max(160, H - head - foot - 2.6 * edge) / tall), gap = F * GAP;
+      const F = 85 * Math.min(((document.documentElement.clientWidth || W) - 2 * pad) / wide, Math.max(160, H - head - foot - 2.6 * edge) / tall), gap = F * GAP;
       setFont(mx, F);
       const L = lines.map((s) => { const m = ink(s); return { s, l: m.l, x: 0, asc: m.asc, desc: m.desc, w: m.w }; });
-      const h = L.reduce((n, l) => n + l.asc + l.desc, 0) + gap * (L.length - 1), top = Math.round(head + Math.max(edge * .6, (H - head - h - foot) / 2));
+      const h = L.reduce((n, l) => n + l.asc + l.desc, 0) + gap * (L.length - 1), top = Math.round(head + Math.max(edge * .6, (H - head - h - foot) * .4));      // a little above the middle
       const bw = Math.max(...L.map((l) => l.w));
       const vw = document.documentElement.clientWidth || W;      // centred on the page itself, not counting the scrollbar
       box = { x: (vw - bw) / 2, y: top, w: bw, h };
@@ -112,6 +115,12 @@ void main() {
         mx.fillText(l.s, l.x, y + l.asc);
         y += l.asc + l.desc + gap;
       });
+      // each line's own box, and the two side by side on one line: the shape the name takes on its way to the logo
+      let yy = top; rows = L.map((l) => { const o = { x: l.x - l.l, y: yy, w: l.w, h: l.asc + l.desc }; yy += o.h + gap; return o; });
+      if (rows.length === 2) {
+        const sp = F * .28, T = rows[0].w + sp + rows[1].w, k = Math.min(1, box.w / T), cx = box.x + box.w / 2, cy = box.y + box.h / 2, lh = rows[0].h;
+        one = { k, split: (rows[0].y + rows[0].h + rows[1].y) / 2, x: cx - T * k / 2, y: cy - lh * k / 2, w: T * k, h: lh * k, x2: cx - T * k / 2 + (rows[0].w + sp) * k };
+      } else one = null;
       edges = [...at].sort((a, b) => a - b); edges.push(box.w + 4);
       cv.width = mask.width; cv.height = mask.height;
       root.style.setProperty("--op-top", (box.y + box.h).toFixed(1) + "px");
@@ -179,7 +188,7 @@ void main() {
       const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
       const a = gl.getAttribLocation(prog_, "aP"); gl.enableVertexAttribArray(a); gl.vertexAttribPointer(a, 2, gl.FLOAT, false, 0, 0);
-      ["uMask", "uEdit", "uField", "uCell", "uAmp", "uBox"].forEach((n) => (U[n] = gl.getUniformLocation(prog_, n)));
+      ["uMask", "uEdit", "uField", "uCell", "uAmp", "uBox", "uA1", "uB1", "uA2", "uB2", "uK", "uSplit"].forEach((n) => (U[n] = gl.getUniformLocation(prog_, n)));
       const mk = (unit) => { const t = gl.createTexture(); gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, t);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE); return t; };
@@ -204,6 +213,12 @@ void main() {
         // about 10 css pixels of bend for the letters at the steepest slope (the footage twice that), the same both ways
         gl.uniform2f(U.uAmp, 0.0095, 0.0095 * W / H);
         gl.uniform4f(U.uBox, box.x / W, box.y / H, box.w / W, box.h / H);
+        // the two lines slide together into one as the name heads for the logo
+        if (one) {
+          const k = 1 + (one.k - 1) * J, b1x = rows[0].x + (one.x - rows[0].x) * J, b1y = rows[0].y + (one.y - rows[0].y) * J, b2x = rows[1].x + (one.x2 - rows[1].x) * J, b2y = rows[1].y + (one.y - rows[1].y) * J;
+          gl.uniform1f(U.uK, k); gl.uniform1f(U.uSplit, one.split / H);
+          gl.uniform2f(U.uA1, rows[0].x / W, rows[0].y / H); gl.uniform2f(U.uB1, b1x / W, b1y / H); gl.uniform2f(U.uA2, rows[1].x / W, rows[1].y / H); gl.uniform2f(U.uB2, b2x / W, b2y / H);
+        } else { gl.uniform1f(U.uK, 1); gl.uniform1f(U.uSplit, 2); [U.uA1, U.uB1, U.uA2, U.uB2].forEach((u) => gl.uniform2f(u, 0, 0)); }
         gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       } else {
@@ -225,22 +240,22 @@ void main() {
       if (reduce) return;
       // the logo's top line ("Alex Denli") is where the name lands
       let tx = 0, ty = 0, sx = 1, sy = 1;
+      J = gl && one ? ease(clamp01(p / 0.5)) : 0;
+      // the name as it stands: two lines, or (once joined) one
+      const B = J && one ? { x: box.x + (one.x - box.x) * J, y: box.y + (one.y - box.y) * J, w: box.w + (one.w - box.w) * J, h: box.h + (one.h - box.h) * J } : box;
       if (logo && p > 0) {
-        const r = logo.getBoundingClientRect(), tw = r.width, th = r.height * 0.5;
-        const s = tw / box.w, sY = th / box.h;
-        // the width gives way first and the height follows, so the name visibly compresses on its way
-        const pw = Math.pow(p, 0.62), ph = Math.pow(p, 1.35), pm = p;
-        sx = 1 + (s - 1) * pw; sy = 1 + (sY - 1) * ph;
-        tx = (r.left - box.x * 1) * pm; ty = (r.top - box.y) * pm;
-        // keep the left edge travelling with the scale (the origin is the name's own top left)
+        // it lands exactly on the logo's top line ("ALEX DENLI"), at the same width
+        const r = logo.getBoundingClientRect(), th = r.height * 0.52, s = r.width / B.w, m = ease(p);
+        sx = 1 + (s - 1) * m; sy = 1 + (Math.min(s, th / B.h) - 1) * m;
+        tx = (r.left - B.x) * m; ty = (r.top - B.y) * m;
       }
-      cv.style.transformOrigin = `${box.x}px ${box.y}px`;
+      cv.style.transformOrigin = `${B.x}px ${B.y}px`;
       cv.style.transform = p > 0 ? `translate3d(${tx.toFixed(2)}px, ${ty.toFixed(2)}px, 0) scale(${sx.toFixed(5)}, ${sy.toFixed(5)})` : "";
       // the line underneath holds its place and wipes away, left to right, as the name lifts off
       if (line) { const w = clamp01(p / 0.32);
         line.style.transform = p > 0 ? `translate3d(0, ${(p * innerHeight * 0.92).toFixed(1)}px, 0)` : "";
         line.style.clipPath = w > 0 ? `inset(-.2em 0 -.2em ${(w * 100).toFixed(2)}%)` : ""; }
-      const hand = clamp01((p - 0.86) / 0.14);          // the last stretch hands over to the logo
+      const hand = clamp01((p - 0.8) / 0.2);          // the last stretch hands over to the logo, which is in the same place
       cv.style.opacity = (1 - hand).toFixed(3);
       cv.style.visibility = p >= 1 ? "hidden" : "";
       if (nav) { nav.style.setProperty("--logo-in", hand.toFixed(3)); nav.style.setProperty("--links", Math.max(1 - clamp01(p / 0.06), hand).toFixed(3)); }   // app.js decides what the bar sits on
