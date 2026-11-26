@@ -40,3 +40,18 @@
 
 /* the Adverts picture carries its own shadow, and its wires fade out at the top rather than ending in mid-air */
 .ch[data-slug="adverts"] .ch-pic img { filter: none; -webkit-mask-image: linear-gradient(transparent, #000 15%); mask-image: linear-gradient(transparent, #000 15%); }
+
+/* ---------- the line through the projects (js/chapters.js): painted behind the products and the words ---------- */
+.ch-line { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.ch-line canvas { position: sticky; top: 0; display: block; width: 100%; height: 100vh; }
+.ch { position: relative; z-index: 1; }
+
+/* ---------- "View project": the words, then a line that keeps reaching out to an arrow ---------- */
+.ch-go { justify-self: start; display: inline-flex; align-items: center; gap: .6em; margin-top: 1vh; color: var(--fg); font-size: var(--t-body); font-weight: 700; line-height: 1; white-space: nowrap; transition: color .3s; }
+.ch-go svg { width: 1.15em; height: 1.15em; flex: none; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; margin-left: -.75em; animation: go-reach-ar 2.2s cubic-bezier(.7, 0, .2, 1) infinite; }
+.ch-go .go-line { width: 2.2em; height: 2px; background: currentColor; transform-origin: 0 50%; animation: go-reach 2.2s cubic-bezier(.7, 0, .2, 1) infinite; }
+.ch-go:hover, .ch-go:focus-visible, .ch:has(.ch-pic:hover) .ch-go { color: var(--accent); }
+/* the arrow rides the end of the line: it moves by the line's full length (2.2em) times its change in scale */
+@keyframes go-reach { 0%, 100% { transform: scaleX(.45); } 50% { transform: scaleX(1.15); } }
+@keyframes go-reach-ar { 0%, 100% { transform: translateX(-1.21em); } 50% { transform: translateX(.33em); } }
+@media (prefers-reduced-motion: reduce) { .ch-go *, .ch-go svg { animation: none !important; } }
