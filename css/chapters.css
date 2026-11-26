@@ -46,65 +46,12 @@
 .ch-line canvas { position: sticky; top: 0; display: block; width: 100%; height: 100vh; }
 .ch { position: relative; z-index: 1; }
 
-/* ---------- "View project": seven styles to choose from (A to G), one on each project for now ---------- */
-.ch-gos { display: flex; align-items: center; gap: 1.2rem; margin-top: 1vh; }
-.ch-go-pick { font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
-.ch-go { --g: var(--accent); position: relative; display: inline-flex; align-items: center; gap: .6em; color: var(--fg); font-size: var(--t-body); font-weight: 700; line-height: 1; white-space: nowrap; }
-.ch-go svg { width: 1.15em; height: 1.15em; flex: none; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
-.ch:has(.ch-pic:hover) .ch-go { --hov: 1; }
-
-/* A pill: a black pill; the arrow slides out and a new one slides in */
-.go-pill { padding: .85em 1.15em .85em 1.4em; background: var(--fg); color: var(--bg); border-radius: 99px; transition: background .3s; }
-.go-pill .go-ar { position: relative; width: 1.15em; height: 1.15em; overflow: hidden; }
-.go-pill .go-ar svg { position: absolute; inset: 0; transition: transform .45s cubic-bezier(.7, 0, .2, 1); }
-.go-pill .go-ar svg + svg { transform: translateX(-130%); }
-.go-pill:hover, .ch:has(.ch-pic:hover) .go-pill { background: var(--g); }
-.go-pill:hover .go-ar svg, .ch:has(.ch-pic:hover) .go-pill .go-ar svg { transform: translateX(130%); }
-.go-pill:hover .go-ar svg + svg, .ch:has(.ch-pic:hover) .go-pill .go-ar svg + svg { transform: none; }
-
-/* B reach: the words, then a line that keeps reaching out to an arrow */
-.go-reach .go-line { width: 2.2em; height: 2px; background: currentColor; transform-origin: 0 50%; animation: go-reach 2.2s cubic-bezier(.7, 0, .2, 1) infinite; }
-.go-reach svg { margin-left: -.75em; animation: go-reach-ar 2.2s cubic-bezier(.7, 0, .2, 1) infinite; }
-.go-reach:hover, .ch:has(.ch-pic:hover) .go-reach { color: var(--g); }
-@keyframes go-reach { 0%, 100% { transform: scaleX(.45); } 50% { transform: scaleX(1.5); } }
-@keyframes go-reach-ar { 0%, 100% { transform: translateX(-1.2em); } 50% { transform: translateX(1.1em); } }
-
-/* C pulse: a green circle with an arrow, sending out a ripple */
-.go-pulse .go-dot { position: relative; display: grid; place-items: center; width: 3.6em; height: 3.6em; border-radius: 50%; background: var(--g); color: #fff; transition: transform .4s cubic-bezier(.3, 1.6, .5, 1); }
-.go-pulse .go-dot::before, .go-pulse .go-dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--g); animation: go-ripple 2.4s ease-out infinite; }
-.go-pulse .go-dot::after { animation-delay: 1.2s; }
-.go-pulse:hover .go-dot, .ch:has(.ch-pic:hover) .go-pulse .go-dot { transform: scale(1.15); }
-@keyframes go-ripple { from { transform: scale(1); opacity: .7; } to { transform: scale(1.9); opacity: 0; } }
-
-/* D ticker: the words running through an outlined pill */
-.go-ticker { width: 12.5em; padding: .85em 0; border: 2px solid currentColor; border-radius: 99px; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent); mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent); }
-.go-ticker .go-run { display: flex; animation: go-run 7s linear infinite; }
-.go-ticker .go-run span { padding-right: .3em; }
-.go-ticker:hover, .ch:has(.ch-pic:hover) .go-ticker { color: var(--g); }
-.go-ticker:hover .go-run { animation-duration: 3s; }
-@keyframes go-run { to { transform: translateX(-50%); } }
-
-/* E wipe: an outlined button with a sheen passing over it; it fills with green from the left */
-.go-wipe { padding: .9em 1.3em; border: 2px solid currentColor; overflow: hidden; isolation: isolate; transition: color .35s; }
-.go-wipe::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--g); transform: scaleX(0); transform-origin: 0 50%; transition: transform .45s cubic-bezier(.7, 0, .2, 1); }
-.go-wipe::after { content: ""; position: absolute; top: 0; bottom: 0; width: 40%; z-index: -1; background: linear-gradient(100deg, transparent, rgba(9, 88, 56, .18), transparent); animation: go-sheen 3.2s ease-in-out infinite; }
-.go-wipe:hover, .ch:has(.ch-pic:hover) .go-wipe { color: #fff; border-color: var(--g); }
-.go-wipe:hover::before, .ch:has(.ch-pic:hover) .go-wipe::before { transform: none; }
-@keyframes go-sheen { 0% { left: -45%; } 60%, 100% { left: 110%; } }
-
-/* F chevrons: three chevrons lighting up one after another, pointing the way */
-.go-chevrons .go-chev { display: inline-flex; }
-.go-chevrons i { width: .55em; height: .55em; margin-left: -.05em; border: solid currentColor; border-width: 2.5px 2.5px 0 0; transform: rotate(45deg); opacity: .15; animation: go-chev 1.5s infinite; }
-.go-chevrons i:nth-child(2) { animation-delay: .2s; } .go-chevrons i:nth-child(3) { animation-delay: .4s; }
-.go-chevrons:hover, .ch:has(.ch-pic:hover) .go-chevrons { color: var(--g); }
-@keyframes go-chev { 0%, 100% { opacity: .15; } 30% { opacity: 1; } }
-
-/* G roll: a blinking green dot, and the words roll over to a second copy on hover */
-.go-rl { position: relative; display: inline-block; height: 1.1em; overflow: hidden; }
-.go-rl span, .go-rl::after { display: block; transition: transform .45s cubic-bezier(.7, 0, .2, 1); }
-.go-rl::after { content: attr(data-t); color: var(--g); }
-.go-blink { width: .55em; height: .55em; border-radius: 50%; background: var(--g); animation: go-blink 1.8s infinite; }
-.go-roll:hover .go-rl span, .go-roll:hover .go-rl::after, .ch:has(.ch-pic:hover) .go-rl span, .ch:has(.ch-pic:hover) .go-rl::after { transform: translateY(-100%); }
-@keyframes go-blink { 0% { box-shadow: 0 0 0 0 rgba(9, 88, 56, .5); } 70%, 100% { box-shadow: 0 0 0 .7em rgba(9, 88, 56, 0); } }
-
-@media (prefers-reduced-motion: reduce) { .ch-go *, .ch-go::before, .ch-go::after { animation: none !important; } }
+/* ---------- "View project": the words, then a line that keeps reaching out to an arrow ---------- */
+.ch-go { justify-self: start; display: inline-flex; align-items: center; gap: .6em; margin-top: 1vh; color: var(--fg); font-size: var(--t-body); font-weight: 700; line-height: 1; white-space: nowrap; transition: color .3s; }
+.ch-go svg { width: 1.15em; height: 1.15em; flex: none; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; margin-left: -.75em; animation: go-reach-ar 2.2s cubic-bezier(.7, 0, .2, 1) infinite; }
+.ch-go .go-line { width: 2.2em; height: 2px; background: currentColor; transform-origin: 0 50%; animation: go-reach 2.2s cubic-bezier(.7, 0, .2, 1) infinite; }
+.ch-go:hover, .ch-go:focus-visible, .ch:has(.ch-pic:hover) .ch-go { color: var(--accent); }
+/* the arrow rides the end of the line: it moves by the line's full length (2.2em) times its change in scale */
+@keyframes go-reach { 0%, 100% { transform: scaleX(.45); } 50% { transform: scaleX(1.15); } }
+@keyframes go-reach-ar { 0%, 100% { transform: translateX(-1.21em); } 50% { transform: translateX(.33em); } }
+@media (prefers-reduced-motion: reduce) { .ch-go *, .ch-go svg { animation: none !important; } }

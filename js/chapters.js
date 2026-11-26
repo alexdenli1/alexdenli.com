@@ -8,8 +8,7 @@
    an orbit, a frame, a figure of eight, a coil) and finishes it while that product is on screen, before
    travelling on to the next. It is painted on a canvas behind the products and the words.
 
-   Each project has a "View project" button. For now each project shows a different style (A to G),
-   so Alex can choose one.
+   Each project has a "View project" button whose line keeps reaching out to its arrow.
    Clicking a product, a title or a button opens the project with the picture growing into the page's
    hero (app.js does the transition; the links carry data-vt for it). */
 (() => {
@@ -32,22 +31,9 @@
   /* project names are set one word to a line, so every name can be big */
   const linesOf = (t) => String(t).split(" ");
 
-  /* ---------- the button: seven styles to choose from, one per project for now ---------- */
+  /* ---------- the button: "View project", then a line that keeps reaching out to an arrow ---------- */
   const ARROW = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg>`;
-  const STYLES = [
-    ["pill", (t) => `<span class="go-tx">${t}</span><span class="go-ar">${ARROW}${ARROW}</span>`],
-    ["reach", (t) => `<span class="go-tx">${t}</span><span class="go-line"></span>${ARROW}`],
-    ["pulse", () => `<span class="go-dot">${ARROW}</span>`],
-    ["ticker", (t) => `<span class="go-run"><span>${t} · ${t} · ${t} · </span><span aria-hidden="true">${t} · ${t} · ${t} · </span></span>`],
-    ["wipe", (t) => `<span class="go-tx">${t}</span>${ARROW}`],
-    ["chevrons", (t) => `<span class="go-tx">${t}</span><span class="go-chev"><i></i><i></i><i></i></span>`],
-    ["roll", (t) => `<span class="go-blink"></span><span class="go-rl" data-t="${t}"><span>${t}</span></span>`],
-  ];
-  const button = (i, href, slug, title) => {
-    const [kind, inner] = STYLES[i % STYLES.length];
-    return `<a class="ch-go go-${kind}" href="${href}" data-vt data-slug="${slug}" aria-label="View project: ${esc(title)}">${inner("View project")}</a>
-      <span class="ch-go-pick" aria-hidden="true">Button ${"ABCDEFG"[i % 7]}</span>`;
-  };
+  const button = (href, slug, title) => `<a class="ch-go" href="${href}" data-vt data-slug="${slug}" aria-label="View project: ${esc(title)}"><span class="go-tx">View project</span><span class="go-line"></span>${ARROW}</a>`;
 
   function html(list) {
     const ch = list.map((p, i) => {
@@ -59,7 +45,7 @@
           <p class="ch-year">${esc(p.year)}</p>
           <h2 class="ch-title" id="ch-${slug}"><a href="${href}" data-vt data-slug="${slug}">${linesOf(p.title).map((l) => `<span>${esc(l)}</span>`).join(" ")}</a></h2>
           <p class="ch-info">${esc(p.summary || "")}</p>
-          <div class="ch-gos">${button(i, href, slug, p.title)}</div>
+          ${button(href, slug, p.title)}
         </div>
       </section>`;
     }).join("");
