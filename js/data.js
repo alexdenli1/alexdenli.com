@@ -72,7 +72,7 @@ window.SITE = {
   projects: [
     {
       slug: "xfly", title: "XFLY", category: "product-design", colour: "#30558A",
-      year: 2026, status: "current", thumb: "images/xfly/thumb.webp", cut: true, hero: "images/xfly/hero.jpg",
+      year: 2026, status: "current", thumb: "images/xfly/thumb.webp", cut: true, hero: "images/xfly/hero.jpg", opening: "images/xfly/opening.jpg",
       line: "A golf launch monitor at a competitive price, with a Bluetooth app, for amateur to professional golfers.",
       process: [{ title: "Research", text: "Placeholder: what golfers and competing monitors showed." }, { title: "Design", text: "Placeholder: the directions explored and the one chosen." }, { title: "Prototype", text: "Placeholder: samples, testing and what changed." }, { title: "Final product", text: "Placeholder: what shipped, and the Bluetooth app." }],
       summary: "A golf launch monitor at a competitive price, with a Bluetooth app, for amateur to professional golfers.",
@@ -91,7 +91,7 @@ window.SITE = {
     },
     {
       slug: "adverts", title: "Adverts", category: "graphic-design", colour: "#E4007C",
-      year: "2025 – now", status: "current", thumb: "images/adverts/thumb.webp", cut: true, hero: "images/adverts/hero.jpg", chapter: "images/adverts/chapter.webp",
+      year: "2025 – now", status: "current", thumb: "images/adverts/thumb.webp", cut: true, hero: "images/adverts/hero.jpg", opening: "images/adverts/opening.jpg", chapter: "images/adverts/chapter.webp",
       process: [{ title: "Brief", text: "Placeholder: the product, the audience and the page it runs on." }, { title: "Concept", text: "Placeholder: the idea that stops a reader on a crowded page." }, { title: "Layout", text: "Placeholder: image, headline and offer, built to the magazine spec." }, { title: "Print-ready", text: "Placeholder: proofs, sign-off and the final files." }],
       summary: "Magazine adverts for print and online, produced monthly.",
       blocks: [
@@ -104,7 +104,7 @@ window.SITE = {
     },
     {
       slug: "signature-logo", title: "Signature Logo Collection", category: "graphic-design", colour: "#C9A243",
-      year: "2025 – now", status: "current", thumb: "images/signature-logo/thumb.webp", cut: true, hero: "images/signature-logo/hero.jpg",
+      year: "2025 – now", status: "current", thumb: "images/signature-logo/thumb.webp", cut: true, hero: "images/signature-logo/hero.jpg", opening: "images/signature-logo/opening.jpg",
       process: [{ title: "Range", text: "Placeholder: which products carry a club's logo." }, { title: "Artwork", text: "Placeholder: preparing each club's logo for every product." }, { title: "Brochure", text: "Placeholder: laying out the range and price list." }, { title: "Launch", text: "Placeholder: how it reached golf clubs." }],
       summary: "A fully custom logo range of promotional products for golf clubs.",
       blocks: [
@@ -116,7 +116,7 @@ window.SITE = {
     },
     {
       slug: "rescue", title: "Rescue", category: "ux-ui", colour: "#52B256",
-      study: true, year: "2026 redevelopment", status: "archive", featured: true, hero: "images/rescue/hero.jpg", chapter: "images/rescue/chapter.webp",
+      study: true, year: "2026 redevelopment", status: "archive", featured: true, hero: "images/rescue/hero.jpg", opening: "images/rescue/opening.webp", chapter: "images/rescue/chapter.webp",
       process: [{ title: "Storyboard", text: "Josh's day, drawn out to find where energy saving could fit." }, { title: "Bodystorming", text: "Acting the app out with people and props, before any design." }, { title: "Prototype", text: "A clickable Marvel prototype so real people could try the route." }, { title: "Redevelopment", text: "In 2026: Pip the red panda, a core daily loop and a playable gate." }],
       summary: "A children's app for learning about energy saving, designed at university and redone in 2026.",
       blocks: [

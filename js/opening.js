@@ -24,14 +24,10 @@
     return q === "title" ? n : n.toUpperCase();
   };
 
-  /* The pictures: every project's hero, with a few process shots in between. Order follows data.js. */
-  const EXTRA = { aeropress: ["images/aeropress/gesture.webp", "images/aeropress/head.webp"], shield: ["images/shield/hero-render.webp", "images/shield/lift.webp"] };
+  /* The pictures: one for each project, its opening picture if it has one, otherwise its hero. Order follows data.js. */
   const shotsOf = (site) => {
     const out = [];
-    site.projects.forEach((p) => { if (p.hero && !/placeholder/.test(p.hero)) out.push(p.hero); });
-    const extra = [].concat(...Object.values(EXTRA));
-    // weave the extras in so two shots of one project never sit side by side
-    extra.forEach((s, i) => out.splice(Math.min(out.length, 2 + i * 3), 0, s));
+    site.projects.forEach((p) => { const s = p.opening || p.hero; if (s && !/placeholder/.test(s)) out.push(s); });
     return out;
   };
 
