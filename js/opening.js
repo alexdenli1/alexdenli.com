@@ -24,14 +24,10 @@
     return q === "title" ? n : n.toUpperCase();
   };
 
-  /* The pictures: every project's hero, with a few process shots in between. Order follows data.js. */
-  const EXTRA = { aeropress: ["images/aeropress/gesture.webp", "images/aeropress/head.webp"], shield: ["images/shield/hero-render.webp", "images/shield/lift.webp"] };
+  /* The pictures: one for each project, its opening picture if it has one, otherwise its hero. Order follows data.js. */
   const shotsOf = (site) => {
     const out = [];
-    site.projects.forEach((p) => { if (p.hero && !/placeholder/.test(p.hero)) out.push(p.hero); });
-    const extra = [].concat(...Object.values(EXTRA));
-    // weave the extras in so two shots of one project never sit side by side
-    extra.forEach((s, i) => out.splice(Math.min(out.length, 2 + i * 3), 0, s));
+    site.projects.forEach((p) => { const s = p.opening || p.hero; if (s && !/placeholder/.test(s)) out.push(s); });
     return out;
   };
 
@@ -154,7 +150,7 @@ void main() {
     }
     /* one picture fades into the next, over and over. Each has its own clock from the moment it starts to
        appear to the moment it has gone, so its slow drift never stops or jumps. */
-    const FADE = 1500, HOLD = 1300, LIFE = FADE + HOLD + FADE;
+    const FADE = 1125, HOLD = 975, LIFE = FADE + HOLD + FADE;
     const ed = { cur: 0, at: 0 };                // the picture on show, and when it began to appear
     const nextReady = () => { let n = (ed.cur + 1) % SHOTS.length, g = 0; while (!pics[n] && g++ < SHOTS.length) n = (n + 1) % SHOTS.length; return n; };
     function paintEdit(now) {
