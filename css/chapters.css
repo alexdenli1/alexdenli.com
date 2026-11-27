@@ -8,6 +8,7 @@
 .ch-pic img { position: absolute; max-width: none; }
 .ch-cut .ch-pic img { filter: drop-shadow(0 2vh 2.6vh rgba(0, 0, 0, .14)); }
 .ch-alt .ch-pic { order: 2; margin: 0 0 0 4vw; }
+.ch-alt .ch-tx { padding-left: clamp(2rem, 7vw, 8rem); }
 
 .ch-tx { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2.6vh; min-width: 0; }
 .ch-year { font-size: var(--t-small); color: var(--muted); }
