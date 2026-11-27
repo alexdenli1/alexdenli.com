@@ -150,7 +150,7 @@ void main() {
     }
     /* one picture fades into the next, over and over. Each has its own clock from the moment it starts to
        appear to the moment it has gone, so its slow drift never stops or jumps. */
-    const FADE = 1500, HOLD = 1300, LIFE = FADE + HOLD + FADE;
+    const FADE = 1125, HOLD = 975, LIFE = FADE + HOLD + FADE;
     const ed = { cur: 0, at: 0 };                // the picture on show, and when it began to appear
     const nextReady = () => { let n = (ed.cur + 1) % SHOTS.length, g = 0; while (!pics[n] && g++ < SHOTS.length) n = (n + 1) % SHOTS.length; return n; };
     function paintEdit(now) {
