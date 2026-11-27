@@ -17,7 +17,7 @@
 
 /* the disciplines, evenly spaced across the full width of the name: first under its left edge, last under its right */
 .op-disc { right: var(--op-right, var(--op-pad)); max-width: none; display: flex; justify-content: space-between;
-  font-size: var(--t-sub); line-height: 1.2; white-space: nowrap; }
+  font-size: clamp(.95rem, 1.1vw, 1.25rem); line-height: 1.2; white-space: nowrap; }
 
 /* phone: the same single row, sized to fit */
-@media (max-width: 820px) { .op-disc { font-size: clamp(.875rem, 4vw, 1.25rem); } }
+@media (max-width: 820px) { .op-disc { font-size: clamp(.8125rem, 3.4vw, 1.0625rem); } }
